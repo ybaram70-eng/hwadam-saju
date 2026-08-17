@@ -3,120 +3,315 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>화담철학관 60갑자</title>
+<title>화담철학관 만세력</title>
 <style>
-:root{--bg:#f5f1e8;--card:#fffdf8;--ink:#222;--muted:#6f6b64;--green:#20352d;--line:#e6ddcf;--gold:#d59a2a;}
+:root{--bg:#f5f1e8;--card:#fffdf8;--ink:#232323;--muted:#727272;--green:#20352d;--gold:#d69b27;--line:#e4ddcf;--soft:#f2eee5}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:var(--ink)}
-.wrap{max-width:620px;margin:auto;padding:16px}
-.hero{background:var(--green);color:#fff;padding:24px 22px;border-radius:24px;margin-bottom:14px}
-.hero h1{margin:0 0 8px;font-size:28px}
-.hero p{margin:0;color:#dbe4df;line-height:1.6;font-size:14px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:18px;margin-bottom:14px}
-h2{font-size:20px;margin:0 0 14px}
-.search{display:flex;gap:8px}
-input{flex:1;border:1px solid #d9cfbf;border-radius:14px;padding:14px;font-size:16px;background:#fff}
-button{border:0;border-radius:14px;background:var(--green);color:#fff;padding:0 16px;font-weight:800;font-size:15px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.item{border:1px solid var(--line);background:#fbf8f1;border-radius:14px;padding:11px 5px;text-align:center;cursor:pointer}
-.item b{font-family:serif;font-size:21px;display:block}
-.item small{color:var(--muted);font-size:10px}
-.item.active{outline:2px solid var(--gold);background:#fff8e8}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+.wrap{max-width:560px;margin:auto;padding:16px}
+.hero{background:var(--green);color:white;border-radius:24px;padding:24px 22px;margin-bottom:15px}
+.hero h1{margin:0 0 9px;font-size:29px}
+.hero p{margin:0;color:#d8e3dd;line-height:1.65;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:14px}
+h2{font-size:21px;margin:0 0 17px}
+label{display:block;color:var(--muted);font-size:13px;margin:12px 4px 6px}
+input,select{width:100%;border:1px solid #d8cebc;background:white;border-radius:14px;padding:14px 13px;font-size:17px;color:#222}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.grid3{display:grid;grid-template-columns:1.25fr .8fr .8fr;gap:8px}
+.radioRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg{border:1px solid #d8cebc;background:white;border-radius:14px;padding:12px;text-align:center;font-weight:700}
+.seg input{width:auto;margin-right:6px}
+button{width:100%;border:0;border-radius:15px;padding:16px;background:var(--green);color:#fff;font-size:18px;font-weight:800;margin-top:16px}
+.help{font-size:12px;line-height:1.65;color:#777;margin-top:10px}
+.hide{display:none}
 .result{display:none}
-.badge{display:inline-block;background:#e9efe9;color:#294236;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800}
-.result h3{font-family:serif;font-size:32px;margin:10px 0 8px}
-.result p{line-height:1.75;font-size:14px;margin:10px 0}
-.note{font-size:12px;color:#6f6657;background:#fff7e8;border-left:4px solid var(--gold);padding:11px 12px;border-radius:9px;line-height:1.6}
-.topline{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-bottom:12px}
-.clear{background:#ece8df;color:#333;padding:8px 11px;font-size:12px}
-@media(max-width:420px){.grid{grid-template-columns:repeat(3,1fr)}}
+.titleLine{font-size:20px;font-weight:800;margin-bottom:12px}
+.subline{font-size:13px;color:#666;margin-bottom:15px;line-height:1.6}
+.pillars{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.pillar{border:1px solid #e0d5c2;background:#faf7ef;border-radius:15px;padding:12px 3px;text-align:center}
+.pillar small{display:block;color:#777;font-size:11px;margin-bottom:5px}
+.pillar b{font-family:serif;font-size:24px}
+.info{margin-top:13px;padding:13px 14px;border-radius:14px;background:#f1eee5;font-size:13px;line-height:1.75}
+.warn{margin-top:12px;border-left:4px solid var(--gold);padding:10px 12px;background:#fff8e9;border-radius:8px;font-size:12px;line-height:1.65;color:#665432}
+.tag{display:inline-block;padding:5px 9px;border-radius:999px;background:#e8eee9;color:#274136;font-size:11px;font-weight:700;margin-right:5px}
 </style>
 </head>
 <body>
 <div class="wrap">
 <section class="hero">
-  <h1>화담철학관 60갑자</h1>
-  <p>일주를 검색하거나 목록에서 선택해 핵심 성향과 해석 포인트를 빠르게 확인하세요.</p>
+<h1>화담철학관 만세력</h1>
+<p>양력·음력 생년월일을 입력해 기본 간지와 시주를 확인하는 모바일용 만세력입니다.</p>
 </section>
 
 <section class="card">
-  <h2>일주 검색</h2>
-  <div class="search">
-    <input id="q" placeholder="예: 갑자, 을미, 신유">
-    <button onclick="doSearch()">검색</button>
-  </div>
-</section>
+<h2>출생 정보</h2>
 
-<section class="card">
-  <div class="topline">
-    <h2 style="margin:0">60갑자 전체</h2>
-    <button class="clear" onclick="showAll()">전체 보기</button>
-  </div>
-  <div id="grid" class="grid"></div>
+<label>양력 / 음력</label>
+<div class="radioRow">
+<label class="seg"><input type="radio" name="cal" value="solar" checked>양력</label>
+<label class="seg"><input type="radio" name="cal" value="lunar">음력</label>
+</div>
+
+<div id="leapBox" class="hide">
+<label>음력 월 구분</label>
+<select id="leap">
+<option value="normal">평달</option>
+<option value="leap">윤달</option>
+</select>
+</div>
+
+<label>이름</label>
+<input id="name" placeholder="이름" autocomplete="off">
+
+<label>생년월일</label>
+<div class="grid3">
+<input id="y" inputmode="numeric" maxlength="4" placeholder="1965">
+<input id="m" inputmode="numeric" maxlength="2" placeholder="12">
+<input id="d" inputmode="numeric" maxlength="2" placeholder="15">
+</div>
+
+<label>출생시간</label>
+<div class="grid2">
+<input id="h" inputmode="numeric" maxlength="2" placeholder="14">
+<input id="min" inputmode="numeric" maxlength="2" placeholder="30">
+</div>
+
+<button type="button" onclick="calculate()">만세력 보기</button>
+<div class="help">지원 범위: 1900년~2050년. 음력은 평달/윤달을 선택할 수 있습니다.</div>
 </section>
 
 <section id="result" class="card result">
-  <span id="badge" class="badge"></span>
-  <h3 id="rname"></h3>
-  <p id="summary"></p>
-  <p id="strengths"></p>
-  <p id="caution"></p>
-  <div class="note">※ 전통 명리학의 상징을 바탕으로 한 학습용 요약입니다. 실제 사주 해석은 월령, 격국, 용신, 대운·세운 등 전체 명식을 함께 보아야 합니다.</div>
+<div id="title" class="titleLine">사주 결과</div>
+<div id="sub" class="subline"></div>
+
+<div class="pillars">
+<div class="pillar"><small>년</small><b id="py">-</b></div>
+<div class="pillar"><small>월</small><b id="pm">-</b></div>
+<div class="pillar"><small>일</small><b id="pd">-</b></div>
+<div class="pillar"><small>시</small><b id="ph">-</b></div>
+</div>
+
+<div id="info" class="info"></div>
+<div class="warn">※ 이 버전의 년·월·일 간지는 기초 확인용입니다. 전문 상담용 절입시각·지역 보정까지 반영한 정밀 만세력은 추가 계산이 필요합니다.</div>
 </section>
 </div>
 
 <script>
-const DATA=[{"no": 1, "name": "갑자", "summary": "갑(큰 나무)의 기질과 자(겨울의 물)의 환경이 만나는 일주입니다. 개척·성장 성향이 중심이며, 지혜·정보·이동의 색채가 더해집니다.", "strengths": "강점은 원칙과 추진력, 그리고 지혜·정보·이동을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 2, "name": "을축", "summary": "을(덩굴과 화초)의 기질과 축(겨울의 땅)의 환경이 만나는 일주입니다. 유연·조율 성향이 중심이며, 인내·축적·현실성의 색채가 더해집니다.", "strengths": "강점은 섬세함과 적응력, 그리고 인내·축적·현실성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 3, "name": "병인", "summary": "병(태양)의 기질과 인(초봄의 목)의 환경이 만나는 일주입니다. 표현·확산 성향이 중심이며, 시작·도전·활동성의 색채가 더해집니다.", "strengths": "강점은 밝음과 추진, 그리고 시작·도전·활동성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 4, "name": "정묘", "summary": "정(등불)의 기질과 묘(봄의 목)의 환경이 만나는 일주입니다. 집중·감성 성향이 중심이며, 관계·감성·성장의 색채가 더해집니다.", "strengths": "강점은 세심함과 품격, 그리고 관계·감성·성장을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 5, "name": "무진", "summary": "무(큰 산)의 기질과 진(봄의 토)의 환경이 만나는 일주입니다. 안정·책임 성향이 중심이며, 변화·조정·확장의 색채가 더해집니다.", "strengths": "강점은 신뢰와 버팀, 그리고 변화·조정·확장을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 6, "name": "기사", "summary": "기(논밭)의 기질과 사(초여름의 화)의 환경이 만나는 일주입니다. 관리·실무 성향이 중심이며, 집중·표현·속도의 색채가 더해집니다.", "strengths": "강점은 현실감과 돌봄, 그리고 집중·표현·속도을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 7, "name": "경오", "summary": "경(큰 쇠)의 기질과 오(한여름의 화)의 환경이 만나는 일주입니다. 결단·개혁 성향이 중심이며, 열정·명예·추진의 색채가 더해집니다.", "strengths": "강점은 직선적 판단, 그리고 열정·명예·추진을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 8, "name": "신미", "summary": "신(보석)의 기질과 미(여름의 토)의 환경이 만나는 일주입니다. 정교·완성 성향이 중심이며, 조율·배려·완성의 색채가 더해집니다.", "strengths": "강점은 미감과 기준, 그리고 조율·배려·완성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 9, "name": "임신", "summary": "임(큰 물)의 기질과 신(초가을의 금)의 환경이 만나는 일주입니다. 확장·정보 성향이 중심이며, 분석·기술·변화의 색채가 더해집니다.", "strengths": "강점은 유연한 사고, 그리고 분석·기술·변화을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 10, "name": "계유", "summary": "계(비와 샘물)의 기질과 유(가을의 금)의 환경이 만나는 일주입니다. 통찰·감수성 성향이 중심이며, 정리·기준·완성도의 색채가 더해집니다.", "strengths": "강점은 세밀한 관찰, 그리고 정리·기준·완성도을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 11, "name": "갑술", "summary": "갑(큰 나무)의 기질과 술(가을의 토)의 환경이 만나는 일주입니다. 개척·성장 성향이 중심이며, 책임·원칙·마무리의 색채가 더해집니다.", "strengths": "강점은 원칙과 추진력, 그리고 책임·원칙·마무리을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 12, "name": "을해", "summary": "을(덩굴과 화초)의 기질과 해(겨울의 물)의 환경이 만나는 일주입니다. 유연·조율 성향이 중심이며, 직관·포용·탐구의 색채가 더해집니다.", "strengths": "강점은 섬세함과 적응력, 그리고 직관·포용·탐구을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 13, "name": "병자", "summary": "병(태양)의 기질과 자(겨울의 물)의 환경이 만나는 일주입니다. 표현·확산 성향이 중심이며, 지혜·정보·이동의 색채가 더해집니다.", "strengths": "강점은 밝음과 추진, 그리고 지혜·정보·이동을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 14, "name": "정축", "summary": "정(등불)의 기질과 축(겨울의 땅)의 환경이 만나는 일주입니다. 집중·감성 성향이 중심이며, 인내·축적·현실성의 색채가 더해집니다.", "strengths": "강점은 세심함과 품격, 그리고 인내·축적·현실성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 15, "name": "무인", "summary": "무(큰 산)의 기질과 인(초봄의 목)의 환경이 만나는 일주입니다. 안정·책임 성향이 중심이며, 시작·도전·활동성의 색채가 더해집니다.", "strengths": "강점은 신뢰와 버팀, 그리고 시작·도전·활동성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 16, "name": "기묘", "summary": "기(논밭)의 기질과 묘(봄의 목)의 환경이 만나는 일주입니다. 관리·실무 성향이 중심이며, 관계·감성·성장의 색채가 더해집니다.", "strengths": "강점은 현실감과 돌봄, 그리고 관계·감성·성장을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 17, "name": "경진", "summary": "경(큰 쇠)의 기질과 진(봄의 토)의 환경이 만나는 일주입니다. 결단·개혁 성향이 중심이며, 변화·조정·확장의 색채가 더해집니다.", "strengths": "강점은 직선적 판단, 그리고 변화·조정·확장을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 18, "name": "신사", "summary": "신(보석)의 기질과 사(초여름의 화)의 환경이 만나는 일주입니다. 정교·완성 성향이 중심이며, 집중·표현·속도의 색채가 더해집니다.", "strengths": "강점은 미감과 기준, 그리고 집중·표현·속도을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 19, "name": "임오", "summary": "임(큰 물)의 기질과 오(한여름의 화)의 환경이 만나는 일주입니다. 확장·정보 성향이 중심이며, 열정·명예·추진의 색채가 더해집니다.", "strengths": "강점은 유연한 사고, 그리고 열정·명예·추진을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 20, "name": "계미", "summary": "계(비와 샘물)의 기질과 미(여름의 토)의 환경이 만나는 일주입니다. 통찰·감수성 성향이 중심이며, 조율·배려·완성의 색채가 더해집니다.", "strengths": "강점은 세밀한 관찰, 그리고 조율·배려·완성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 21, "name": "갑신", "summary": "갑(큰 나무)의 기질과 신(초가을의 금)의 환경이 만나는 일주입니다. 개척·성장 성향이 중심이며, 분석·기술·변화의 색채가 더해집니다.", "strengths": "강점은 원칙과 추진력, 그리고 분석·기술·변화을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 22, "name": "을유", "summary": "을(덩굴과 화초)의 기질과 유(가을의 금)의 환경이 만나는 일주입니다. 유연·조율 성향이 중심이며, 정리·기준·완성도의 색채가 더해집니다.", "strengths": "강점은 섬세함과 적응력, 그리고 정리·기준·완성도을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 23, "name": "병술", "summary": "병(태양)의 기질과 술(가을의 토)의 환경이 만나는 일주입니다. 표현·확산 성향이 중심이며, 책임·원칙·마무리의 색채가 더해집니다.", "strengths": "강점은 밝음과 추진, 그리고 책임·원칙·마무리을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 24, "name": "정해", "summary": "정(등불)의 기질과 해(겨울의 물)의 환경이 만나는 일주입니다. 집중·감성 성향이 중심이며, 직관·포용·탐구의 색채가 더해집니다.", "strengths": "강점은 세심함과 품격, 그리고 직관·포용·탐구을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 25, "name": "무자", "summary": "무(큰 산)의 기질과 자(겨울의 물)의 환경이 만나는 일주입니다. 안정·책임 성향이 중심이며, 지혜·정보·이동의 색채가 더해집니다.", "strengths": "강점은 신뢰와 버팀, 그리고 지혜·정보·이동을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 26, "name": "기축", "summary": "기(논밭)의 기질과 축(겨울의 땅)의 환경이 만나는 일주입니다. 관리·실무 성향이 중심이며, 인내·축적·현실성의 색채가 더해집니다.", "strengths": "강점은 현실감과 돌봄, 그리고 인내·축적·현실성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 27, "name": "경인", "summary": "경(큰 쇠)의 기질과 인(초봄의 목)의 환경이 만나는 일주입니다. 결단·개혁 성향이 중심이며, 시작·도전·활동성의 색채가 더해집니다.", "strengths": "강점은 직선적 판단, 그리고 시작·도전·활동성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 28, "name": "신묘", "summary": "신(보석)의 기질과 묘(봄의 목)의 환경이 만나는 일주입니다. 정교·완성 성향이 중심이며, 관계·감성·성장의 색채가 더해집니다.", "strengths": "강점은 미감과 기준, 그리고 관계·감성·성장을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 29, "name": "임진", "summary": "임(큰 물)의 기질과 진(봄의 토)의 환경이 만나는 일주입니다. 확장·정보 성향이 중심이며, 변화·조정·확장의 색채가 더해집니다.", "strengths": "강점은 유연한 사고, 그리고 변화·조정·확장을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 30, "name": "계사", "summary": "계(비와 샘물)의 기질과 사(초여름의 화)의 환경이 만나는 일주입니다. 통찰·감수성 성향이 중심이며, 집중·표현·속도의 색채가 더해집니다.", "strengths": "강점은 세밀한 관찰, 그리고 집중·표현·속도을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 31, "name": "갑오", "summary": "갑(큰 나무)의 기질과 오(한여름의 화)의 환경이 만나는 일주입니다. 개척·성장 성향이 중심이며, 열정·명예·추진의 색채가 더해집니다.", "strengths": "강점은 원칙과 추진력, 그리고 열정·명예·추진을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 32, "name": "을미", "summary": "을(덩굴과 화초)의 기질과 미(여름의 토)의 환경이 만나는 일주입니다. 유연·조율 성향이 중심이며, 조율·배려·완성의 색채가 더해집니다.", "strengths": "강점은 섬세함과 적응력, 그리고 조율·배려·완성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 33, "name": "병신", "summary": "병(태양)의 기질과 신(초가을의 금)의 환경이 만나는 일주입니다. 표현·확산 성향이 중심이며, 분석·기술·변화의 색채가 더해집니다.", "strengths": "강점은 밝음과 추진, 그리고 분석·기술·변화을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 34, "name": "정유", "summary": "정(등불)의 기질과 유(가을의 금)의 환경이 만나는 일주입니다. 집중·감성 성향이 중심이며, 정리·기준·완성도의 색채가 더해집니다.", "strengths": "강점은 세심함과 품격, 그리고 정리·기준·완성도을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 35, "name": "무술", "summary": "무(큰 산)의 기질과 술(가을의 토)의 환경이 만나는 일주입니다. 안정·책임 성향이 중심이며, 책임·원칙·마무리의 색채가 더해집니다.", "strengths": "강점은 신뢰와 버팀, 그리고 책임·원칙·마무리을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 36, "name": "기해", "summary": "기(논밭)의 기질과 해(겨울의 물)의 환경이 만나는 일주입니다. 관리·실무 성향이 중심이며, 직관·포용·탐구의 색채가 더해집니다.", "strengths": "강점은 현실감과 돌봄, 그리고 직관·포용·탐구을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 37, "name": "경자", "summary": "경(큰 쇠)의 기질과 자(겨울의 물)의 환경이 만나는 일주입니다. 결단·개혁 성향이 중심이며, 지혜·정보·이동의 색채가 더해집니다.", "strengths": "강점은 직선적 판단, 그리고 지혜·정보·이동을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 38, "name": "신축", "summary": "신(보석)의 기질과 축(겨울의 땅)의 환경이 만나는 일주입니다. 정교·완성 성향이 중심이며, 인내·축적·현실성의 색채가 더해집니다.", "strengths": "강점은 미감과 기준, 그리고 인내·축적·현실성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 39, "name": "임인", "summary": "임(큰 물)의 기질과 인(초봄의 목)의 환경이 만나는 일주입니다. 확장·정보 성향이 중심이며, 시작·도전·활동성의 색채가 더해집니다.", "strengths": "강점은 유연한 사고, 그리고 시작·도전·활동성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 40, "name": "계묘", "summary": "계(비와 샘물)의 기질과 묘(봄의 목)의 환경이 만나는 일주입니다. 통찰·감수성 성향이 중심이며, 관계·감성·성장의 색채가 더해집니다.", "strengths": "강점은 세밀한 관찰, 그리고 관계·감성·성장을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 41, "name": "갑진", "summary": "갑(큰 나무)의 기질과 진(봄의 토)의 환경이 만나는 일주입니다. 개척·성장 성향이 중심이며, 변화·조정·확장의 색채가 더해집니다.", "strengths": "강점은 원칙과 추진력, 그리고 변화·조정·확장을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 42, "name": "을사", "summary": "을(덩굴과 화초)의 기질과 사(초여름의 화)의 환경이 만나는 일주입니다. 유연·조율 성향이 중심이며, 집중·표현·속도의 색채가 더해집니다.", "strengths": "강점은 섬세함과 적응력, 그리고 집중·표현·속도을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 43, "name": "병오", "summary": "병(태양)의 기질과 오(한여름의 화)의 환경이 만나는 일주입니다. 표현·확산 성향이 중심이며, 열정·명예·추진의 색채가 더해집니다.", "strengths": "강점은 밝음과 추진, 그리고 열정·명예·추진을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 44, "name": "정미", "summary": "정(등불)의 기질과 미(여름의 토)의 환경이 만나는 일주입니다. 집중·감성 성향이 중심이며, 조율·배려·완성의 색채가 더해집니다.", "strengths": "강점은 세심함과 품격, 그리고 조율·배려·완성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 45, "name": "무신", "summary": "무(큰 산)의 기질과 신(초가을의 금)의 환경이 만나는 일주입니다. 안정·책임 성향이 중심이며, 분석·기술·변화의 색채가 더해집니다.", "strengths": "강점은 신뢰와 버팀, 그리고 분석·기술·변화을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 46, "name": "기유", "summary": "기(논밭)의 기질과 유(가을의 금)의 환경이 만나는 일주입니다. 관리·실무 성향이 중심이며, 정리·기준·완성도의 색채가 더해집니다.", "strengths": "강점은 현실감과 돌봄, 그리고 정리·기준·완성도을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 47, "name": "경술", "summary": "경(큰 쇠)의 기질과 술(가을의 토)의 환경이 만나는 일주입니다. 결단·개혁 성향이 중심이며, 책임·원칙·마무리의 색채가 더해집니다.", "strengths": "강점은 직선적 판단, 그리고 책임·원칙·마무리을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 48, "name": "신해", "summary": "신(보석)의 기질과 해(겨울의 물)의 환경이 만나는 일주입니다. 정교·완성 성향이 중심이며, 직관·포용·탐구의 색채가 더해집니다.", "strengths": "강점은 미감과 기준, 그리고 직관·포용·탐구을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 49, "name": "임자", "summary": "임(큰 물)의 기질과 자(겨울의 물)의 환경이 만나는 일주입니다. 확장·정보 성향이 중심이며, 지혜·정보·이동의 색채가 더해집니다.", "strengths": "강점은 유연한 사고, 그리고 지혜·정보·이동을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 50, "name": "계축", "summary": "계(비와 샘물)의 기질과 축(겨울의 땅)의 환경이 만나는 일주입니다. 통찰·감수성 성향이 중심이며, 인내·축적·현실성의 색채가 더해집니다.", "strengths": "강점은 세밀한 관찰, 그리고 인내·축적·현실성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 51, "name": "갑인", "summary": "갑(큰 나무)의 기질과 인(초봄의 목)의 환경이 만나는 일주입니다. 개척·성장 성향이 중심이며, 시작·도전·활동성의 색채가 더해집니다.", "strengths": "강점은 원칙과 추진력, 그리고 시작·도전·활동성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 52, "name": "을묘", "summary": "을(덩굴과 화초)의 기질과 묘(봄의 목)의 환경이 만나는 일주입니다. 유연·조율 성향이 중심이며, 관계·감성·성장의 색채가 더해집니다.", "strengths": "강점은 섬세함과 적응력, 그리고 관계·감성·성장을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 53, "name": "병진", "summary": "병(태양)의 기질과 진(봄의 토)의 환경이 만나는 일주입니다. 표현·확산 성향이 중심이며, 변화·조정·확장의 색채가 더해집니다.", "strengths": "강점은 밝음과 추진, 그리고 변화·조정·확장을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 54, "name": "정사", "summary": "정(등불)의 기질과 사(초여름의 화)의 환경이 만나는 일주입니다. 집중·감성 성향이 중심이며, 집중·표현·속도의 색채가 더해집니다.", "strengths": "강점은 세심함과 품격, 그리고 집중·표현·속도을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 55, "name": "무오", "summary": "무(큰 산)의 기질과 오(한여름의 화)의 환경이 만나는 일주입니다. 안정·책임 성향이 중심이며, 열정·명예·추진의 색채가 더해집니다.", "strengths": "강점은 신뢰와 버팀, 그리고 열정·명예·추진을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 56, "name": "기미", "summary": "기(논밭)의 기질과 미(여름의 토)의 환경이 만나는 일주입니다. 관리·실무 성향이 중심이며, 조율·배려·완성의 색채가 더해집니다.", "strengths": "강점은 현실감과 돌봄, 그리고 조율·배려·완성을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 57, "name": "경신", "summary": "경(큰 쇠)의 기질과 신(초가을의 금)의 환경이 만나는 일주입니다. 결단·개혁 성향이 중심이며, 분석·기술·변화의 색채가 더해집니다.", "strengths": "강점은 직선적 판단, 그리고 분석·기술·변화을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 58, "name": "신유", "summary": "신(보석)의 기질과 유(가을의 금)의 환경이 만나는 일주입니다. 정교·완성 성향이 중심이며, 정리·기준·완성도의 색채가 더해집니다.", "strengths": "강점은 미감과 기준, 그리고 정리·기준·완성도을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 59, "name": "임술", "summary": "임(큰 물)의 기질과 술(가을의 토)의 환경이 만나는 일주입니다. 확장·정보 성향이 중심이며, 책임·원칙·마무리의 색채가 더해집니다.", "strengths": "강점은 유연한 사고, 그리고 책임·원칙·마무리을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}, {"no": 60, "name": "계해", "summary": "계(비와 샘물)의 기질과 해(겨울의 물)의 환경이 만나는 일주입니다. 통찰·감수성 성향이 중심이며, 직관·포용·탐구의 색채가 더해집니다.", "strengths": "강점은 세밀한 관찰, 그리고 직관·포용·탐구을(를) 살리는 능력입니다.", "caution": "다만 한쪽 성향이 지나치게 강해지면 고집, 과속, 감정 소모로 나타날 수 있어 균형이 중요합니다."}];
+const BASE_YEAR=1900,MAX_YEAR=2050,DAY_DIFF=43;
+const SOLAR_DAYS=[31,28,31,30,31,30,31,31,30,31,30,31,29];
+const STEMS=["갑","을","병","정","무","기","경","신","임","계"];
+const BRANCHES=["자","축","인","묘","진","사","오","미","신","유","술","해"];
 
-function render(list){
-  const grid=document.getElementById('grid');
-  grid.innerHTML='';
-  list.forEach(x=>{
-    const el=document.createElement('div');
-    el.className='item';
-    el.dataset.name=x.name;
-    el.innerHTML=`<small>${x.no}번</small><b>${x.name}</b>`;
-    el.onclick=()=>selectItem(x,el);
-    grid.appendChild(el);
-  });
-}
+const LUNAR_DATA=[2197849277,2193884334,2194016855,2197706061,3267628326,2194017685,2197898837,2193884522,3267758509,2197824861,2193884334,2197842523,3267627597,2193886501,2197839273,2194017109,3267626346,2197826266,2194016605,2197845179,3267626139,2193885771,2197838667,2193884841,3267627732,2197965749,2193883830,2194016603,3271566647,2193884311,2197710422,2193886794,3267759781,2197903017,2194015669,2193883830,3271637166,2193885486,2197912717,2193886357,3267628362,2197908874,2194017129,2194015597,3271639643,2193883741,2193885485,2197826859,3267627669,2197847381,2193886026,2194017109,3271644501,2194015451,2193883739,2197895255,3267626283,2197850779,2193884821,2193884842,3271584490,2194016949,2193884342,2197834414,3267758679,2193884455,2197698342,2194017685,3271587509,2193884522,2194016685,2197837021,3267626158,2193885774,2197835085,2193886501,3271593305,2193886036,2194017642,2197907802,3267758427,2193884315,2197834395,2193885771,3271600935,2193884837,2193884884,2197973877,3267625654,2194016603,2197836983,2193884311,3267626571,2197698378,2194017957,2197849817,3267757485,2193883830,2197838190,2193885486,3267628182,2197835413,2193886538,2194017701,3271567189,2193884524,2197977787,2193883741,3267627309,2197839019,2193885845,2193886026,3271637834,2194017109,2197853533,2193884346,3267758683,2197837143,2193884459,2193885845,3271576469,2193884842,2194016981,2197825205,3267626166,2197842542,2194016855,2193884455,3271448230,2194017683,2193884586,2197830506,3267758445,2197861551,2193884334,2193885773,3271650573,2193886501,2193886546,2197839316,3267758954,2194016621,2197824859,2193884315,3271588439,2193885771,2193885989,2197904165,3267626708,2194016986,2197895350];
 
-function selectItem(x,el){
-  document.querySelectorAll('.item').forEach(i=>i.classList.remove('active'));
-  if(el) el.classList.add('active');
-  document.getElementById('badge').textContent=`${x.no}번째 일주`;
-  document.getElementById('rname').textContent=x.name+'일주';
-  document.getElementById('summary').textContent=x.summary;
-  document.getElementById('strengths').textContent=x.strengths;
-  document.getElementById('caution').textContent=x.caution;
-  const r=document.getElementById('result');
-  r.style.display='block';
-  r.scrollIntoView({behavior:'smooth',block:'start'});
+function ld(y){return LUNAR_DATA[y-BASE_YEAR]}
+function leapMonthOf(data){return (data>>12)&15}
+
+function lunarDays(y,m,isLeap){
+const data=ld(y);
+if(isLeap&&leapMonthOf(data)===m)return ((data>>16)&1)?30:29;
+return ((data>>(12-m))&1)?30:29;
 }
 
-function doSearch(){
-  const q=document.getElementById('q').value.trim();
-  if(!q){render(DATA);return;}
-  const exact=DATA.find(x=>x.name===q || x.name+'일주'===q);
-  const list=DATA.filter(x=>x.name.includes(q));
-  render(list.length?list:DATA);
-  if(exact){
-    setTimeout(()=>{
-      const el=[...document.querySelectorAll('.item')].find(i=>i.dataset.name===exact.name);
-      selectItem(exact,el);
-    },0);
-  } else if(!list.length){
-    alert('해당 일주를 찾지 못했습니다. 예: 갑자, 을미, 신유');
-  }
+function lunarYearDays(y){return (ld(y)>>17)&0x1ff}
+function solarLeap(y){return ((ld(y)>>30)&1)>0}
+
+function solarDays(y,m){
+return (m===2&&solarLeap(y))?29:SOLAR_DAYS[m-1];
 }
-function showAll(){
-  document.getElementById('q').value='';
-  render(DATA);
-  document.getElementById('result').style.display='none';
+
+function sumLunarYears(y){
+let s=0;
+for(let yy=BASE_YEAR;yy<=y;yy++)s+=lunarYearDays(yy);
+return s;
 }
-document.getElementById('q').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch();});
-render(DATA);
+
+function sumLunarMonths(y,m,isInter){
+let s=0;
+if(y>=BASE_YEAR&&m>0){
+for(let mm=1;mm<=m;mm++)s+=lunarDays(y,mm,false);
+if(isInter){
+const lp=leapMonthOf(ld(y));
+if(lp>0&&lp<m+1)s+=lunarDays(y,lp,true);
+}}
+return s;
+}
+
+function lunarAbs(y,m,d,isInter){
+let s=sumLunarYears(y-1)+sumLunarMonths(y,m-1,true)+d;
+if(isInter&&leapMonthOf(ld(y))===m)s+=lunarDays(y,m,false);
+return s;
+}
+
+function sumSolarYears(y){
+let s=0;
+for(let yy=BASE_YEAR;yy<=y;yy++)s+=solarLeap(yy)?366:365;
+return s;
+}
+
+function sumSolarMonths(y,m){
+let s=0;
+for(let mm=1;mm<=m;mm++)s+=solarDays(y,mm);
+return s;
+}
+
+function solarAbs(y,m,d){
+return sumSolarYears(y-1)+sumSolarMonths(y,m-1)+d-DAY_DIFF;
+}
+
+function validSolar(y,m,d){
+return y>=BASE_YEAR&&y<=MAX_YEAR&&m>=1&&m<=12&&d>=1&&d<=solarDays(y,m);
+}
+
+function validLunar(y,m,d,isInter){
+if(y<BASE_YEAR||y>MAX_YEAR||m<1||m>12||d<1)return false;
+if(isInter&&leapMonthOf(ld(y))!==m)return false;
+return d<=lunarDays(y,m,isInter);
+}
+
+function lunarToSolar(y,m,d,isInter){
+const a=lunarAbs(y,m,d,isInter);
+let sy=(a<solarAbs(y+1,1,1))?y:y+1,sm=1,sd=1;
+for(let mm=12;mm>=1;mm--){
+const b=solarAbs(sy,mm,1);
+if(a>=b){sm=mm;sd=a-b+1;break}
+}
+return {y:sy,m:sm,d:sd};
+}
+
+function solarToLunar(y,m,d){
+const a=solarAbs(y,m,d);
+let ly=(a>=lunarAbs(y,1,1,false))?y:y-1;
+let lm=1,lday=1,isInter=false;
+const lp=leapMonthOf(ld(ly));
+
+for(let mm=12;mm>=1;mm--){
+const normalStart=lunarAbs(ly,mm,1,false);
+if(a>=normalStart){
+lm=mm;
+if(lp===mm){
+const leapStart=lunarAbs(ly,mm,1,true);
+if(a>=leapStart){
+isInter=true;
+lday=a-leapStart+1;
+}else{
+lday=a-normalStart+1;
+}
+}else{
+lday=a-normalStart+1;
+}
+break;
+}}
+return {y:ly,m:lm,d:lday,isInter};
+}
+
+function gapja(l){
+const a=lunarAbs(l.y,l.m,l.d,l.isInter);
+
+const yiS=((l.y+6)-BASE_YEAR)%10;
+const yiB=((l.y)-BASE_YEAR)%12;
+
+const mc=l.m+12*(l.y-BASE_YEAR);
+const miS=(mc+3)%10;
+const miB=(mc+1)%12;
+
+const diS=(a+4)%10;
+const diB=(a+2)%12;
+
+return {
+year:STEMS[(yiS+10)%10]+BRANCHES[(yiB+12)%12],
+month:STEMS[(miS+10)%10]+BRANCHES[(miB+12)%12],
+day:STEMS[(diS+10)%10]+BRANCHES[(diB+12)%12],
+dayStem:(diS+10)%10
+};
+}
+
+function hourPillar(dayStem,h){
+const branch=Math.floor(((h+1)%24)/2);
+const stem=(dayStem*2+branch)%10;
+return STEMS[stem]+BRANCHES[branch];
+}
+
+function pad(n){
+return String(n).padStart(2,"0");
+}
+
+function getNum(id){
+return parseInt(document.getElementById(id).value,10);
+}
+
+function currentCal(){
+return document.querySelector('input[name="cal"]:checked').value;
+}
+
+document.querySelectorAll('input[name="cal"]').forEach(el=>{
+el.addEventListener('change',()=>{
+document.getElementById('leapBox').classList.toggle('hide',currentCal()!=="lunar");
+});
+});
+
+function calculate(){
+const name=document.getElementById("name").value.trim()||"고객";
+const y=getNum("y");
+const m=getNum("m");
+const d=getNum("d");
+const h=getNum("h");
+const mi=getNum("min");
+
+if(!Number.isInteger(h)||h<0||h>23||!Number.isInteger(mi)||mi<0||mi>59){
+alert("출생시간을 0~23시, 0~59분으로 입력해 주세요.");
+return;
+}
+
+let solar,lunar;
+
+if(currentCal()==="solar"){
+if(!validSolar(y,m,d)){
+alert("양력 생년월일을 확인해 주세요. (1900~2050)");
+return;
+}
+solar={y,m,d};
+lunar=solarToLunar(y,m,d);
+
+}else{
+
+const isInter=document.getElementById("leap").value==="leap";
+
+if(!validLunar(y,m,d,isInter)){
+const lp=(y>=BASE_YEAR&&y<=MAX_YEAR)?leapMonthOf(ld(y)):0;
+alert(isInter&&lp!==m
+?`해당 연도의 윤달은 ${lp?lp+"월":"없습니다"}.`
+:"음력 생년월일을 확인해 주세요.");
+return;
+}
+
+lunar={y,m,d,isInter};
+solar=lunarToSolar(y,m,d,isInter);
+}
+
+const g=gapja(lunar);
+const hp=hourPillar(g.dayStem,h);
+
+document.getElementById("title").textContent=name+"님의 기초 만세력";
+
+document.getElementById("py").textContent=g.year;
+document.getElementById("pm").textContent=g.month;
+document.getElementById("pd").textContent=g.day;
+document.getElementById("ph").textContent=hp;
+
+document.getElementById("sub").innerHTML=
+`<span class="tag">양력 ${solar.y}.${pad(solar.m)}.${pad(solar.d)}</span>`+
+`<span class="tag">음력 ${lunar.y}.${pad(lunar.m)}.${pad(lunar.d)}${lunar.isInter?" 윤달":""}</span>`;
+
+document.getElementById("info").innerHTML=
+`출생시간: <b>${pad(h)}:${pad(mi)}</b><br>`+
+`년 간지: <b>${g.year}</b> · 월 간지: <b>${g.month}</b> · 일진: <b>${g.day}</b> · 시 간지: <b>${hp}</b><br>`+
+`음력 월: ${lunar.isInter?"윤달":"평달"}`;
+
+const r=document.getElementById("result");
+r.style.display="block";
+r.scrollIntoView({behavior:"smooth"});
+}
 </script>
 </body>
 </html>
-

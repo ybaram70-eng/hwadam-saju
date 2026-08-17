@@ -1,0 +1,1 @@
+Force Vercel deployment from restored main branch with clickable monthly fortune version.

@@ -1,6 +1,6 @@
 import postgres from 'postgres';
 let sql=null;
-export function db(){const url=process.env.POSTGRES_URL||process.env.DATABASE_URL||'';if(!url)return null;if(!sql)sql=postgres(url,{ssl:'require',max:1,prepare:false});return sql}
+export function db(){const url=process.env.POSTGRES_URL||process.env.DATABASE_URL||process.env.POSTGRES_URL_NON_POOLING||'';if(!url)return null;if(!sql)sql=postgres(url,{ssl:'require',max:1,prepare:false});return sql}
 export async function ensureEntitlementTable(){const s=db();if(!s)return false;await s`create table if not exists hwadam_report_entitlements (report_id text primary key, order_id text not null unique, amount integer not null, approved_at timestamptz not null, payment_status text not null, created_at timestamptz not null default now())`;return true}
 export async function saveEntitlement({reportId,orderId,amount,approvedAt,status}){const s=db();if(!s)return false;await ensureEntitlementTable();await s`insert into hwadam_report_entitlements (report_id,order_id,amount,approved_at,payment_status) values (${reportId},${orderId},${amount},${approvedAt},${status}) on conflict (report_id) do update set order_id=excluded.order_id, amount=excluded.amount, approved_at=excluded.approved_at, payment_status=excluded.payment_status`;return true}
 export async function getEntitlement(reportId){const s=db();if(!s)return null;await ensureEntitlementTable();const rows=await s`select report_id,order_id,amount,approved_at,payment_status from hwadam_report_entitlements where report_id=${reportId} limit 1`;return rows[0]||null}

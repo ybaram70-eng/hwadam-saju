@@ -1,0 +1,14 @@
+import { randomBytes, scryptSync, timingSafeEqual, createHash } from 'node:crypto';
+import { db } from './_db.js';
+
+export async function ensureAuthTables(){const s=db();if(!s)return false;await s`create table if not exists hwadam_users (id bigserial primary key, name text not null, email text not null unique, phone text, birth_date date, gender text, password_salt text not null, password_hash text not null, created_at timestamptz not null default now())`;await s`create table if not exists hwadam_sessions (token_hash text primary key, user_id bigint not null references hwadam_users(id) on delete cascade, expires_at timestamptz not null, created_at timestamptz not null default now())`;return true}
+export function normalizeEmail(v){return String(v||'').trim().toLowerCase()}
+export function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(v))}
+export function hashPassword(password,salt=randomBytes(16).toString('hex')){const hash=scryptSync(String(password),salt,64).toString('hex');return{salt,hash}}
+export function verifyPassword(password,salt,stored){try{const a=Buffer.from(hashPassword(password,salt).hash,'hex'),b=Buffer.from(stored,'hex');return a.length===b.length&&timingSafeEqual(a,b)}catch{return false}}
+export function hashToken(token){return createHash('sha256').update(String(token)).digest('hex')}
+export async function createSession(userId){const s=db();if(!s)throw new Error('DB_NOT_CONFIGURED');await ensureAuthTables();const token=randomBytes(32).toString('base64url'),tokenHash=hashToken(token),expires=new Date(Date.now()+1000*60*60*24*30);await s`insert into hwadam_sessions(token_hash,user_id,expires_at) values(${tokenHash},${userId},${expires.toISOString()})`;return{token,expires}}
+export function setSessionCookie(res,token,expires){res.setHeader('Set-Cookie',`hwadam_session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Expires=${expires.toUTCString()}`)}
+export function clearSessionCookie(res){res.setHeader('Set-Cookie','hwadam_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0')}
+export function cookie(req,name){const raw=req.headers?.cookie||'';for(const p of raw.split(';')){const [k,...rest]=p.trim().split('=');if(k===name)return rest.join('=')}return''}
+export async function currentUser(req){const token=cookie(req,'hwadam_session');if(!token)return null;const s=db();if(!s)return null;await ensureAuthTables();const rows=await s`select u.id,u.name,u.email,u.phone,u.birth_date,u.gender from hwadam_sessions ss join hwadam_users u on u.id=ss.user_id where ss.token_hash=${hashToken(token)} and ss.expires_at>now() limit 1`;return rows[0]||null}

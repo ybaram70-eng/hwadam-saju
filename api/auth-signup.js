@@ -1,7 +1,16 @@
 import { db } from './_db.js';
 import { ensureAuthTables, normalizePhone, validPhone, hashPassword, verifyPassword, createSession, setSessionCookie } from './_auth.js';
 
-const normDate=v=>String(v||'').slice(0,10);
+function normDate(v){
+  if(!v)return '';
+  if(v instanceof Date && !Number.isNaN(v.getTime())) return v.toISOString().slice(0,10);
+  const s=String(v);
+  const m=s.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if(m)return `${m[1]}-${m[2]}-${m[3]}`;
+  const dt=new Date(v);
+  return Number.isNaN(dt.getTime())?'':dt.toISOString().slice(0,10);
+}
+
 export default async function handler(req,res){
   if(req.method!=='POST')return res.status(405).json({ok:false,error:'METHOD_NOT_ALLOWED'});
   const s=db();
@@ -19,10 +28,9 @@ export default async function handler(req,res){
     const exists=await s`select id,name,email,phone,birth_date,gender,calendar_type,password_salt,password_hash from hwadam_users where phone=${p} limit 1`;
     if(exists.length){
       const old=exists[0];
-      const active=await s`select 1 from hwadam_sessions where user_id=${old.id} and expires_at>now() limit 1`;
       const oldPassOk=verifyPassword(password,old.password_salt,old.password_hash);
       const sameIdentity=String(old.name||'').trim()===cleanName && normDate(old.birth_date)===normDate(birthDate) && String(old.gender||'')===String(cleanGender||'');
-      if(!oldPassOk && !(active.length===0 && sameIdentity)) return res.status(409).json({ok:false,error:'REJOIN_IDENTITY_MISMATCH'});
+      if(!oldPassOk && !sameIdentity)return res.status(409).json({ok:false,error:'REJOIN_IDENTITY_MISMATCH'});
       const {salt,hash}=hashPassword(chosen);
       const rows=await s`update hwadam_users set name=${cleanName},birth_date=${birthDate||null},gender=${cleanGender},calendar_type=${cal},password_salt=${salt},password_hash=${hash} where id=${old.id} returning id,name,email,phone,birth_date,gender,calendar_type`;
       await s`delete from hwadam_sessions where user_id=${old.id}`;

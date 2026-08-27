@@ -1,9 +1,11 @@
 import { randomBytes, scryptSync, timingSafeEqual, createHash } from 'node:crypto';
 import { db } from './_db.js';
 
-export async function ensureAuthTables(){const s=db();if(!s)return false;await s`create table if not exists hwadam_users (id bigserial primary key, name text not null, email text not null unique, phone text, birth_date date, gender text, password_salt text not null, password_hash text not null, created_at timestamptz not null default now())`;await s`create table if not exists hwadam_sessions (token_hash text primary key, user_id bigint not null references hwadam_users(id) on delete cascade, expires_at timestamptz not null, created_at timestamptz not null default now())`;return true}
+export async function ensureAuthTables(){const s=db();if(!s)return false;await s`create table if not exists hwadam_users (id bigserial primary key, name text not null, email text unique, phone text, birth_date date, gender text, password_salt text not null, password_hash text not null, created_at timestamptz not null default now())`;await s`alter table hwadam_users alter column email drop not null`;await s`create unique index if not exists hwadam_users_phone_uidx on hwadam_users(phone) where phone is not null`;await s`create table if not exists hwadam_sessions (token_hash text primary key, user_id bigint not null references hwadam_users(id) on delete cascade, expires_at timestamptz not null, created_at timestamptz not null default now())`;return true}
 export function normalizeEmail(v){return String(v||'').trim().toLowerCase()}
 export function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizeEmail(v))}
+export function normalizePhone(v){return String(v||'').replace(/\D/g,'')}
+export function validPhone(v){const p=normalizePhone(v);return /^01\d{8,9}$/.test(p)}
 export function hashPassword(password,salt=randomBytes(16).toString('hex')){const hash=scryptSync(String(password),salt,64).toString('hex');return{salt,hash}}
 export function verifyPassword(password,salt,stored){try{const a=Buffer.from(hashPassword(password,salt).hash,'hex'),b=Buffer.from(stored,'hex');return a.length===b.length&&timingSafeEqual(a,b)}catch{return false}}
 export function hashToken(token){return createHash('sha256').update(String(token)).digest('hex')}

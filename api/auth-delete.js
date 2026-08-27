@@ -11,6 +11,7 @@ export default async function handler(req,res){
     await ensureAuthTables();
     const phone=user.phone||null;
     await s.begin(async sql=>{
+      if(phone) await sql`insert into hwadam_deleted_members(phone,deleted_at) values(${phone},now()) on conflict(phone) do update set deleted_at=excluded.deleted_at`;
       await sql`delete from hwadam_sessions where user_id=${user.id}`;
       await sql`delete from hwadam_users where id=${user.id}`;
     });

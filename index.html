@@ -116,7 +116,8 @@
       let d = null,
         mode = "main",
         currentTarget = "home",
-        transitioning = false;
+        transitioning = false,
+        pendingProduct = new URLSearchParams(location.search).get("product");
       function setActiveTarget(t) {
         document
           .querySelectorAll(".navItem")
@@ -137,7 +138,7 @@
           if (!d) return;
           addScript("hwadam-ui-polish", "/ui-polish.js?v=20260829-1");
           addScript("hwadam-premium-ui", "/premium-ui.js?v=20260829-4");
-          addScript("hwadam-home-dashboard", "/home-dashboard.js?v=20260830-2");
+          addScript("hwadam-home-dashboard", "/home-dashboard.js?v=20260830-3");
           addScript(
             "hwadam-signup-calendar",
             "/signup-calendar-ui.js?v=20260829-1",
@@ -445,7 +446,29 @@
       f.addEventListener("load", () => {
         if (mode === "main") {
           setupMain();
-          setTimeout(() => showMode(currentTarget), 500);
+          if (pendingProduct === "annual-fortune") {
+            const year = new Date().getFullYear();
+            try {
+              f.contentWindow.localStorage.setItem(
+                "hwadam_selected_product",
+                JSON.stringify({
+                  id: "annual-fortune",
+                  name: `${year}년 신년운세`,
+                  price: 9900,
+                  at: new Date().toISOString(),
+                }),
+              );
+              history.replaceState({}, "", "/");
+            } catch {}
+            pendingProduct = "";
+            setTimeout(
+              () =>
+                document
+                  .querySelector('.navItem[data-target="ai"]')
+                  ?.click(),
+              650,
+            );
+          } else setTimeout(() => showMode(currentTarget), 500);
         } else setupCalendar();
       });
     </script>

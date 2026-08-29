@@ -8,5 +8,6 @@ export default function handler(req,res){
   const clientKey=process.env.TOSS_CLIENT_KEY||'';
   const productId=String(req.query?.productId||'comprehensive');
   const product=PRODUCTS[productId]||PRODUCTS.comprehensive;
-  res.status(200).json({enabled:!!clientKey,clientKey,productId:PRODUCTS[productId]?productId:'comprehensive',amount:product.amount,currency:'KRW',orderName:`화담 ${product.name}`,productName:product.name});
+  const mode=clientKey.startsWith('test_ck_')?'test':clientKey.startsWith('live_ck_')?'live':'unknown';
+  res.status(200).json({enabled:!!clientKey,clientKey,mode,isTest:mode==='test',productId:PRODUCTS[productId]?productId:'comprehensive',amount:product.amount,currency:'KRW',orderName:`화담 ${product.name}`,productName:product.name});
 }

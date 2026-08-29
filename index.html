@@ -403,6 +403,24 @@
         showMode(t);
         done && done();
       }
+      function clickWhenMainReady(target) {
+        let tries = 0;
+        const run = () => {
+          const inputReady = !!d?.getElementById("name");
+          const helpersReady = !!(
+            d?.defaultView?.hwadamMemberAutofill &&
+            d?.defaultView?.hwadamScreenMode
+          );
+          if ((inputReady && helpersReady) || tries++ >= 35) {
+            document
+              .querySelector(`.navItem[data-target="${target}"]`)
+              ?.click();
+            return;
+          }
+          setTimeout(run, 200);
+        };
+        setTimeout(run, 200);
+      }
       function slideNavigate(target, action) {
         if (transitioning) return;
         transitioning = true;
@@ -478,26 +496,14 @@
               history.replaceState({}, "", "/");
             } catch {}
             pendingProduct = "";
-            setTimeout(
-              () =>
-                document
-                  .querySelector('.navItem[data-target="ai"]')
-                  ?.click(),
-              650,
-            );
+            clickWhenMainReady("ai");
           } else if (["analysis", "journal"].includes(pendingOpen)) {
             const target = pendingOpen;
             pendingOpen = "";
             try {
               history.replaceState({}, "", "/");
             } catch {}
-            setTimeout(
-              () =>
-                document
-                  .querySelector(`.navItem[data-target="${target}"]`)
-                  ?.click(),
-              650,
-            );
+            clickWhenMainReady(target);
           } else setTimeout(() => showMode(currentTarget), 500);
         } else setupCalendar();
       });

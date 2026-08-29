@@ -31,7 +31,7 @@
   function decorate(){
     style();const form=$('hwadamLoginForm');
     if(form&&!form.querySelector('.hdForgotBtn')){const b=d.createElement('button');b.type='button';b.className='hdForgotBtn';b.textContent='비밀번호를 잊으셨나요?';b.onclick=openRequest;form.querySelector('.hdAuthSubmit')?.insertAdjacentElement('afterend',b)}
-    const bar=$('hwadamAuthBar'),userKey=bar?.querySelector('.hdAuthUser')?.textContent||'';if(bar&&userKey&&!bar.querySelector('#hwadamResetAdmin')&&bar.dataset.resetAdminChecked!==userKey){bar.dataset.resetAdminChecked=userKey;fetch('/api/auth-reset-admin').then(r=>{if(!r.ok)return;const b=d.createElement('button');b.id='hwadamResetAdmin';b.type='button';b.className='hdAuthBtn hdAdminResetBtn';b.textContent='비번요청 확인';b.onclick=openAdmin;bar.appendChild(b)}).catch(()=>{})}
+    const bar=$('hwadamAuthBar'),userKey=bar?.querySelector('.hdAuthUser')?.textContent||'';if(bar&&userKey&&!bar.querySelector('#hwadamResetAdmin')&&bar.dataset.resetAdminChecked!==userKey){bar.dataset.resetAdminChecked=userKey;fetch('/api/auth-reset-admin').then(r=>{if(!r.ok)return;const b=d.createElement('button');b.id='hwadamResetAdmin';b.type='button';b.className='hdAuthBtn hdAdminResetBtn';b.textContent='비번요청 확인';b.onclick=openAdmin;const deleteButton=bar.querySelector('#hwadamDeleteAccount');if(deleteButton){deleteButton.className='hdAuthBtn hdAdminResetBtn';bar.insertBefore(b,deleteButton)}else bar.appendChild(b)}).catch(()=>{})}
   }
   function boot(){style();decorate();let t;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(decorate,80)}).observe(d.body,{subtree:true,childList:true});}
   if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',boot,{once:true});else boot();

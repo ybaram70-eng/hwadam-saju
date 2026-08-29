@@ -11,6 +11,7 @@ export default async function handler(req,res){
   if(req.method!=='POST')return res.status(405).json({error:'POST 요청만 지원합니다.'});
   const secret=process.env.TOSS_SECRET_KEY||'';
   if(!secret)return res.status(503).json({error:'결제 서버 설정이 아직 완료되지 않았습니다.'});
+  const mode=secret.startsWith('test_sk_')?'test':secret.startsWith('live_sk_')?'live':'unknown';
   try{
     const {paymentKey,orderId,amount,reportId,productId}=req.body||{};
     const pid=String(productId||'comprehensive');
@@ -29,6 +30,6 @@ export default async function handler(req,res){
     try{await saveEntitlement({reportId:String(reportId),orderId:data.orderId,amount:expected,approvedAt,status:data.status})}catch(dbErr){console.error('entitlement save failed',dbErr)}
     const payload={v:2,reportId:String(reportId),orderId:data.orderId,amount:expected,productId:pid,approvedAt};
     const entitlementToken=sign(payload,secret);
-    return res.status(200).json({ok:true,paymentKey:data.paymentKey,orderId:data.orderId,status:data.status,totalAmount:data.totalAmount,approvedAt:data.approvedAt,method:data.method,reportId,productId:pid,productName:product.name,entitlementToken});
+    return res.status(200).json({ok:true,paymentKey:data.paymentKey,orderId:data.orderId,status:data.status,totalAmount:data.totalAmount,approvedAt:data.approvedAt,method:data.method,reportId,productId:pid,productName:product.name,mode,isTest:mode==='test',entitlementToken});
   }catch(e){return res.status(500).json({error:e?.message||String(e)})}
 }

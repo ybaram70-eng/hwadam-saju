@@ -23,6 +23,24 @@
     } catch {}
     return false;
   }
+  function showDirect(t) {
+    try {
+      d.defaultView?.hwadamScreenMode?.show?.(t);
+      parent.document.querySelectorAll(".navItem").forEach((item) =>
+        item.classList.toggle("active", item.dataset.target === t),
+      );
+      d.defaultView.scrollTo(0, 0);
+      return true;
+    } catch {
+      return false;
+    }
+  }
+  function hasBirthResult() {
+    return Boolean(
+      ($("dP")?.textContent || "").trim() &&
+        ($("yP")?.textContent || "").trim(),
+    );
+  }
   function ensureStyle() {
     if ($("hwadam-home-dashboard-style")) return;
     const s = d.createElement("style");
@@ -73,6 +91,16 @@
               JSON.stringify(product),
             );
           } catch {}
+        }
+        if (b.dataset.product) {
+          const target = hasBirthResult() ? "ai" : "input";
+          if (!hasBirthResult()) {
+            try {
+              sessionStorage.setItem("hwadam_product_after_input", "1");
+            } catch {}
+          }
+          if (!showDirect(target)) goParent(target);
+          return;
         }
         goParent(b.dataset.go);
       }),

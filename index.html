@@ -138,12 +138,16 @@
           if (!d) return;
           addScript("hwadam-ui-polish", "/ui-polish.js?v=20260829-1");
           addScript("hwadam-premium-ui", "/premium-ui.js?v=20260829-4");
-          addScript("hwadam-home-dashboard", "/home-dashboard.js?v=20260830-5");
+          addScript("hwadam-home-dashboard", "/home-dashboard.js?v=20260830-6");
           addScript(
             "hwadam-signup-calendar",
             "/signup-calendar-ui.js?v=20260829-1",
           );
           addScript("hwadam-screen-mode", "/screen-mode.js?v=20260829-4");
+          addScript(
+            "hwadam-input-screen-fix",
+            "/input-screen-fix.js?v=20260830-1",
+          );
           addScript(
             "hwadam-member-autofill",
             "/member-autofill.js?v=20260829-4",
@@ -446,17 +450,29 @@
       f.addEventListener("load", () => {
         if (mode === "main") {
           setupMain();
-          if (pendingProduct === "annual-fortune") {
+          if (
+            pendingProduct === "annual-fortune" ||
+            pendingProduct === "compatibility"
+          ) {
             const year = new Date().getFullYear();
+            const product =
+              pendingProduct === "annual-fortune"
+                ? {
+                    id: "annual-fortune",
+                    name: `${year}년 신년운세`,
+                    price: 9900,
+                    at: new Date().toISOString(),
+                  }
+                : {
+                    id: "compatibility",
+                    name: "궁합 상담",
+                    price: 7900,
+                    at: new Date().toISOString(),
+                  };
             try {
               f.contentWindow.localStorage.setItem(
                 "hwadam_selected_product",
-                JSON.stringify({
-                  id: "annual-fortune",
-                  name: `${year}년 신년운세`,
-                  price: 9900,
-                  at: new Date().toISOString(),
-                }),
+                JSON.stringify(product),
               );
               history.replaceState({}, "", "/");
             } catch {}

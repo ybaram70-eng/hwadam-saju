@@ -67,6 +67,11 @@
     x.id = "hwadamHomeDashboard";
     const year = new Date().getFullYear();
     x.innerHTML = `<div class="hdDashHero"><div class="hdDashBrand">和談 · HWADAM</div><h2>화담철학관 만세력</h2><p>원국부터 대운·세운까지 한 화면에서 확인합니다.</p></div><div class="hdToday"><div><div class="hdTodayName">오늘의 화담 ✦</div><h3>오늘의 흐름을<br>차분하게 살펴보세요</h3><div class="hdTags"><button class="hdTag" data-topic="재물">#재물</button><button class="hdTag" data-topic="건강">#건강</button><button class="hdTag" data-topic="계획">#계획</button><button class="hdTag" data-topic="안정">#안정</button></div></div><div class="hdCat">🐱</div></div><div id="hdTopicBox" class="hdTopicBox"><b id="hdTopicTitle"></b><p id="hdTopicText"></p></div><div class="hdFortune"><div><small>✦ 오늘의 안내</small><div class="hdScoreRow"><span class="hdScore">화담</span><span class="hdBadge">좋은 흐름</span></div><p>출생정보를 입력하면 원국과 대운·세운을 바탕으로 필요한 상담을 이어서 볼 수 있습니다.</p></div><div class="hdCheck">✓</div></div><div class="hdMenu"><button data-go="input"><span>📝</span>사주입력</button><button data-go="analysis"><span>📊</span>화담분석</button><button data-go="ai"><span>💬</span>AI상담</button><button data-go="calendar"><span>🗓️</span>택일달력</button><button data-go="journal"><span>📔</span>화담일지</button><button data-go="ai" data-product="compatibility"><span>💞</span>궁합</button><a target="_top" href="/?product=annual-fortune"><span>☯️</span>${year} 신년운세</a><button data-go="journal"><span>🎁</span>이벤트</button></div><div class="hdFlow"><b>최근 에너지 흐름</b><p>사주를 계산하면 현재 대운·세운과 상담 흐름을 이어서 확인할 수 있습니다.</p></div>`;
+    const compatibility = x.querySelector('[data-product="compatibility"]');
+    if (compatibility) {
+      compatibility.outerHTML =
+        '<a target="_top" href="/?product=compatibility"><span>💞</span>궁합</a>';
+    }
     x.querySelector(".hdFlow").innerHTML = `<div class="hdFlowHead"><b>나의 운세 흐름</b><span>한눈에 보기</span></div><p>사주를 입력하면 현재의 큰 흐름부터 올해의 변화와 저장된 상담까지 차근차근 확인할 수 있습니다.</p><div class="hdFlowDetails"><div><strong>대운·세운</strong><small>현재 인생 흐름과 올해의 변화를 확인합니다.</small></div><div><strong>월별 운세</strong><small>달마다 달라지는 재물·직업·관계 흐름을 살펴봅니다.</small></div><div><strong>상담 기록</strong><small>받은 상담과 결제한 리포트를 다시 확인합니다.</small></div></div>`;
     hero.insertAdjacentElement("afterend", x);
     x.querySelectorAll("[data-go]").forEach((b) =>

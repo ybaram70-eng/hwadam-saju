@@ -498,3 +498,43 @@
               },
               compatibility: {
                 id: "compatibility",
+                name: "궁합 상담",
+                price: 7900,
+              },
+              "money-business": {
+                id: "money-business",
+                name: "재물·사업 상담",
+                price: 5900,
+              },
+              comprehensive: {
+                id: "comprehensive",
+                name: "종합 사주 상담",
+                price: 9900,
+              },
+            };
+            const product = {
+              ...products[pendingProduct],
+              at: new Date().toISOString(),
+            };
+            try {
+              f.contentWindow.localStorage.setItem(
+                "hwadam_selected_product",
+                JSON.stringify(product),
+              );
+              history.replaceState({}, "", "/");
+            } catch {}
+            pendingProduct = "";
+            clickWhenMainReady("ai");
+          } else if (["analysis", "journal"].includes(pendingOpen)) {
+            const target = pendingOpen;
+            pendingOpen = "";
+            try {
+              history.replaceState({}, "", "/");
+            } catch {}
+            clickWhenMainReady(target);
+          } else setTimeout(() => showMode(currentTarget), 500);
+        } else setupCalendar();
+      });
+    </script>
+  </body>
+</html>

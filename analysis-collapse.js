@@ -5,7 +5,7 @@
     if($('analysis-collapse-style'))return;
     const s=d.createElement('style');
     s.id='analysis-collapse-style';
-    s.textContent=`#hwadamAnalysisToggleWrap{margin:12px 0 8px}#hwadamAnalysisToggle{width:100%;border:1px solid #d9cfbd;background:#fffdf8;color:#20352d;border-radius:14px;padding:12px 13px;font-size:14px;font-weight:900;display:flex;align-items:center;justify-content:space-between;gap:8px;box-shadow:none}#hwadamAnalysisToggle .sub{font-size:10px;font-weight:700;color:#7d7467}#hwadamAnalysis.is-collapsed{display:none!important}#hwadamAnalysis{font-size:14px!important;line-height:1.65!important}#hwadamAnalysis h1,#hwadamAnalysis h2{font-size:25px!important;line-height:1.25!important}#hwadamAnalysis h3{font-size:19px!important;line-height:1.35!important}#hwadamAnalysis p,#hwadamAnalysis li,#hwadamAnalysis div,#hwadamAnalysis span{line-height:1.65}#hwadamAnalysis .analysisCard,#hwadamAnalysis .aCard,#hwadamAnalysis .box{padding-top:14px!important;padding-bottom:14px!important}`;
+    s.textContent=`#hwadamAnalysisToggleWrap{margin:12px 0 8px}#hwadamAnalysisToggle{width:100%;border:1px solid #d9cfbd;background:#fffdf8;color:#20352d;border-radius:14px;padding:11px 12px;font-size:13px;font-weight:900;display:flex;align-items:center;justify-content:space-between;gap:8px;box-shadow:none;transition:none!important;animation:none!important}#hwadamAnalysisToggle .sub{font-size:9px;font-weight:700;color:#7d7467}#hwadamAnalysis.is-collapsed{display:none!important}#hwadamAnalysis{font-size:12.5px!important;line-height:1.55!important;animation:none!important;transition:none!important;transform:none!important;opacity:1!important;filter:none!important}#hwadamAnalysis *{animation:none!important;transition:none!important;transform:none!important;filter:none!important;text-shadow:none!important}#hwadamAnalysis h1,#hwadamAnalysis h2{font-size:20px!important;line-height:1.25!important;margin-top:10px!important;margin-bottom:8px!important}#hwadamAnalysis h3{font-size:16px!important;line-height:1.3!important;margin-top:9px!important;margin-bottom:6px!important}#hwadamAnalysis p,#hwadamAnalysis li,#hwadamAnalysis div,#hwadamAnalysis span{font-size:12.5px!important;line-height:1.55!important}#hwadamAnalysis .analysisCard,#hwadamAnalysis .aCard,#hwadamAnalysis .box{padding:11px!important;margin-bottom:8px!important}#hwadamAnalysis .analysisLabel,#hwadamAnalysis .label,#hwadamAnalysis strong{font-size:13px!important}`;
     d.head.appendChild(s);
   }
   function setup(){
@@ -37,8 +37,7 @@
   function boot(){
     setup();
     let t;
-    new MutationObserver(()=>{clearTimeout(t);t=setTimeout(setup,120)}).observe(d.body,{subtree:true,childList:true});
-    setInterval(setup,1200);
+    new MutationObserver(()=>{clearTimeout(t);t=setTimeout(setup,250)}).observe(d.body,{subtree:true,childList:true});
   }
   if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

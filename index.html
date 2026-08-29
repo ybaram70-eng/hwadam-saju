@@ -141,7 +141,7 @@
           addScript("hwadam-premium-ui", "/premium-ui.js?v=20260829-4");
           addScript(
             "hwadam-home-dashboard",
-            "/home-dashboard-mobile-v2.js",
+            "/home-dashboard-mobile-v3.js",
           );
           addScript(
             "hwadam-signup-calendar",
@@ -473,24 +473,40 @@
         if (mode === "main") {
           setupMain();
           if (
-            pendingProduct === "annual-fortune" ||
-            pendingProduct === "compatibility"
+            [
+              "annual-fortune",
+              "compatibility",
+              "money-business",
+              "comprehensive",
+            ].includes(pendingProduct)
           ) {
             const year = new Date().getFullYear();
-            const product =
-              pendingProduct === "annual-fortune"
-                ? {
-                    id: "annual-fortune",
-                    name: `${year}년 신년운세`,
-                    price: 9900,
-                    at: new Date().toISOString(),
-                  }
-                : {
-                    id: "compatibility",
-                    name: "궁합 상담",
-                    price: 7900,
-                    at: new Date().toISOString(),
-                  };
+            const products = {
+              "annual-fortune": {
+                id: "annual-fortune",
+                name: `${year}년 신년운세`,
+                price: 9900,
+              },
+              compatibility: {
+                id: "compatibility",
+                name: "궁합 상담",
+                price: 7900,
+              },
+              "money-business": {
+                id: "money-business",
+                name: "재물·사업 상담",
+                price: 5900,
+              },
+              comprehensive: {
+                id: "comprehensive",
+                name: "종합 사주 상담",
+                price: 9900,
+              },
+            };
+            const product = {
+              ...products[pendingProduct],
+              at: new Date().toISOString(),
+            };
             try {
               f.contentWindow.localStorage.setItem(
                 "hwadam_selected_product",

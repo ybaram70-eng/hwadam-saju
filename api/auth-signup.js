@@ -26,18 +26,7 @@ export default async function handler(req,res){
     if(!agree)return res.status(400).json({ok:false,error:'AGREEMENT_REQUIRED'});
 
     const exists=await s`select id,name,email,phone,birth_date,gender,calendar_type,password_salt,password_hash from hwadam_users where phone=${p} limit 1`;
-    if(exists.length){
-      const old=exists[0];
-      const oldPassOk=verifyPassword(password,old.password_salt,old.password_hash);
-      const sameIdentity=String(old.name||'').trim()===cleanName && normDate(old.birth_date)===normDate(birthDate) && String(old.gender||'')===String(cleanGender||'');
-      if(!oldPassOk && !sameIdentity)return res.status(409).json({ok:false,error:'REJOIN_IDENTITY_MISMATCH'});
-      const {salt,hash}=hashPassword(chosen);
-      const rows=await s`update hwadam_users set name=${cleanName},birth_date=${birthDate||null},gender=${cleanGender},calendar_type=${cal},password_salt=${salt},password_hash=${hash} where id=${old.id} returning id,name,email,phone,birth_date,gender,calendar_type`;
-      await s`delete from hwadam_sessions where user_id=${old.id}`;
-      const u=rows[0],session=await createSession(u.id);
-      setSessionCookie(res,session.token,session.expires);
-      return res.status(200).json({ok:true,user:u,reRegistered:true,passwordReset:true});
-    }
+    if(exists.length)return res.status(409).json({ok:false,error:'PHONE_EXISTS'});
 
     const {salt,hash}=hashPassword(chosen);
     const rows=await s`insert into hwadam_users(name,email,phone,birth_date,gender,calendar_type,password_salt,password_hash) values(${cleanName},${null},${p},${birthDate||null},${cleanGender},${cal},${salt},${hash}) returning id,name,email,phone,birth_date,gender,calendar_type`;

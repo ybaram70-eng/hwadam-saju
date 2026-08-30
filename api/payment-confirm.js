@@ -5,7 +5,8 @@ const PRODUCTS={
   'annual-fortune':{name:'1년 신년운세',amount:9900},
   'money-business':{name:'재물·사업 상담',amount:5900},
   'compatibility':{name:'궁합 상담',amount:7900},
-  'comprehensive':{name:'종합 사주 상담',amount:9900}
+  'comprehensive':{name:'종합 사주 상담',amount:9900},
+  'lifetime-fortune':{name:'평생운세 장문 리포트',amount:14900}
 };
 function b64url(v){return Buffer.from(v).toString('base64url')}
 function sign(payload,secret){const body=b64url(JSON.stringify(payload));const sig=crypto.createHmac('sha256',secret).update(body).digest('base64url');return body+'.'+sig}

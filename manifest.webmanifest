@@ -1,0 +1,13 @@
+{
+  "name": "화담철학관 만세력",
+  "short_name": "화담만세력",
+  "description": "사주 원국, 오행, 십성, 대운·세운과 AI 상담을 제공하는 화담철학관 만세력",
+  "lang": "ko-KR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f3efe6",
+  "theme_color": "#20352d",
+  "orientation": "portrait-primary",
+  "categories": ["lifestyle", "education"]
+}

@@ -230,6 +230,10 @@
             "/consultation-products.js?v=20260830-3",
           );
           addScript(
+            "hwadam-yongsin-direct",
+            "/yongsin-direct.js?v=20260830-1",
+          );
+          addScript(
             "hwadam-compatibility-addon",
             "/compatibility-addon.js?v=20260829-1",
           );
@@ -539,6 +543,12 @@
                 "hwadam_selected_product",
                 JSON.stringify(product),
               );
+              if (pendingProduct === "yongsin") {
+                f.contentWindow.sessionStorage.setItem(
+                  "hwadam_direct_product",
+                  "yongsin",
+                );
+              }
               history.replaceState({}, "", "/");
             } catch {}
             pendingProduct = "";

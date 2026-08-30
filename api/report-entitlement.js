@@ -5,7 +5,8 @@ const PRODUCTS={
   'annual-fortune':9900,
   'money-business':5900,
   'compatibility':7900,
-  'comprehensive':9900
+  'comprehensive':9900,
+  'lifetime-fortune':14900
 };
 function safeEq(a,b){const x=Buffer.from(a),y=Buffer.from(b);return x.length===y.length&&crypto.timingSafeEqual(x,y)}
 export default async function handler(req,res){
@@ -19,7 +20,7 @@ export default async function handler(req,res){
     const expectedSig=crypto.createHmac('sha256',secret).update(body).digest('base64url');
     if(!safeEq(sig,expectedSig))return res.status(403).json({ok:false,error:'유효하지 않은 리포트 이용권입니다.'});
     const payload=JSON.parse(Buffer.from(body,'base64url').toString('utf8'));
-    const allowedAmount=payload?.v===2?PRODUCTS[payload?.productId]:[5900,7900,9900].includes(Number(payload?.amount))?Number(payload.amount):0;
+    const allowedAmount=payload?.v===2?PRODUCTS[payload?.productId]:[5900,7900,9900,14900].includes(Number(payload?.amount))?Number(payload.amount):0;
     if(![1,2].includes(payload?.v)||payload?.reportId!==reportId||!allowedAmount||Number(payload?.amount)!==allowedAmount)return res.status(403).json({ok:false,error:'이 리포트에 사용할 수 없는 이용권입니다.'});
     if(process.env.POSTGRES_URL||process.env.DATABASE_URL){const row=await getEntitlement(reportId);if(!row||row.payment_status!=='DONE'||Number(row.amount)!==allowedAmount||row.order_id!==payload.orderId)return res.status(403).json({ok:false,error:'서버 결제기록을 확인할 수 없습니다.'})}
     const auth=Buffer.from(secret+':').toString('base64');

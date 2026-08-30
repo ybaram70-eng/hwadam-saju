@@ -495,6 +495,7 @@
           setupMain();
           if (
             [
+              "yongsin",
               "annual-fortune",
               "compatibility",
               "money-business",
@@ -503,6 +504,11 @@
           ) {
             const year = new Date().getFullYear();
             const products = {
+              yongsin: {
+                id: "yongsin",
+                name: "개인 용신 분석",
+                price: 5900,
+              },
               "annual-fortune": {
                 id: "annual-fortune",
                 name: `${year}년 신년운세`,

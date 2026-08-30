@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://hwadam-saju.vercel.app/sitemap.xml

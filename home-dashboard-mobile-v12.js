@@ -86,7 +86,7 @@
     );
     x.querySelector(".hdPromo").insertAdjacentHTML(
       "afterend",
-      `<a class="hdYongsin" target="_top" href="/?open=analysis"><div><small>오픈 안내</small><strong>나를 돕는 기운<br>용신 알아보기</strong><p>내 사주에 필요한 오행과<br>균형을 쉽게 설명해 드립니다.</p><div class="hdYongsinAction">용신 설명 보기 ›</div></div><div class="hdYongsinElements"><span>🔥</span><span>⛰️</span><span>🌳</span><span>💧</span><span>⚔️</span></div></a>`,
+      `<a class="hdYongsin" target="_top" href="/yongsin.html"><div><small>오픈 안내</small><strong>나를 돕는 기운<br>용신 알아보기</strong><p>내 사주에 필요한 오행과<br>균형을 쉽게 설명해 드립니다.</p><div class="hdYongsinAction">용신 설명 보기 ›</div></div><div class="hdYongsinElements"><span>🔥</span><span>⛰️</span><span>🌳</span><span>💧</span><span>⚔️</span></div></a>`,
     );
     x.querySelectorAll(".hdPromoTabs button").forEach((button) =>
       button.addEventListener("click", () => {

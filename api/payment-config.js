@@ -1,4 +1,5 @@
 const PRODUCTS={
+  'yongsin':{name:'개인 용신 분석',amount:5900},
   'annual-fortune':{name:'1년 신년운세',amount:9900},
   'money-business':{name:'재물·사업 상담',amount:5900},
   'compatibility':{name:'궁합 상담',amount:7900},

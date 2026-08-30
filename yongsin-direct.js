@@ -3,7 +3,7 @@
   function run() {
     let direct = "";
     try { direct = sessionStorage.getItem("hwadam_direct_product") || ""; } catch {}
-    if (direct !== "yongsin") return true;
+    if (direct !== "yongsin") return false;
     const card = d.querySelector('.hwadamProduct[data-id="yongsin"]');
     const question = d.getElementById("aiQuestion");
     if (!card || !question) return false;

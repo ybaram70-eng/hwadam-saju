@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import {getEntitlement} from './_db.js';
 const PRODUCTS={
+  'yongsin':5900,
   'annual-fortune':9900,
   'money-business':5900,
   'compatibility':7900,

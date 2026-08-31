@@ -1,0 +1,1 @@
+(()=>{const d=document;function clear(){['year','month','day','hour','minute'].forEach(id=>{const el=d.getElementById(id);if(el)el.removeAttribute('placeholder')})}if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',clear,{once:true});else clear();})();

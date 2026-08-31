@@ -1,6 +1,9 @@
 import crypto from 'node:crypto';
 import {saveEntitlement} from './_db.js';
+import {currentUser} from './_auth.js';
+import {activateAnnualMembership} from './membership.js';
 const PRODUCTS={
+  'annual-membership':{name:'1년 회원권',amount:55000},
   'yongsin':{name:'개인 용신 분석',amount:5900},
   'annual-fortune':{name:'1년 신년운세',amount:9900},
   'money-business':{name:'재물·사업 상담',amount:5900},
@@ -24,6 +27,10 @@ export default async function handler(req,res){
     if(!paymentKey||!orderId||!amount||!reportId)return res.status(400).json({error:'결제 승인 정보가 부족합니다.'});
     if(!/^RPT-[A-Za-z0-9_-]{10,80}$/.test(String(reportId)))return res.status(400).json({error:'리포트 식별값이 올바르지 않습니다.'});
     if(Number(amount)!==expected)return res.status(400).json({error:'결제 금액이 일치하지 않습니다.'});
+    if(pid==='annual-membership'){
+      const user=await currentUser(req);
+      if(!user)return res.status(401).json({error:'1년 회원권은 로그인한 회원만 결제할 수 있습니다.'});
+    }
     const auth=Buffer.from(secret+':').toString('base64');
     const r=await fetch('https://api.tosspayments.com/v1/payments/confirm',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Basic '+auth,'Idempotency-Key':orderId},body:JSON.stringify({paymentKey,orderId,amount:expected})});
     const data=await r.json();
@@ -31,8 +38,13 @@ export default async function handler(req,res){
     if(data.status!=='DONE'||Number(data.totalAmount)!==expected)return res.status(400).json({error:'결제 승인 상태를 확인할 수 없습니다.'});
     const approvedAt=data.approvedAt||new Date().toISOString();
     try{await saveEntitlement({reportId:String(reportId),orderId:data.orderId,amount:expected,approvedAt,status:data.status})}catch(dbErr){console.error('entitlement save failed',dbErr)}
+    let membership=null;
+    if(pid==='annual-membership'){
+      const user=await currentUser(req);
+      membership=await activateAnnualMembership({userId:user.id,orderId:data.orderId,amount:expected,source:'toss'});
+    }
     const payload={v:2,reportId:String(reportId),orderId:data.orderId,amount:expected,productId:pid,approvedAt};
     const entitlementToken=sign(payload,secret);
-    return res.status(200).json({ok:true,paymentKey:data.paymentKey,orderId:data.orderId,status:data.status,totalAmount:data.totalAmount,approvedAt:data.approvedAt,method:data.method,reportId,productId:pid,productName:product.name,mode,isTest:mode==='test',entitlementToken});
+    return res.status(200).json({ok:true,paymentKey:data.paymentKey,orderId:data.orderId,status:data.status,totalAmount:data.totalAmount,approvedAt:data.approvedAt,method:data.method,reportId,productId:pid,productName:product.name,mode,isTest:mode==='test',entitlementToken,membership});
   }catch(e){return res.status(500).json({error:e?.message||String(e)})}
 }

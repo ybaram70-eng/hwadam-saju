@@ -1,1 +1,66 @@
-export default async function handler(req,res){if(req.method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({error:'POST 요청만 지원합니다.'})}const key=process.env.OPENAI_API_KEY;if(!key)return res.status(503).json({error:'AI 상담 서버 연결이 아직 준비되지 않았습니다. 관리자 API 키 설정이 필요합니다.'});try{const body=req.body||{},question=String(body.question||'').trim(),chart=body.chart||{};if(!question)return res.status(400).json({error:'상담 질문을 입력해 주세요.'});const isLifetime=/평생운세 장문 리포트|평생 총운|말년운/.test(question);const normalInstructions='당신은 한국 명리학 상담을 돕는 화담철학관 AI 보조상담가입니다. 사용자가 제공한 사주 원국과 계산 결과를 가장 우선적인 근거로 사용하세요. 제공되지 않은 생년월일, 나이, 대운, 세운, 가족관계, 재산상황을 추측하거나 만들어내지 마세요. 단정적 예언, 공포 조장, 질병 진단, 법률·투자 확정 조언은 하지 마세요. 재물·직업·관계·대운·세운은 가능성, 경향, 주의점, 활용 방향으로 설명하세요. 질문 주제에 직접 답하고 같은 내용을 반복하지 마세요. 답변은 한국어로 모바일에서 읽기 쉽게 작성하세요. 문장은 자연스럽고 상담자가 실제로 설명하듯 부드럽게 쓰되, 추상적인 표현보다 구체적인 뜻이 드러나게 하세요. “힘이 분명합니다”, “기운이 있습니다” 같은 막연한 문장은 피하고, 무엇이 어떻게 나타나는지를 설명하세요. 마크다운 기호(#, ##, **, __, ``` 등)는 절대 사용하지 마세요. 답변 형식은 반드시 다음 순서로 작성하세요. 첫째 제목 “핵심 요약” 뒤에 2~4개의 짧은 항목. 둘째 제목 “명리상 근거” 뒤에 실제 원국·십신·오행·대운·세운 중 질문과 직접 관련된 근거만 2~4개. 셋째 제목 “현실적인 활용 조언” 뒤에 실행 가능한 조언을 정확히 3개. 각 항목은 반드시 “• ”로 시작하세요. 한 항목은 가능하면 2문장을 넘지 마세요. 전체 답변은 약 500~900자 정도를 목표로 하고 장황한 서론과 반복 설명은 생략하세요. 어려운 한자나 전문용어는 바로 뒤에 쉬운 한국어 설명을 덧붙이세요. 재물운 질문에는 수입·지출·현금흐름·동업·보증·투자 주의점을, 직업·사업 질문에는 강점·일 방식·확장 시 주의점을, 배우자·관계 질문에는 소통·기대·갈등 포인트를, 대운·세운 질문에는 현재 흐름과 활용 포인트를 우선 다루세요. 마지막 문장은 불필요한 희망고문이나 확정 예언 대신 현재 상황에서 할 수 있는 현실적인 행동으로 마무리하세요.';const lifetimeInstructions='당신은 한국 명리학 상담을 돕는 화담철학관 AI 보조상담가입니다. 사용자가 제공한 사주 원국과 계산 결과만을 근거로 평생운세 장문 리포트를 작성하세요. 제공되지 않은 가족관계, 재산, 직업 이력, 질병, 실제 사건은 추측하거나 만들어내지 마세요. 단정적 예언과 공포 조장을 피하고 모든 해석은 경향, 가능성, 시기별 활용 방향으로 설명하세요. 한국어로 작성하고 마크다운 기호(#, ##, **, __, ``` 등)는 사용하지 마세요. 다음 제목을 반드시 이 순서로 사용하세요: 1. 평생운세 핵심 총평, 2. 타고난 성향과 삶의 기본 구조, 3. 재물운과 돈의 흐름, 4. 직업·사업운과 사회적 성취, 5. 배우자·결혼운과 인간관계, 6. 가족·자녀와 관계의 흐름, 7. 건강에서 주의할 생활 흐름, 8. 대운별 주요 전환점, 9. 중년 이후의 변화, 10. 말년운과 삶의 정리, 11. 현실적인 활용 조언. 각 제목 아래에는 실제 원국의 오행, 십신, 일간, 지지 관계, 현재 확인 가능한 대운·세운 근거를 연결해 설명하세요. 각 장은 같은 말을 반복하지 말고 서로 다른 관점으로 충분히 자세히 쓰세요. 특히 대운별 주요 전환점에서는 화면에 제공된 대운 정보만 사용하며 없는 대운은 만들지 마세요. 건강 부분은 질병 진단이 아니라 생활 습관과 과로, 스트레스, 균형 관점으로만 설명하세요. 마지막에는 사용자가 현실적으로 적용할 수 있는 행동 조언 7개를 “• ” 항목으로 정리하세요. 전체는 장문 리포트답게 최소 5,000자 이상을 목표로 충분히 깊고 구체적으로 작성하세요.';const payload={model:process.env.OPENAI_MODEL||'gpt-5.6-luna',instructions:isLifetime?lifetimeInstructions:normalInstructions,input:`[사주 데이터]\n${JSON.stringify(chart)}\n\n[사용자 질문]\n${question}`,max_output_tokens:isLifetime?6500:900};const r=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify(payload)});const data=await r.json();if(!r.ok)return res.status(r.status).json({error:data?.error?.message||'AI 응답 생성에 실패했습니다.'});let answer='';for(const item of data.output||[]){if(item?.type==='message')for(const c of item.content||[]){if(c?.type==='output_text'&&c.text)answer+=c.text}}if(!answer&&typeof data.output_text==='string')answer=data.output_text;if(!answer)return res.status(502).json({error:'AI 응답 텍스트를 확인할 수 없습니다.'});return res.status(200).json({answer})}catch(e){return res.status(500).json({error:e?.message||String(e)})}}
+export default async function handler(req,res){
+  if(req.method!=='POST'){
+    res.setHeader('Allow','POST');
+    return res.status(405).json({error:'POST 요청만 지원합니다.'});
+  }
+  const key=process.env.OPENAI_API_KEY;
+  if(!key)return res.status(503).json({error:'AI 상담 서버 연결이 아직 준비되지 않았습니다. 관리자 API 키 설정이 필요합니다.'});
+  try{
+    const body=req.body||{};
+    const question=String(body.question||'').trim();
+    const chart=body.chart||{};
+    if(!question)return res.status(400).json({error:'상담 질문을 입력해 주세요.'});
+
+    const isLifetime=/평생운세 장문 리포트|평생 총운|말년운/.test(question);
+
+    const normalInstructions=`당신은 한국 명리학 상담을 돕는 화담철학관 AI 보조상담가입니다. 사용자가 제공한 사주 원국과 계산 결과를 가장 우선적인 근거로 사용하세요. 제공되지 않은 생년월일, 나이, 대운, 세운, 가족관계, 재산상황을 추측하거나 만들어내지 마세요. 단정적 예언, 공포 조장, 질병 진단, 법률·투자 확정 조언은 하지 마세요. 재물·직업·관계·대운·세운은 가능성, 경향, 주의점, 활용 방향으로 설명하세요. 질문 주제에 직접 답하고 같은 내용을 반복하지 마세요. 한국어로 모바일에서 읽기 쉽게 작성하세요. 마크다운 기호는 사용하지 마세요. 답변은 핵심 요약, 명리상 근거, 현실적인 활용 조언 순서로 작성하세요. 각 항목은 • 로 시작하고 전체는 약 500~900자 정도로 작성하세요.`;
+
+    const lifetimeInstructions=`당신은 한국 명리학 상담을 돕는 화담철학관 AI 보조상담가입니다. 사용자가 제공한 사주 원국과 계산 결과만을 근거로 평생운세 장문 리포트를 작성하세요. 제공되지 않은 가족관계, 재산, 직업 이력, 질병, 실제 사건은 추측하거나 만들어내지 마세요. 단정적 예언과 공포 조장을 피하고 모든 해석은 경향, 가능성, 시기별 활용 방향으로 설명하세요. 한국어로 작성하고 마크다운 기호는 사용하지 마세요.
+
+반드시 아래 11개 장을 모두 작성하고 어느 장도 생략하지 마세요.
+1. 평생운세 핵심 총평
+2. 타고난 성향과 삶의 기본 구조
+3. 재물운과 돈의 흐름
+4. 직업·사업운과 사회적 성취
+5. 배우자·결혼운과 인간관계
+6. 가족·자녀와 관계의 흐름
+7. 건강에서 주의할 생활 흐름
+8. 대운별 주요 전환점
+9. 중년 이후의 변화
+10. 말년운과 삶의 정리
+11. 현실적인 활용 조언
+
+각 장은 실제 원국의 오행, 십신, 일간, 지지 관계와 화면에 제공된 대운·세운 자료 중 확인 가능한 근거만 사용하세요. 없는 대운이나 실제 사건을 만들어내지 마세요. 같은 설명을 반복하지 말고 각 장의 주제에 맞게 구체적으로 설명하세요. 건강 부분은 질병 진단이 아니라 생활 습관, 과로, 스트레스, 균형 관점으로만 설명하세요.
+
+중요: 답변이 중간 문장에서 끝나면 안 됩니다. 1번부터 11번까지 반드시 모두 완성하세요. 10번 말년운 문장을 완결한 뒤 11번 현실적인 활용 조언을 반드시 작성하세요. 11번에는 사용자가 현실적으로 적용할 수 있는 행동 조언을 정확히 7개 작성하고 각 항목을 • 로 시작하세요. 마지막 조언까지 완전한 문장으로 끝내세요. 불필요하게 한 장을 길게 늘이지 말고 전체 분량을 5,000~7,000자 정도로 조절하여 모든 장이 출력 한도 안에 들어오게 하세요.`;
+
+    const payload={
+      model:process.env.OPENAI_MODEL||'gpt-5.6-luna',
+      instructions:isLifetime?lifetimeInstructions:normalInstructions,
+      input:`[사주 데이터]\n${JSON.stringify(chart)}\n\n[사용자 질문]\n${question}`,
+      max_output_tokens:isLifetime?12000:900
+    };
+
+    const r=await fetch('https://api.openai.com/v1/responses',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
+      body:JSON.stringify(payload)
+    });
+    const data=await r.json();
+    if(!r.ok)return res.status(r.status).json({error:data?.error?.message||'AI 응답 생성에 실패했습니다.'});
+
+    let answer='';
+    for(const item of data.output||[]){
+      if(item?.type==='message'){
+        for(const c of item.content||[]){
+          if(c?.type==='output_text'&&c.text)answer+=c.text;
+        }
+      }
+    }
+    if(!answer&&typeof data.output_text==='string')answer=data.output_text;
+    if(!answer)return res.status(502).json({error:'AI 응답 텍스트를 확인할 수 없습니다.'});
+    return res.status(200).json({answer});
+  }catch(e){
+    return res.status(500).json({error:e?.message||String(e)});
+  }
+}

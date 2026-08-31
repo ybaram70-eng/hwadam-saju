@@ -16,12 +16,12 @@
   }
   async function paid(reportId) {
     const item = entitlement(reportId);
-    if (!item?.token) return false;
     try {
       const response = await fetch("/api/report-entitlement", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: item.token, reportId }),
+        credentials: "same-origin",
+        body: JSON.stringify({ token: item?.token || "", reportId }),
       });
       const data = await response.json();
       return Boolean(response.ok && data.ok);

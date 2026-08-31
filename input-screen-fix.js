@@ -1,7 +1,15 @@
 (() => {
   const d = document;
 
+  function hideSamplePlaceholders() {
+    ["year", "month", "day", "hour", "minute"].forEach((id) => {
+      const el = d.getElementById(id);
+      if (el) el.placeholder = "";
+    });
+  }
+
   function revealInput() {
+    hideSamplePlaceholders();
     const name = d.getElementById("name");
     if (!name) return false;
     let node = name.closest(".card") || name.parentElement;
@@ -32,6 +40,7 @@
       button.addEventListener(
         "click",
         () => {
+          hideSamplePlaceholders();
           setTimeout(revealInput, 40);
           setTimeout(revealInput, 180);
           setTimeout(revealInput, 500);
@@ -42,8 +51,12 @@
   }
 
   function boot() {
+    hideSamplePlaceholders();
     bind();
-    setTimeout(bind, 400);
+    setTimeout(() => {
+      hideSamplePlaceholders();
+      bind();
+    }, 400);
     try {
       const active = parent.document.querySelector(
         '.navItem.active[data-target="input"]',
@@ -52,7 +65,7 @@
     } catch {}
   }
 
-  window.hwadamInputScreenFix = { reveal: revealInput };
+  window.hwadamInputScreenFix = { reveal: revealInput, hideSamplePlaceholders };
   if (d.readyState === "loading") {
     d.addEventListener("DOMContentLoaded", boot, { once: true });
   } else {

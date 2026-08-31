@@ -12,6 +12,14 @@
       q: "",
     },
     {
+      id: "annual-membership",
+      name: "1년 회원권",
+      price: 55000,
+      badge: "MEMBER",
+      desc: "회원 본인 기준 · 1년 동안 화담 유료 기능 전체 이용",
+      q: "",
+    },
+    {
       id: "yongsin",
       name: "개인 용신 분석",
       price: 5900,
@@ -104,6 +112,12 @@
       return;
     }
     const ta = $("aiQuestion");
+    if (p.id === "annual-membership") {
+      if (ta) ta.value = "";
+      if (status)
+        status.textContent = "1년 회원권 · 55,000원 상품을 선택했습니다. 회원 본인 기준으로 1년 동안 유료 기능 전체를 이용할 수 있습니다.";
+      return;
+    }
     if (ta) {
       ta.value = p.q;
       ta.focus();
@@ -120,7 +134,7 @@
     if (!ai || $("hwadamProductCatalog")) return false;
     const sec = d.createElement("section");
     sec.id = "hwadamProductCatalog";
-    sec.innerHTML = `<div class="hpcHead"><div><span>상담 상품</span><h3>원하는 상담을 선택하세요</h3></div><p>결제한 리포트는 화담일지에서 계속 다시 볼 수 있습니다.</p></div><div class="hpcGrid">${PRODUCTS.map((p, i) => `<button type="button" class="hwadamProduct ${i === 0 ? "selected" : ""}" data-id="${p.id}"><div class="hpTop"><b>${p.name}</b><em>${p.badge}</em></div><strong>${money(p.price)}</strong><small>${p.desc}</small><span>${p.price ? "상담 선택" : "무료로 보기"} ›</span></button>`).join("")}</div><div class="hpcNote">신년운세는 연도별 상품입니다. 평생운세는 한 번의 결제로 장문 리포트를 제공하며, 결제한 리포트는 화담일지에서 계속 다시 볼 수 있습니다.</div>`;
+    sec.innerHTML = `<div class="hpcHead"><div><span>상담 상품</span><h3>원하는 상담을 선택하세요</h3></div><p>결제한 리포트는 화담일지에서 계속 다시 볼 수 있습니다.</p></div><div class="hpcGrid">${PRODUCTS.map((p, i) => `<button type="button" class="hwadamProduct ${i === 0 ? "selected" : ""}" data-id="${p.id}"><div class="hpTop"><b>${p.name}</b><em>${p.badge}</em></div><strong>${money(p.price)}</strong><small>${p.desc}</small><span>${p.price ? "상품 선택" : "무료로 보기"} ›</span></button>`).join("")}</div><div class="hpcNote">1년 회원권은 로그인한 회원 본인에게만 적용되며, 가입일 기준 1년 동안 화담 유료 기능을 추가 결제 없이 이용할 수 있습니다. 신년운세는 연도별 상품이며, 평생운세는 한 번의 결제로 장문 리포트를 제공합니다.</div>`;
     const anchor = ai.querySelector(".aiChips") || ai.querySelector("textarea");
     anchor?.insertAdjacentElement("beforebegin", sec);
     sec.querySelectorAll(".hwadamProduct").forEach((b) =>
@@ -153,7 +167,7 @@
     if (!$("hwadamProductStyle")) {
       const st = d.createElement("style");
       st.id = "hwadamProductStyle";
-      st.textContent = `#hwadamProductCatalog{margin:18px 0 16px}.hpcHead{display:flex;justify-content:space-between;gap:12px;align-items:end;margin-bottom:12px}.hpcHead span{font-size:12px;font-weight:900;color:#b88746}.hpcHead h3{margin:3px 0 0;font-size:22px;color:#20352d}.hpcHead p{margin:0;max-width:46%;font-size:12px;line-height:1.5;color:#777}.hpcGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hwadamProduct{min-height:150px!important;margin:0!important;text-align:left!important;padding:15px!important;border:1px solid #dfd5c5!important;border-radius:17px!important;background:#fffdf9!important;color:#26352f!important;box-shadow:none!important}.hwadamProduct.selected{outline:3px solid #d49a49!important;outline-offset:-2px}.hwadamProduct:nth-child(1){background:#eef7f1!important}.hwadamProduct:nth-child(2){background:#fff4d8!important}.hwadamProduct:nth-child(3){background:#ffe9ef!important}.hwadamProduct:nth-child(4){background:#eaf0ff!important}.hwadamProduct:nth-child(7){background:#f3eaff!important}.hpTop{display:flex;justify-content:space-between;gap:8px;align-items:center}.hpTop b{font-size:16px}.hpTop em{font-style:normal;font-size:11px;padding:4px 7px;border-radius:999px;background:#20352d;color:#fff}.hwadamProduct strong{display:block;margin:9px 0 6px;font-size:22px;color:#8d5e24}.hwadamProduct small{display:block;min-height:42px;font-size:12px;line-height:1.55;color:#68635c}.hwadamProduct span{display:block;margin-top:9px;font-size:12px;font-weight:900;color:#20352d}.hpcNote{margin-top:9px;padding:10px 12px;border-radius:12px;background:#f4f0e8;font-size:11px;line-height:1.55;color:#726b61}@media(max-width:430px){.hpcHead{display:block}.hpcHead p{max-width:none;margin-top:5px}.hpcGrid{grid-template-columns:1fr}.hwadamProduct{min-height:132px!important}}`;
+      st.textContent = `#hwadamProductCatalog{margin:18px 0 16px}.hpcHead{display:flex;justify-content:space-between;gap:12px;align-items:end;margin-bottom:12px}.hpcHead span{font-size:12px;font-weight:900;color:#b88746}.hpcHead h3{margin:3px 0 0;font-size:22px;color:#20352d}.hpcHead p{margin:0;max-width:46%;font-size:12px;line-height:1.5;color:#777}.hpcGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.hwadamProduct{min-height:150px!important;margin:0!important;text-align:left!important;padding:15px!important;border:1px solid #dfd5c5!important;border-radius:17px!important;background:#fffdf9!important;color:#26352f!important;box-shadow:none!important}.hwadamProduct.selected{outline:3px solid #d49a49!important;outline-offset:-2px}.hwadamProduct:nth-child(1){background:#eef7f1!important}.hwadamProduct:nth-child(2){background:#e8f6ff!important}.hwadamProduct:nth-child(3){background:#fff4d8!important}.hwadamProduct:nth-child(4){background:#ffe9ef!important}.hwadamProduct:nth-child(5){background:#eaf0ff!important}.hwadamProduct:nth-child(8){background:#f3eaff!important}.hpTop{display:flex;justify-content:space-between;gap:8px;align-items:center}.hpTop b{font-size:16px}.hpTop em{font-style:normal;font-size:11px;padding:4px 7px;border-radius:999px;background:#20352d;color:#fff}.hwadamProduct strong{display:block;margin:9px 0 6px;font-size:22px;color:#8d5e24}.hwadamProduct small{display:block;min-height:42px;font-size:12px;line-height:1.55;color:#68635c}.hwadamProduct span{display:block;margin-top:9px;font-size:12px;font-weight:900;color:#20352d}.hpcNote{margin-top:9px;padding:10px 12px;border-radius:12px;background:#f4f0e8;font-size:11px;line-height:1.55;color:#726b61}@media(max-width:430px){.hpcHead{display:block}.hpcHead p{max-width:none;margin-top:5px}.hpcGrid{grid-template-columns:1fr}.hwadamProduct{min-height:132px!important}}`;
       d.head.appendChild(st);
     }
     return true;

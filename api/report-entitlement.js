@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import {getEntitlement} from './_db.js';
+import {currentUser,isAdminUser} from './_auth.js';
 const PRODUCTS={
   'yongsin':5900,
   'annual-fortune':9900,
@@ -11,9 +12,13 @@ const PRODUCTS={
 function safeEq(a,b){const x=Buffer.from(a),y=Buffer.from(b);return x.length===y.length&&crypto.timingSafeEqual(x,y)}
 export default async function handler(req,res){
   if(req.method!=='POST')return res.status(405).json({ok:false,error:'POST 요청만 지원합니다.'});
-  const secret=process.env.TOSS_SECRET_KEY||'';
-  if(!secret)return res.status(503).json({ok:false,error:'결제 서버 설정이 아직 완료되지 않았습니다.'});
   try{
+    const user=await currentUser(req);
+    if(user&&isAdminUser(user)){
+      return res.status(200).json({ok:true,admin:true,reportId:String(req.body?.reportId||''),productId:'admin'});
+    }
+    const secret=process.env.TOSS_SECRET_KEY||'';
+    if(!secret)return res.status(503).json({ok:false,error:'결제 서버 설정이 아직 완료되지 않았습니다.'});
     const token=String(req.body?.token||''),reportId=String(req.body?.reportId||'');
     const [body,sig]=token.split('.');
     if(!body||!sig||!reportId)return res.status(400).json({ok:false,error:'리포트 이용권 정보가 없습니다.'});

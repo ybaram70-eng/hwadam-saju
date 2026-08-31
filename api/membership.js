@@ -47,6 +47,9 @@ export default async function handler(req,res){
     const user=await currentUser(req);
     if(!user)return res.status(401).json({ok:false,error:'LOGIN_REQUIRED'});
     if(req.method==='GET'){
+      if(isAdminUser(user)){
+        return res.status(200).json({ok:true,membership:{active:true,plan:'admin',source:'admin',admin:true,expires_at:null}});
+      }
       const membership=await getMembership(user.id);
       return res.status(200).json({ok:true,membership:membership||{active:false,plan:null}});
     }

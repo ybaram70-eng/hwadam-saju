@@ -1,5 +1,9 @@
 {
-  "rewrites": [{ "source": "/", "destination": "/index.html" }],
+  "rewrites": [
+    { "source": "/api/auth-me", "destination": "/api/auth-session" },
+    { "source": "/api/auth-logout", "destination": "/api/auth-session" },
+    { "source": "/", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/",

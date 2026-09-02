@@ -32,7 +32,7 @@
     if (d.getElementById("hwadam-payment-runtime")) return;
     const s = d.createElement("script");
     s.id = "hwadam-payment-runtime";
-    s.src = "/payment.js?v=20260902-payfix1";
+    s.src = "/payment.js?v=20260902-payfix2";
     d.body.appendChild(s);
   }
 
@@ -72,20 +72,30 @@
     const b = box.querySelector("button");
     b.style.pointerEvents = "auto";
     b.style.touchAction = "manipulation";
-    b.addEventListener("click", (e) => { e.preventDefault(); openPayment(); }, true);
-    b.addEventListener("touchend", (e) => { e.preventDefault(); openPayment(); }, { passive: false, capture: true });
+    b.addEventListener("click", (e) => { e.preventDefault(); e.stopPropagation(); openPayment(); }, true);
+    b.addEventListener("touchend", (e) => { e.preventDefault(); e.stopPropagation(); openPayment(); }, { passive: false, capture: true });
     return box;
+  }
+
+  function clearLock() {
+    const ai = $("hwadamAiConsult");
+    if (ai) {
+      ai.classList.remove("hdYongsinLocked");
+      ai.classList.remove("hdYongsinUnlocked");
+    }
+    $("hwadamYongsinLock")?.remove();
+    $("aiAnswer")?.removeAttribute("hidden");
   }
 
   function style() {
     if ($("hwadamYongsinPaywallStyle")) return;
     const sheet = d.createElement("style");
     sheet.id = "hwadamYongsinPaywallStyle";
-    sheet.textContent = `#hwadamAiConsult.hdYongsinLocked #aiAnswer{display:none!important}#hwadamYongsinLock{margin:14px 0;padding:22px 17px;border:2px solid #dec17f;border-radius:18px;background:#fff8e8;text-align:center}#hwadamYongsinLock>span{font-size:32px}#hwadamYongsinLock h3{margin:8px 0;color:#20352d;font-size:20px}#hwadamYongsinLock p{margin:0;color:#666057;font-size:14px;line-height:1.7}#hwadamYongsinLock button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:13px;background:#20352d;color:#fff;font-size:16px;font-weight:900;pointer-events:auto!important;touch-action:manipulation!important;position:relative;z-index:8}#hwadamAiConsult.hdYongsinUnlocked #hwadamYongsinLock{display:none!important}#hwadamAiConsult.hdYongsinUnlocked #aiAnswer{display:block!important}`;
+    sheet.textContent = `#hwadamAiConsult.hdYongsinLocked #aiAnswer{display:none!important}#hwadamYongsinLock{margin:14px 0;padding:22px 17px;border:2px solid #dec17f;border-radius:18px;background:#fff8e8;text-align:center}#hwadamYongsinLock>span{font-size:32px}#hwadamYongsinLock h3{margin:8px 0;color:#20352d;font-size:20px}#hwadamYongsinLock p{margin:0;color:#666057;font-size:14px;line-height:1.7}#hwadamYongsinLock button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:13px;background:#20352d;color:#fff;font-size:16px;font-weight:900;pointer-events:auto!important;touch-action:manipulation!important;position:relative;z-index:80}#hwadamAiConsult.hdYongsinUnlocked #hwadamYongsinLock{display:none!important}#hwadamAiConsult.hdYongsinUnlocked #aiAnswer{display:block!important}`;
     d.head.appendChild(sheet);
   }
   async function apply() {
-    if (selected().id !== "yongsin") return;
+    if (selected().id !== "yongsin") { clearLock(); return; }
     const ai = $("hwadamAiConsult"), report = last();
     if (!ai) return;
     style();
@@ -93,6 +103,7 @@
     if (report.reportId && await paid(report.reportId)) {
       ai.classList.remove("hdYongsinLocked");
       ai.classList.add("hdYongsinUnlocked");
+      $("hwadamYongsinLock")?.remove();
       $("aiAnswer")?.removeAttribute("hidden");
       return;
     }
@@ -110,6 +121,7 @@
       timer = setTimeout(apply, 80);
     }).observe(d.body, { childList: true, subtree: true, attributes: true });
     d.addEventListener("hwadam:report-entitled", apply);
+    d.addEventListener("hwadam:product-selected", () => setTimeout(apply, 20));
     setInterval(apply, 900);
   }
   if (d.readyState === "loading") d.addEventListener("DOMContentLoaded", boot, { once: true });

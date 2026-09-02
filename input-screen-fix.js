@@ -1,6 +1,14 @@
 (() => {
   const d = document;
 
+  function ensureServerCalculator() {
+    if (d.getElementById("hwadam-saju-calc-server-v3")) return;
+    const s = d.createElement("script");
+    s.id = "hwadam-saju-calc-server-v3";
+    s.src = "/saju-calc-server.js?v=20260902-3";
+    d.body.appendChild(s);
+  }
+
   function hideSamplePlaceholders() {
     ["year", "month", "day", "hour", "minute"].forEach((id) => {
       const el = d.getElementById(id);
@@ -10,6 +18,7 @@
 
   function revealInput() {
     hideSamplePlaceholders();
+    ensureServerCalculator();
     const name = d.getElementById("name");
     if (!name) return false;
     let node = name.closest(".card") || name.parentElement;
@@ -31,6 +40,7 @@
   }
 
   function bind() {
+    ensureServerCalculator();
     try {
       const button = parent.document.querySelector(
         '.navItem[data-target="input"]',
@@ -41,6 +51,7 @@
         "click",
         () => {
           hideSamplePlaceholders();
+          ensureServerCalculator();
           setTimeout(revealInput, 40);
           setTimeout(revealInput, 180);
           setTimeout(revealInput, 500);
@@ -51,9 +62,11 @@
   }
 
   function boot() {
+    ensureServerCalculator();
     hideSamplePlaceholders();
     bind();
     setTimeout(() => {
+      ensureServerCalculator();
       hideSamplePlaceholders();
       bind();
     }, 400);

@@ -12,6 +12,7 @@ export default function handler(req,res){
   const clientKey=process.env.TOSS_CLIENT_KEY||'';
   const productId=String(req.query?.productId||'comprehensive');
   const product=PRODUCTS[productId]||PRODUCTS.comprehensive;
-  const mode=clientKey.startsWith('test_ck_')?'test':clientKey.startsWith('live_ck_')?'live':'unknown';
+  const mode=clientKey.startsWith('test_')?'test':clientKey.startsWith('live_')?'live':'unknown';
+  res.setHeader('Cache-Control','no-store, max-age=0');
   res.status(200).json({enabled:!!clientKey,clientKey,mode,isTest:mode==='test',productId:PRODUCTS[productId]?productId:'comprehensive',amount:product.amount,currency:'KRW',orderName:`화담 ${product.name}`,productName:product.name});
 }

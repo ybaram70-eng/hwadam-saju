@@ -71,7 +71,7 @@
       if (!year || !month || !day || Number.isNaN(hour) || hour<0 || hour>23 || Number.isNaN(minute) || minute<0 || minute>59) throw new Error("생년월일과 시간을 확인해 주세요.");
       const lunar = d.querySelector('input[name="cal"]:checked')?.value === "lunar";
       const ctrl = new AbortController(); const timer=setTimeout(()=>ctrl.abort(),12000);
-      let res; try { res = await fetch("/api/saju-calc", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({year,month,day,hour,minute,isLunar:lunar,isLeapMonth:lunar&&$("leap")?.value==="leap",dayBoundary:$("boundary")?.value||"midnight",gender:$("gender")?.value||"female"}),signal:ctrl.signal}); } finally { clearTimeout(timer); }
+      let res; try { res = await fetch("/api/support?action=saju-calc", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({year,month,day,hour,minute,isLunar:lunar,isLeapMonth:lunar&&$("leap")?.value==="leap",dayBoundary:$("boundary")?.value||"midnight",gender:$("gender")?.value||"female"}),signal:ctrl.signal}); } finally { clearTimeout(timer); }
       const j=await res.json().catch(()=>({})); if(!res.ok||!j.ok) throw new Error(j.error||"사주 계산에 실패했습니다.");
       const k=j.pillars||{};
       if ($("who")) $("who").textContent=(($("name")?.value||"").trim()||"고객")+"님의 사주팔자";

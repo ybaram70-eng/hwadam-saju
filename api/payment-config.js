@@ -4,7 +4,7 @@ const PRODUCTS={
   'annual-fortune':{name:'1년 신년운세',amount:9900},
   'money-business':{name:'재물·사업 상담',amount:5900},
   'compatibility':{name:'궁합 상담',amount:7900},
-  'comprehensive':{name:'종합 사주 상담',amount:9900},
+  'comprehensive':{name:'정식 상담 리포트',amount:9900},
   'lifetime-fortune':{name:'평생운세 장문 리포트',amount:14900}
 };
 export default function handler(req,res){

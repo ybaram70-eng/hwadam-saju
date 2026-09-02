@@ -1,6 +1,13 @@
 (() => {
   const d = document;
   const $ = (id) => d.getElementById(id);
+  const STEMS=['갑','을','병','정','무','기','경','신','임','계'];
+  const BRANCHES=['자','축','인','묘','진','사','오','미','신','유','술','해'];
+
+  function yearPillar(year){
+    const i=((Number(year)-4)%60+60)%60;
+    return STEMS[i%10]+BRANCHES[i%12];
+  }
 
   function enableInputs() {
     ["name","year","month","day","hour","minute"].forEach((id) => {
@@ -60,6 +67,51 @@
     return true;
   }
 
+  function renderDaewoon(luckPillars){
+    const box=$("luck");
+    if(!box)return;
+    box.innerHTML='';
+    const list=Array.isArray(luckPillars?.pillars)?luckPillars.pillars:Array.isArray(luckPillars)?luckPillars:[];
+    list.slice(0,12).forEach((x,idx)=>{
+      const p=String(x?.korean||x?.pillar||x?.ganji||x?.name||'').trim().slice(0,2);
+      const age=Number(x?.age??x?.startAge??x?.start_age??x?.fromAge??(idx*10));
+      if(p.length<2)return;
+      const el=d.createElement('div');
+      el.className='lb';
+      el.dataset.p=p;
+      if(Number.isFinite(age))el.dataset.age=String(age);
+      el.innerHTML=`<b>${p}</b><small>${Number.isFinite(age)?age+'세':''}</small>`;
+      el.addEventListener('click',()=>{
+        d.querySelectorAll('.lb').forEach(z=>z.classList.remove('selected'));
+        el.classList.add('selected');
+        if($("luckText")) $("luckText").innerHTML=`<b>${Number.isFinite(age)?age+'세 ':''}${p} 대운</b><br>이 대운의 십신·12운성·원국과의 합충 관계를 확인합니다.`;
+      });
+      box.appendChild(el);
+    });
+    if(!box.children.length && $("luckText")) $("luckText").textContent='대운 데이터가 없습니다.';
+  }
+
+  function renderSewoon(){
+    const box=$("years");
+    if(!box)return;
+    box.innerHTML='';
+    const start=new Date().getFullYear();
+    for(let y=start;y<start+10;y++){
+      const p=yearPillar(y);
+      const el=d.createElement('div');
+      el.className='yb';
+      el.dataset.year=String(y);
+      el.dataset.p=p;
+      el.innerHTML=`<b>${y}</b><small>${p}</small>`;
+      el.addEventListener('click',()=>{
+        d.querySelectorAll('.yb').forEach(z=>z.classList.remove('selected'));
+        el.classList.add('selected');
+        if($("yearText")) $("yearText").innerHTML=`<b>${y}년 ${p} 세운</b><br>해당 연도의 천간·지지와 원국의 관계를 확인합니다.`;
+      });
+      box.appendChild(el);
+    }
+  }
+
   async function directCalculate(ev) {
     ev?.preventDefault?.(); ev?.stopPropagation?.(); ev?.stopImmediatePropagation?.();
     const btn = $("go"), st = $("st");
@@ -79,8 +131,11 @@
       [["y",k.year],["m",k.month],["d",k.day],["h",k.hour]].forEach(([id,p])=>{ if($(id+"P")) $(id+"P").textContent=p||""; });
       if ($("dm")) $("dm").textContent=`${k.day?.[0]||"-"} 일간 · ${j.dayElement||"-"} · ${j.dayYinYang||"-"}`;
       if ($("vb")) $("vb").textContent=Array.isArray(j.voidBranches)?j.voidBranches.join(" · "):(j.voidBranches||"-");
+      renderDaewoon(j.luckPillars);
+      renderSewoon();
       if ($("result")) $("result").style.display="block";
       if (st) { st.className="status"; st.textContent="계산 완료"; }
+      try { d.defaultView?.dispatchEvent?.(new Event('resize')); } catch {}
       try { const analysis=parent.document.querySelector('.navItem[data-target="analysis"]'); if(analysis) analysis.click(); } catch {}
       setTimeout(()=>$("result")?.scrollIntoView?.({behavior:"smooth",block:"start"}),120);
     } catch(e) {
@@ -110,6 +165,6 @@
 
   function boot(){ hideSamplePlaceholders(); enableInputs(); bindNav(); hardBindCalc(); setTimeout(()=>{enableInputs();bindNav();hardBindCalc();},250); setTimeout(()=>{enableInputs();bindNav();hardBindCalc();},800); try{const active=parent.document.querySelector('.navItem.active[data-target="input"]'); if(active)setTimeout(()=>{revealInput();hardBindCalc();enableInputs();},80);}catch{} }
 
-  window.hwadamInputScreenFix={reveal:revealInput,hideSamplePlaceholders,enableInputs,calculate:directCalculate};
+  window.hwadamInputScreenFix={reveal:revealInput,hideSamplePlaceholders,enableInputs,calculate:directCalculate,renderDaewoon,renderSewoon};
   if(d.readyState==="loading") d.addEventListener("DOMContentLoaded",boot,{once:true}); else boot();
 })();

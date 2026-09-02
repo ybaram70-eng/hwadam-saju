@@ -15,7 +15,7 @@
       if(!y||!m||!day||Number.isNaN(h)||h<0||h>23||Number.isNaN(min)||min<0||min>59)throw Error('생년월일과 시간을 확인해 주세요.');
       const lunar=d.querySelector('input[name=cal]:checked')?.value==='lunar';
       const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),12000);
-      let r;try{r=await fetch('/api/saju-calc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({year:y,month:m,day,hour:h,minute:min,isLunar:lunar,isLeapMonth:lunar&&$('leap')?.value==='leap',dayBoundary:$('boundary')?.value||'midnight',gender:$('gender')?.value||'female'}),signal:ctrl.signal})}finally{clearTimeout(timer)}
+      let r;try{r=await fetch('/api/support?action=saju-calc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({year:y,month:m,day,hour:h,minute:min,isLunar:lunar,isLeapMonth:lunar&&$('leap')?.value==='leap',dayBoundary:$('boundary')?.value||'midnight',gender:$('gender')?.value||'female'}),signal:ctrl.signal})}finally{clearTimeout(timer)}
       const j=await r.json().catch(()=>({}));if(!r.ok||!j.ok)throw Error(j.error||'사주 계산에 실패했습니다.');
       const k=j.pillars||{};
       if($('who'))$('who').textContent=(($('name')?.value||'').trim()||'고객')+'님의 사주팔자';

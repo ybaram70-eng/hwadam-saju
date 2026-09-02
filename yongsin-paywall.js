@@ -32,7 +32,7 @@
     if (d.getElementById("hwadam-payment-runtime")) return;
     const s = d.createElement("script");
     s.id = "hwadam-payment-runtime";
-    s.src = "/payment.js?v=20260902-payfix3";
+    s.src = "/payment.js?v=20260903-payfix4";
     d.body.appendChild(s);
   }
 
@@ -49,27 +49,41 @@
     return sec;
   }
 
-  function openPayment() {
+  function rememberYongsin() {
     try {
       const p = { id: "yongsin", name: "개인 용신 분석", price: 5900, at: new Date().toISOString() };
       localStorage.setItem("hwadam_selected_product", JSON.stringify(p));
       d.dispatchEvent(new CustomEvent("hwadam:product-selected", { detail: p }));
-    } catch {}
+      return p;
+    } catch { return { id:"yongsin", name:"개인 용신 분석", price:5900 }; }
+  }
+
+  function openPayment() {
+    const p = rememberYongsin();
     const sec = ensureImmediatePanel();
-    if (sec) sec.scrollIntoView({ behavior: "smooth", block: "start" });
     ensurePaymentScript();
-    setTimeout(() => d.dispatchEvent(new CustomEvent("hwadam:product-selected", { detail: { id:"yongsin", name:"개인 용신 분석", price:5900 } })), 250);
+    if (sec) {
+      sec.hidden = false;
+      sec.style.display = "block";
+      sec.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    setTimeout(() => d.dispatchEvent(new CustomEvent("hwadam:product-selected", { detail: p })), 120);
+    setTimeout(() => {
+      const pay = $("hwadamPaidReport");
+      if (pay) pay.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 420);
   }
 
   function lockBox() {
     let box = $("hwadamYongsinLock");
-    if (box) return box;
     const answer = $("aiAnswer");
-    if (!answer) return null;
-    box = d.createElement("section");
-    box.id = "hwadamYongsinLock";
-    box.innerHTML = `<span>🔒</span><h3>개인 용신 결과가 준비되었습니다</h3><p>전체 용신·희신·기신과 대운·세운 활용 결과는 결제 완료 후 확인할 수 있습니다.</p><button id="hwadamYongsinPayButton" type="button">5,900원 결제하고 전체 결과 보기</button>`;
-    answer.insertAdjacentElement("beforebegin", box);
+    if (!box) {
+      if (!answer) return null;
+      box = d.createElement("section");
+      box.id = "hwadamYongsinLock";
+      answer.insertAdjacentElement("beforebegin", box);
+    }
+    box.innerHTML = `<span>🔒</span><h3>개인 용신 결과가 준비되었습니다</h3><p>전체 용신·희신·기신과 대운·세운 활용 결과는 결제 완료 후 확인할 수 있습니다.</p><a id="hwadamYongsinPayButton" href="/?product=yongsin" target="_top" role="button">5,900원 결제하고 전체 결과 보기</a>`;
     return box;
   }
 
@@ -84,11 +98,13 @@
   }
 
   function style() {
-    if ($("hwadamYongsinPaywallStyle")) return;
-    const sheet = d.createElement("style");
-    sheet.id = "hwadamYongsinPaywallStyle";
-    sheet.textContent = `#hwadamAiConsult.hdYongsinLocked #aiAnswer{display:none!important}#hwadamYongsinLock{margin:14px 0;padding:22px 17px;border:2px solid #dec17f;border-radius:18px;background:#fff8e8;text-align:center}#hwadamYongsinLock>span{font-size:32px}#hwadamYongsinLock h3{margin:8px 0;color:#20352d;font-size:20px}#hwadamYongsinLock p{margin:0;color:#666057;font-size:14px;line-height:1.7}#hwadamYongsinPayButton{width:100%;margin-top:14px;padding:16px;border:0;border-radius:13px;background:#20352d;color:#fff;font-size:16px;font-weight:900;pointer-events:auto!important;touch-action:manipulation!important;position:relative!important;z-index:999!important;cursor:pointer!important}#hwadamPaidReport{margin-top:18px;padding:18px;border-radius:18px;background:#fffdf8;border:1px solid #ddd3c2}.payState{padding:12px;border-radius:12px;background:#f4f0e8;color:#625d55}#hwadamAiConsult.hdYongsinUnlocked #hwadamYongsinLock{display:none!important}#hwadamAiConsult.hdYongsinUnlocked #aiAnswer{display:block!important}`;
-    d.head.appendChild(sheet);
+    let sheet = $("hwadamYongsinPaywallStyle");
+    if (!sheet) {
+      sheet = d.createElement("style");
+      sheet.id = "hwadamYongsinPaywallStyle";
+      d.head.appendChild(sheet);
+    }
+    sheet.textContent = `#hwadamAiConsult.hdYongsinLocked #aiAnswer{display:none!important}#hwadamYongsinLock{margin:14px 0;padding:22px 17px;border:2px solid #dec17f;border-radius:18px;background:#fff8e8;text-align:center}#hwadamYongsinLock>span{font-size:32px}#hwadamYongsinLock h3{margin:8px 0;color:#20352d;font-size:20px}#hwadamYongsinLock p{margin:0;color:#666057;font-size:14px;line-height:1.7}#hwadamYongsinPayButton{display:block;width:100%;box-sizing:border-box;margin-top:14px;padding:16px;border:0;border-radius:13px;background:#20352d;color:#fff!important;text-decoration:none!important;font-size:16px;font-weight:900;pointer-events:auto!important;touch-action:manipulation!important;position:relative!important;z-index:999!important;cursor:pointer!important}#hwadamPaidReport{margin-top:18px;padding:18px;border-radius:18px;background:#fffdf8;border:1px solid #ddd3c2}.payState{padding:12px;border-radius:12px;background:#f4f0e8;color:#625d55}#hwadamAiConsult.hdYongsinUnlocked #hwadamYongsinLock{display:none!important}#hwadamAiConsult.hdYongsinUnlocked #aiAnswer{display:block!important}`;
   }
 
   async function apply() {
@@ -112,12 +128,8 @@
   function delegatedTap(e) {
     const b = e.target?.closest?.("#hwadamYongsinPayButton");
     if (!b) return;
-    e.preventDefault();
-    e.stopPropagation();
-    e.stopImmediatePropagation?.();
-    b.textContent = "결제 화면 여는 중…";
+    rememberYongsin();
     openPayment();
-    setTimeout(() => { if (b.isConnected) b.textContent = "5,900원 결제하고 전체 결과 보기"; }, 1200);
   }
 
   function boot() {

@@ -1,5 +1,6 @@
 import {db} from './_db.js';
 import {currentUser,isAdminUser} from './_auth.js';
+import * as M from 'manseryeok';
 
 async function ensureTables(){
   const s=db();
@@ -28,8 +29,24 @@ async function ensureTables(){
 
 export default async function handler(req,res){
   try{
-    const s=await ensureTables();
     const action=String(req.query?.action||'notices');
+
+    if(req.method==='POST'&&action==='saju-calc'){
+      const {year,month,day,hour,minute,isLunar,isLeapMonth,dayBoundary,gender}=req.body||{};
+      const y=Number(year),m=Number(month),d=Number(day),h=Number(hour),min=Number(minute);
+      if(!y||!m||!d||Number.isNaN(h)||h<0||h>23||Number.isNaN(min)||min<0||min>59){
+        return res.status(400).json({ok:false,error:'생년월일과 시간을 확인해 주세요.'});
+      }
+      if(typeof M.calculateFourPillars!=='function'){
+        return res.status(500).json({ok:false,error:'만세력 엔진을 불러오지 못했습니다.'});
+      }
+      const r=M.calculateFourPillars({year:y,month:m,day:d,hour:h,minute:min,isLunar:!!isLunar,isLeapMonth:!!isLeapMonth,dayBoundary:dayBoundary||'midnight',gender:gender||'female'});
+      const k=r.toObject();
+      const dm=k?.day?.[0]||'';
+      return res.status(200).json({ok:true,pillars:k,tenGods:r.tenGods||null,voidBranches:r.voidBranches||null,luckPillars:r.luckPillars||null,dayElement:dm&&M.getHeavenlyStemElement?M.getHeavenlyStemElement(dm):'',dayYinYang:dm&&M.getHeavenlyStemYinYang?M.getHeavenlyStemYinYang(dm):''});
+    }
+
+    const s=await ensureTables();
     const user=await currentUser(req);
     const admin=isAdminUser(user);
 
@@ -66,5 +83,5 @@ export default async function handler(req,res){
       return res.status(200).json({ok:true});
     }
     return res.status(405).json({ok:false,error:'METHOD_NOT_ALLOWED'});
-  }catch(e){console.error(e);return res.status(500).json({ok:false,error:'SUPPORT_FAILED'});}
+  }catch(e){console.error(e);return res.status(500).json({ok:false,error:e?.message||'SUPPORT_FAILED'});}
 }

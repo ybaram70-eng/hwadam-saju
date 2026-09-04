@@ -40,17 +40,37 @@
     return true;
   }
 
-  function fixHomeProducts(){
-    const promo=d.querySelector('.hdPromo');
-    const track=promo?.querySelector('.hdPromoTrack');
-    if(!promo||!track) return false;
+  const canonicalProducts=()=>{
     const year=new Date().getFullYear();
-    track.innerHTML=`
+    return `
       <a class="hdPromoCard" data-cat="consult" target="_top" href="/?product=annual-membership"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>MEMBER</span><span>1년</span></div><strong>1년 동안<br>모든 유료 기능 이용</strong></div><div class="hdPromoBody"><b>1년 회원권</b><p>구매일로부터 1년간 화담 유료 기능 전체를 이용합니다.</p><div class="hdPromoPrice">55,000원 <span>회원권 선택 ›</span></div></div></a>
       <a class="hdPromoCard" data-cat="fortune" target="_top" href="/?product=annual-fortune"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>NEW</span><span>연도별</span></div><strong>${year}년<br>나의 신년운세</strong></div><div class="hdPromoBody"><b>${year}년 신년운세</b><p>1년 총운과 12개월 월별 흐름을 자세히 살펴봅니다.</p><div class="hdPromoPrice">9,900원 <span>상담 선택 ›</span></div></div></a>
       <a class="hdPromoCard" data-cat="consult" target="_top" href="/?product=money-business"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>추천</span><span>재물</span></div><strong>돈의 흐름과<br>사업 기회 분석</strong></div><div class="hdPromoBody"><b>재물·사업 상담</b><p>재물운, 사업운과 시기별 주의점을 확인합니다.</p><div class="hdPromoPrice">5,900원 <span>상담 선택 ›</span></div></div></a>
       <a class="hdPromoCard" data-cat="consult" target="_top" href="/?product=compatibility"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>관계</span><span>궁합</span></div><strong>두 사람의<br>관계 흐름과 궁합</strong></div><div class="hdPromoBody"><b>궁합 상담</b><p>잘 맞는 점과 갈등을 줄이는 방법을 살펴봅니다.</p><div class="hdPromoPrice">7,900원 <span>상담 선택 ›</span></div></div></a>
       <a class="hdPromoCard" data-cat="fortune" target="_top" href="/?product=lifetime-fortune"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>PREMIUM</span><span>평생</span></div><strong>평생의 흐름과<br>대운 전환점 분석</strong></div><div class="hdPromoBody"><b>평생운세 장문 리포트</b><p>재물·직업·배우자·자녀·건강·말년운과 대운 전환점을 깊게 살펴봅니다.</p><div class="hdPromoPrice">14,900원 <span>상담 선택 ›</span></div></div></a>`;
+  };
+
+  function normalizeProducts(rebuild=false){
+    const promo=d.querySelector('.hdPromo');
+    const track=promo?.querySelector('.hdPromoTrack');
+    if(!promo||!track) return false;
+
+    if(rebuild) track.innerHTML=canonicalProducts();
+
+    const allowed=['annual-membership','annual-fortune','money-business','compatibility','lifetime-fortune'];
+    const seen=new Set();
+    [...track.querySelectorAll('.hdPromoCard')].forEach(card=>{
+      const href=card.getAttribute('href')||'';
+      const match=href.match(/[?&]product=([^&#]+)/);
+      const id=match?decodeURIComponent(match[1]):'';
+      if(!allowed.includes(id)||seen.has(id)) card.remove();
+      else seen.add(id);
+    });
+
+    if(seen.size!==5){
+      track.innerHTML=canonicalProducts();
+    }
+
     const countEl=promo.querySelector('.hdPromoHead b');
     if(countEl) countEl.textContent='5개 상품';
     return true;
@@ -59,7 +79,14 @@
   let tries=0;
   const timer=setInterval(()=>{
     const businessReady=addBusinessInfo();
-    const productsReady=fixHomeProducts();
-    if((businessReady&&productsReady)||tries++>40) clearInterval(timer);
+    const productsReady=normalizeProducts(true);
+    if((businessReady&&productsReady)||tries++>40){
+      clearInterval(timer);
+      const track=d.querySelector('.hdPromoTrack');
+      if(track){
+        const observer=new MutationObserver(()=>normalizeProducts(false));
+        observer.observe(track,{childList:true});
+      }
+    }
   },250);
 })();

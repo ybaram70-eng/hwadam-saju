@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#153b30"/><stop offset="1" stop-color="#2e6b55"/></linearGradient></defs>
+  <rect width="1200" height="630" fill="#f5f1e8"/>
+  <rect x="48" y="48" width="1104" height="534" rx="42" fill="url(#g)"/>
+  <text x="110" y="185" fill="#e4c781" font-size="34" font-family="sans-serif" font-weight="700">和談 · HWADAM</text>
+  <text x="110" y="300" fill="#ffffff" font-size="72" font-family="sans-serif" font-weight="800">화담철학관</text>
+  <text x="110" y="388" fill="#ffffff" font-size="40" font-family="sans-serif" font-weight="700">사주 · 용신 · 대운 · 세운 · AI 상담</text>
+  <text x="110" y="470" fill="#e9efe9" font-size="30" font-family="sans-serif">내 사주의 흐름을 쉽고 편하게 확인하세요</text>
+  <circle cx="995" cy="230" r="92" fill="#f0d58e" opacity=".95"/>
+  <text x="995" y="252" text-anchor="middle" fill="#173d31" font-size="76" font-family="serif" font-weight="700">和</text>
+</svg>

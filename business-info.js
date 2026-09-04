@@ -50,6 +50,30 @@
       <a class="hdPromoCard" data-cat="fortune" target="_top" href="/?product=lifetime-fortune"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>PREMIUM</span><span>평생</span></div><strong>평생의 흐름과<br>대운 전환점 분석</strong></div><div class="hdPromoBody"><b>평생운세 장문 리포트</b><p>재물·직업·배우자·자녀·건강·말년운과 대운 전환점을 깊게 살펴봅니다.</p><div class="hdPromoPrice">14,900원 <span>상담 선택 ›</span></div></div></a>`;
   };
 
+  function openLifetimeFortune(e){
+    e?.preventDefault?.();
+    const p={id:'lifetime-fortune',name:'평생운세 장문 리포트',price:14900,at:new Date().toISOString()};
+    try{localStorage.setItem('hwadam_selected_product',JSON.stringify(p));localStorage.removeItem('hwadam_formal_report_payment')}catch{}
+    const q='평생운세 장문 리포트로 작성해 주세요. 사주 원국을 근거로 평생 총운, 타고난 성향과 강점, 재물운, 직업·사업운, 배우자·결혼운, 가족·자녀운, 건강에서 주의할 생활 흐름, 대운별 주요 전환점과 기회·주의 시기, 중년 이후의 변화, 말년운과 삶의 방향까지 항목별로 충분히 깊고 길게 설명해 주세요. 단정적인 예언은 피하고 실제 생활에서 활용할 수 있는 조언을 포함해 주세요.';
+    const ta=d.getElementById('aiQuestion');if(ta)ta.value=q;
+    const status=d.getElementById('aiStatus');if(status)status.textContent='평생운세 장문 리포트 · 14,900원 상품을 선택했습니다. AI 상담을 완료하면 아래 카드결제 영역에서 결제할 수 있습니다.';
+    d.dispatchEvent(new CustomEvent('hwadam:product-selected',{detail:p}));
+    try{parent.document.querySelector('.navItem[data-target="ai"]')?.click()}catch{}
+    setTimeout(()=>{
+      const ta2=d.getElementById('aiQuestion');if(ta2&&!ta2.value.trim())ta2.value=q;
+      d.getElementById('hwadamAiConsult')?.scrollIntoView({behavior:'smooth',block:'start'});
+    },350);
+  }
+
+  function bindProductActions(track){
+    if(!track)return;
+    const lifetime=track.querySelector('a[href*="product=lifetime-fortune"]');
+    if(lifetime&&!lifetime.dataset.hwadamBound){
+      lifetime.dataset.hwadamBound='1';
+      lifetime.addEventListener('click',openLifetimeFortune);
+    }
+  }
+
   function normalizeProducts(rebuild=false){
     const promo=d.querySelector('.hdPromo');
     const track=promo?.querySelector('.hdPromoTrack');
@@ -71,6 +95,7 @@
       track.innerHTML=canonicalProducts();
     }
 
+    bindProductActions(track);
     const countEl=promo.querySelector('.hdPromoHead b');
     if(countEl) countEl.textContent='5개 상품';
     return true;
@@ -84,6 +109,7 @@
       clearInterval(timer);
       const track=d.querySelector('.hdPromoTrack');
       if(track){
+        bindProductActions(track);
         const observer=new MutationObserver(()=>normalizeProducts(false));
         observer.observe(track,{childList:true});
       }

@@ -27,5 +27,14 @@ body{color:var(--hd-text)!important}
 .journalCore{background:#fbf7ef!important}
 .journalCore .coreBox:nth-child(1){background:var(--hd-blue)!important}.journalCore .coreBox:nth-child(2){background:var(--hd-mint)!important}.journalCore .coreBox:nth-child(3){background:var(--hd-yellow)!important}.journalCore .coreBox:nth-child(4){background:var(--hd-peach)!important}
 .journalCore .coreBox b{font-size:18px!important}.journalCore .coreBox>div{font-size:18px!important;line-height:1.7!important}.journalCore .coreSmall{font-size:16px!important;line-height:1.7!important}
-@media(max-width:430px){#hwadamAnalysis .haHead h3{font-size:31px!important}#hwadamAnalysis .haGrid article{padding:17px!important}#hwadamAnalysis .haGrid article b{font-size:22px!important}#hwadamAnalysis .haGrid article p{font-size:20px!important;line-height:1.9!important}#hwadamAiConsult .aiAnswer{font-size:20px!important;line-height:1.9!important}}
+/* 사주 원국표: 칸은 촘촘하게, 글씨는 최대한 크게 */
+#hwadamPillarMatrix{grid-template-columns:60px repeat(4,minmax(0,1fr))!important}
+#hwadamPillarMatrix .hdLabel,#hwadamPillarMatrix .hdCell{min-height:32px!important;padding:3px 1px!important;line-height:1.16!important}
+#hwadamPillarMatrix .hdLabel{font-size:13px!important;font-weight:950!important;letter-spacing:-.5px!important}
+#hwadamPillarMatrix .hdCell{font-size:13.5px!important;font-weight:850!important;letter-spacing:-.35px!important}
+#hwadamPillarMatrix .branchRep{font-size:15px!important;font-weight:950!important}
+#hwadamPillarMatrix .hiddenGods{font-size:13.5px!important;line-height:1.13!important;font-weight:900!important}
+@media(max-width:430px){#hwadamAnalysis .haHead h3{font-size:31px!important}#hwadamAnalysis .haGrid article{padding:17px!important}#hwadamAnalysis .haGrid article b{font-size:22px!important}#hwadamAnalysis .haGrid article p{font-size:20px!important;line-height:1.9!important}#hwadamAiConsult .aiAnswer{font-size:20px!important;line-height:1.9!important}#hwadamPillarMatrix{grid-template-columns:58px repeat(4,minmax(0,1fr))!important}#hwadamPillarMatrix .hdLabel{font-size:12.5px!important}#hwadamPillarMatrix .hdCell{font-size:13px!important}#hwadamPillarMatrix .branchRep{font-size:14.5px!important}#hwadamPillarMatrix .hiddenGods{font-size:13px!important;line-height:1.1!important}}
 `;d.head.appendChild(s)})();
+
+(()=>{const d=document;function n(s){return String(s||'').replace(/\s|·|\./g,'')}function find(box,name){return[...box.querySelectorAll('.hdLabel')].find(x=>n(x.textContent)===n(name))}function rowNodes(label){const out=[];let x=label;for(let i=0;i<5&&x;i++,x=x.nextElementSibling)out.push(x);return out}function apply(){const box=d.getElementById('hwadamPillarMatrix');if(!box)return;const hidden=find(box,'지장간'),gods=find(box,'지장간십성');if(!hidden||!gods)return;const godsNodes=rowNodes(gods);for(const x of godsNodes)box.insertBefore(x,hidden)}function boot(){apply();let t;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(apply,60)}).observe(d.body,{subtree:true,childList:true});setInterval(apply,1000)}if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',boot,{once:true});else boot()})();

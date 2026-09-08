@@ -2,6 +2,8 @@
   "rewrites": [
     { "source": "/api/auth-me", "destination": "/api/auth-session" },
     { "source": "/api/auth-logout", "destination": "/api/auth-session" },
+    { "source": "/api/auth-login", "destination": "/api/auth-session?action=login" },
+    { "source": "/api/auth-signup", "destination": "/api/auth-session?action=signup" },
     { "source": "/", "destination": "/index.html" }
   ],
   "headers": [

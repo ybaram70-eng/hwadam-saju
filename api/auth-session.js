@@ -1,8 +1,34 @@
 import { db } from './_db.js';
 import { cookie, hashToken, clearSessionCookie, currentUser, isAdminUser, normalizePhone, verifyPassword, createSession, setSessionCookie, ensureAuthTables, validPhone, hashPassword } from './_auth.js';
 
+async function ensureVisitTable(s){
+  await s`create table if not exists hwadam_visit_daily (
+    day date primary key,
+    visits integer not null default 0,
+    updated_at timestamptz not null default now()
+  )`;
+}
+
 export default async function handler(req,res){
   const action=String(req.query?.action||req.body?.action||'').trim();
+
+  if(req.method==='GET'&&action==='stats'){
+    const s=db();
+    if(!s)return res.status(503).json({ok:false,error:'DB_NOT_CONFIGURED'});
+    try{
+      const user=await currentUser(req);
+      if(!user||!isAdminUser(user))return res.status(403).json({ok:false,error:'ADMIN_REQUIRED'});
+      await ensureVisitTable(s);
+      const rows=await s`
+        select
+          coalesce(sum(visits) filter (where day=current_date),0)::int as today,
+          coalesce(sum(visits) filter (where day>=current_date-6),0)::int as last7,
+          coalesce(sum(visits) filter (where day>=current_date-29),0)::int as last30
+        from hwadam_visit_daily
+      `;
+      return res.status(200).json({ok:true,stats:rows[0]||{today:0,last7:0,last30:0}});
+    }catch(e){console.error('visit-stats',e);return res.status(500).json({ok:false,error:'STATS_FAILED'})}
+  }
 
   if(req.method==='GET'){
     try{
@@ -12,6 +38,17 @@ export default async function handler(req,res){
       console.error(e);
       return res.status(500).json({ok:false,error:'ME_FAILED',user:null,isAdmin:false});
     }
+  }
+
+  if(req.method==='POST'&&action==='visit'){
+    const s=db();
+    if(!s)return res.status(503).json({ok:false,error:'DB_NOT_CONFIGURED'});
+    try{
+      await ensureVisitTable(s);
+      await s`insert into hwadam_visit_daily(day,visits) values(current_date,1)
+              on conflict(day) do update set visits=hwadam_visit_daily.visits+1, updated_at=now()`;
+      return res.status(200).json({ok:true});
+    }catch(e){console.error('visit-track',e);return res.status(500).json({ok:false,error:'VISIT_FAILED'})}
   }
 
   if(req.method==='POST'&&action==='login'){

@@ -13,6 +13,7 @@
         <div><b>상호명</b><span>화담철학관</span></div>
         <div><b>대표자명</b><span>구점애</span></div>
         <div><b>사업자등록번호</b><span>549-46-01517</span></div>
+        <div><b>통신판매업 신고번호</b><span>제2026-전남순천-7381호</span></div>
         <div><b>사업장 주소</b><span>전남광주통합특별시 순천시 오천4길 21, 105동 902호 (오천동, 골드클래스)</span></div>
         <div><b>고객문의</b><span>010-3021-4060</span></div>
       </div>

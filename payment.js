@@ -22,18 +22,8 @@
   }
   function lastReport(){try{return JSON.parse(localStorage.getItem('hwadam_last_ai_consult')||'{}')||{}}catch{return{}}}
   function selectedProduct(){
-    try{
-      if(localStorage.getItem('hwadam_formal_report_payment')==='1')return{id:'comprehensive',name:'정식 상담 리포트',price:9900};
-      return JSON.parse(localStorage.getItem('hwadam_selected_product')||'{}')||{};
-    }catch{return{}}
+    try{return JSON.parse(localStorage.getItem('hwadam_selected_product')||'{}')||{}}catch{return{}}
   }
-  function forceFormalReport(){
-    const p={id:'comprehensive',name:'정식 상담 리포트',price:9900,at:new Date().toISOString()};
-    try{localStorage.setItem('hwadam_selected_product',JSON.stringify(p));localStorage.setItem('hwadam_formal_report_payment','1')}catch{}
-    d.dispatchEvent(new CustomEvent('hwadam:product-selected',{detail:p}));
-    return p;
-  }
-  function clearFormalFlag(){try{localStorage.removeItem('hwadam_formal_report_payment')}catch{}}
   function entitlement(reportId){try{return(JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{})[reportId]||null}catch{return null}}
   async function valid(reportId){const e=entitlement(reportId);if(!e?.token)return false;try{const r=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:e.token,reportId})});const x=await r.json();return !!(r.ok&&x.ok)}catch{return false}}
   function memberReportId(){try{let id=localStorage.getItem('hwadam_membership_report_id');if(!id){id='RPT-MEMBER-'+Date.now()+'-'+Math.random().toString(36).slice(2,10).toUpperCase();localStorage.setItem('hwadam_membership_report_id',id)}return id}catch{return 'RPT-MEMBER-'+Date.now()}}
@@ -102,11 +92,10 @@
   }
   function boot(){
     ensureBox();sync();
-    d.addEventListener('hwadam:product-selected',e=>{if(e?.detail?.id!=='comprehensive')clearFormalFlag();lastKey='';setTimeout(sync,60)});
+    d.addEventListener('hwadam:product-selected',()=>{lastKey='';setTimeout(sync,60)});
     d.addEventListener('hwadam:report-entitled',()=>{lastKey='';setTimeout(sync,60)});
     d.addEventListener('click',e=>{
-      if(e.target.closest('#aiReport')){forceFormalReport();lastKey='';setTimeout(sync,60);return}
-      if(e.target.closest('.hwadamProduct'))clearFormalFlag();
+      if(e.target.closest('#aiReport')){lastKey='';setTimeout(sync,60);return}
       if(e.target.closest('#aiAsk,.hwadamProduct'))setTimeout(()=>{lastKey='';sync()},350)
     },true);
   }

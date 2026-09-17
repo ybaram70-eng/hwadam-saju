@@ -6,7 +6,7 @@
     if($('hwadam-auth-style'))return;
     const s=d.createElement('style');
     s.id='hwadam-auth-style';
-    s.textContent=`.hdAuthBar{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin:8px 10px 10px;flex-wrap:wrap}.hdAuthBtn{border:1px solid #d8cdbb;background:#fffdf8;color:#20352d;border-radius:999px;padding:9px 13px;font-size:13px;font-weight:900;box-shadow:0 3px 10px rgba(32,53,45,.06)}.hdAuthBtn.primary{background:#20352d;color:#fff;border-color:#20352d}.hdAuthBtn.admin{background:#b88746;color:#fff;border-color:#b88746}.hdAuthBtn.danger{color:#9b342c;border-color:#e4b9b4;background:#fff7f6;margin-left:auto}.hdAuthUser{font-size:13px;font-weight:900;color:#20352d}.hdAuthModal{position:fixed;z-index:99999;inset:0;background:rgba(15,25,21,.48);display:flex;align-items:flex-end;justify-content:center}.hdAuthSheet{width:min(100%,520px);max-height:92vh;overflow:auto;background:#fffdf8;border-radius:24px 24px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.15)}.hdAuthHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.hdAuthHead h2{margin:0;color:#20352d;font-size:25px}.hdAuthClose{border:0;background:#f3efe6;width:38px;height:38px;border-radius:50%;font-size:22px}.hdAuthTabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}.hdAuthTabs button{padding:12px;border-radius:12px;border:1px solid #d8cdbb;background:#fff;font-weight:900}.hdAuthTabs button.on{background:#20352d;color:#fff;border-color:#20352d}.hdAuthForm{display:grid;gap:10px}.hdAuthForm label{font-size:13px;font-weight:800;color:#4d4d4d}.hdAuthForm input,.hdAuthForm select{width:100%;padding:13px 14px;border:1px solid #d6cdbd;border-radius:12px;background:#fff;font-size:16px;box-sizing:border-box}.hdAuthSubmit{margin-top:5px;padding:14px;border:0;border-radius:14px;background:#20352d;color:#fff;font-size:17px;font-weight:900}.hdAuthAgree{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5}.hdAuthAgree input{width:auto;margin-top:3px}.hdAuthMsg{min-height:20px;font-size:13px;font-weight:800;color:#9a3c32}.hdAuthHelp{font-size:12px;color:#756b5e;line-height:1.6}.hdHidden{display:none!important}`;
+    s.textContent=`.hdAuthBar{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin:8px 10px 10px;flex-wrap:wrap}.hdAuthBtn{border:1px solid #d8cdbb;background:#fffdf8;color:#20352d;border-radius:999px;padding:9px 13px;font-size:13px;font-weight:900;box-shadow:0 3px 10px rgba(32,53,45,.06)}.hdAuthBtn.primary{background:#20352d;color:#fff;border-color:#20352d}.hdAuthBtn.admin{background:#b88746;color:#fff;border-color:#b88746}.hdAuthBtn.danger{color:#9b342c;border-color:#e4b9b4;background:#fff7f6}.hdAuthUser{font-size:13px;font-weight:900;color:#20352d}.hdAuthModal{position:fixed;z-index:99999;inset:0;background:rgba(15,25,21,.48);display:flex;align-items:flex-end;justify-content:center}.hdAuthSheet{width:min(100%,520px);max-height:92vh;overflow:auto;background:#fffdf8;border-radius:24px 24px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));box-shadow:0 -10px 30px rgba(0,0,0,.15)}.hdAuthHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}.hdAuthHead h2{margin:0;color:#20352d;font-size:25px}.hdAuthClose{border:0;background:#f3efe6;width:38px;height:38px;border-radius:50%;font-size:22px}.hdAuthTabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}.hdAuthTabs button{padding:12px;border-radius:12px;border:1px solid #d8cdbb;background:#fff;font-weight:900}.hdAuthTabs button.on{background:#20352d;color:#fff;border-color:#20352d}.hdAuthForm{display:grid;gap:10px}.hdAuthForm label{font-size:13px;font-weight:800;color:#4d4d4d}.hdAuthForm input,.hdAuthForm select{width:100%;padding:13px 14px;border:1px solid #d6cdbd;border-radius:12px;background:#fff;font-size:16px;box-sizing:border-box}.hdAuthSubmit{margin-top:5px;padding:14px;border:0;border-radius:14px;background:#20352d;color:#fff;font-size:17px;font-weight:900}.hdAuthAgree{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5}.hdAuthAgree input{width:auto;margin-top:3px}.hdAuthMsg{min-height:20px;font-size:13px;font-weight:800;color:#9a3c32}.hdAuthHelp{font-size:12px;color:#756b5e;line-height:1.6}.hdHidden{display:none!important}.hdAccountBox{display:grid;gap:10px}.hdAccountInfo{padding:14px;border-radius:14px;background:#f5f1e8;color:#20352d;font-size:14px;font-weight:800}.hdAccountDanger{margin-top:8px;padding-top:14px;border-top:1px solid #eadfd0}.hdAccountDanger p{margin:0 0 10px;color:#7a7168;font-size:12px;line-height:1.6}.hdAccountDanger button{width:100%;padding:13px;border-radius:12px;border:1px solid #e4b9b4;background:#fff7f6;color:#9b342c;font-weight:900}`;
     d.head.appendChild(s);
   }
 
@@ -23,11 +23,22 @@
     try{const b=parent.document.querySelector('.navItem[data-target="customers"]');if(b){b.style.display='flex';b.click();return}}catch{}
     try{d.defaultView?.hwadamScreenMode?.show?.('customers')}catch{}
   }
+  function openAccount(){
+    if(!user)return;
+    let x=$('hwadamAccountModal');
+    if(x)x.remove();
+    x=d.createElement('div');x.id='hwadamAccountModal';x.className='hdAuthModal';
+    x.innerHTML=`<div class="hdAuthSheet"><div class="hdAuthHead"><h2>계정 관리</h2><button class="hdAuthClose" aria-label="닫기">×</button></div><div class="hdAccountBox"><div class="hdAccountInfo">${user.name||'회원'}님의 계정</div><div class="hdAccountDanger"><p>회원탈퇴는 계정과 저장된 회원 정보를 삭제하는 기능입니다.</p><button id="hwadamDeleteAccount" type="button">회원탈퇴</button></div></div></div>`;
+    d.body.appendChild(x);
+    x.querySelector('.hdAuthClose').onclick=()=>x.remove();
+    x.addEventListener('click',e=>{if(e.target===x)x.remove()});
+    x.querySelector('#hwadamDeleteAccount')?.addEventListener('click',deleteAccount);
+  }
   function bar(){
     let b=$('hwadamAuthBar');
     if(!b){b=d.createElement('div');b.id='hwadamAuthBar';b.className='hdAuthBar';const hero=d.querySelector('.hero');if(hero)hero.insertAdjacentElement('beforebegin',b);else d.body.prepend(b)}
     if(user){
-      b.innerHTML=`<span class="hdAuthUser">${user.name||'회원'}님</span>${isAdmin?'<button class="hdAuthBtn admin" id="hwadamAdminCustomers">관리자 · 고객목록</button>':''}<button class="hdAuthBtn" id="hwadamLogout">로그아웃</button><button class="hdAuthBtn danger" id="hwadamDeleteAccount">회원탈퇴</button>`;
+      b.innerHTML=`<span class="hdAuthUser">${user.name||'회원'}님</span>${isAdmin?'<button class="hdAuthBtn admin" id="hwadamAdminCustomers">관리자 · 고객목록</button>':''}<button class="hdAuthBtn" id="hwadamLogout">로그아웃</button><button class="hdAuthBtn" id="hwadamAccountManage">계정관리</button>`;
     }else{
       b.innerHTML=`<button class="hdAuthBtn" id="hwadamLoginOpen">로그인</button><button class="hdAuthBtn primary" id="hwadamSignupOpen">회원가입</button><button class="hdAuthBtn admin" id="hwadamAdminLoginOpen">관리자 로그인</button>`;
     }
@@ -36,7 +47,7 @@
     b.querySelector('#hwadamSignupOpen')?.addEventListener('click',()=>open('signup'));
     b.querySelector('#hwadamAdminCustomers')?.addEventListener('click',goCustomers);
     b.querySelector('#hwadamLogout')?.addEventListener('click',logout);
-    b.querySelector('#hwadamDeleteAccount')?.addEventListener('click',deleteAccount);
+    b.querySelector('#hwadamAccountManage')?.addEventListener('click',openAccount);
     setCustomerNav();
   }
 
@@ -65,7 +76,7 @@
   async function submitLogin(e){e.preventDefault();const form=e.currentTarget,f=new FormData(form),box=form.querySelector('.hdAuthMsg'),btn=form.querySelector('.hdAuthSubmit');btn.disabled=true;box.textContent='로그인 중…';const {r,j}=await post('/api/auth-login',{phone:f.get('phone'),password:f.get('password')});btn.disabled=false;if(!r.ok){box.textContent=msgFor(j.error);return}await refreshIdentity();$('hwadamAuthModal')?.remove()}
   async function submitSignup(e){e.preventDefault();const form=e.currentTarget,f=new FormData(form),box=form.querySelector('.hdAuthMsg'),btn=form.querySelector('.hdAuthSubmit'),bd=birth(f.get('birthDate'));if(bd===false){box.textContent='생년월일을 숫자 8자리로 정확히 입력해 주세요. 예: 19651214';return}btn.disabled=true;box.textContent='가입 중…';const {r,j}=await post('/api/auth-signup',{name:f.get('name'),phone:f.get('phone'),birthDate:bd,gender:f.get('gender'),password:f.get('password'),agree:f.get('agree')==='on'});btn.disabled=false;if(!r.ok){box.textContent=msgFor(j.error);return}await refreshIdentity();$('hwadamAuthModal')?.remove();const n=d.getElementById('name');if(n&&!n.value)n.value=user?.name||''}
   async function logout(){await post('/api/auth-logout',{});user=null;isAdmin=false;bar()}
-  async function deleteAccount(){if(!user)return;if(!window.confirm(`${user.name}님의 회원 계정을 탈퇴하시겠습니까?`))return;if(!window.confirm('정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))return;const {r,j}=await post('/api/auth-delete',{});if(!r.ok){window.alert(msgFor(j.error));return}user=null;isAdmin=false;bar();window.alert('회원탈퇴가 완료되었습니다.')}
+  async function deleteAccount(){if(!user)return;if(!window.confirm(`${user.name}님의 회원 계정을 탈퇴하시겠습니까?`))return;if(!window.confirm('정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))return;const {r,j}=await post('/api/auth-delete',{});if(!r.ok){window.alert(msgFor(j.error));return}user=null;isAdmin=false;$('hwadamAccountModal')?.remove();bar();window.alert('회원탈퇴가 완료되었습니다.')}
   function boot(){style();refreshIdentity()}
   if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

@@ -25,7 +25,7 @@
     try{return JSON.parse(localStorage.getItem('hwadam_selected_product')||'{}')||{}}catch{return{}}
   }
   function entitlement(reportId){try{return(JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{})[reportId]||null}catch{return null}}
-  async function valid(reportId){const e=entitlement(reportId);if(!e?.token)return false;try{const r=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:e.token,reportId})});const x=await r.json();return !!(r.ok&&x.ok)}catch{return false}}
+  async function valid(reportId){const e=entitlement(reportId);try{const r=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:e?.token||'',reportId})});const x=await r.json();return !!(r.ok&&x.ok)}catch{return false}}
   function memberReportId(){try{let id=localStorage.getItem('hwadam_membership_report_id');if(!id){id='RPT-MEMBER-'+Date.now()+'-'+Math.random().toString(36).slice(2,10).toUpperCase();localStorage.setItem('hwadam_membership_report_id',id)}return id}catch{return 'RPT-MEMBER-'+Date.now()}}
   async function membership(){try{const r=await fetch('/api/membership',{credentials:'same-origin',cache:'no-store'});if(!r.ok)return null;const j=await r.json();return j.membership||null}catch{return null}}
   function ensureBox(){
@@ -68,7 +68,7 @@
         }
       }else{
         if(!last.answer||!reportId){state.textContent='선택한 상품으로 AI 상담을 완료하면 결제 버튼이 활성화됩니다.';return}
-        if(await valid(reportId)){state.textContent='이 상담은 결제가 완료되어 정식 열람이 가능합니다.';document.dispatchEvent(new CustomEvent('hwadam:report-entitled',{detail:{reportId}}));return}
+        if(await valid(reportId)){const m=await membership();state.textContent=m?.admin?'관리자 무료 이용 · 결제 없이 정식 열람 가능':'이 상담은 결제가 완료되어 정식 열람이 가능합니다.';document.dispatchEvent(new CustomEvent('hwadam:report-entitled',{detail:{reportId,admin:!!m?.admin}}));return}
       }
       const r=await fetch('/api/payment-config?productId='+encodeURIComponent(sel.id),{cache:'no-store'}),nextCfg=await r.json();
       if(!nextCfg.enabled){state.textContent='결제 기능은 준비되어 있습니다. 토스페이먼츠 키를 연결하면 바로 사용할 수 있습니다.';return}

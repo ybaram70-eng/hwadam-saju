@@ -59,16 +59,23 @@
       if(!sel?.id||sel.id==='free-basic'){state.textContent='유료 상담 상품을 먼저 선택해 주세요.';return}
       const isMember=sel.id==='annual-membership';
       let reportId=isMember?memberReportId():(last.reportId||'');
+      const m=await membership();
+      if(m?.admin||m?.plan==='admin'||(m?.source==='admin'&&!m?.expires_at)){
+        state.textContent='관리자 무료 이용 · 결제 없이 이용 가능합니다.';
+        btn.hidden=true;
+        const reportBtn=$('aiReport');
+        if(reportBtn){reportBtn.dataset.entitled='1';reportBtn.textContent='정식 상담 리포트 열기 (관리자 무료)'}
+        d.dispatchEvent(new CustomEvent('hwadam:report-entitled',{detail:{reportId,admin:true}}));
+        return;
+      }
       if(isMember){
-        const m=await membership();
         if(m?.active){
-          if(m.admin||m.plan==='admin'||(m.source==='admin'&&!m.expires_at)){state.textContent='관리자 무료 이용 · 기간 제한 없음';return}
           const exp=m.expires_at?new Date(m.expires_at).toLocaleDateString('ko-KR'):'';
           state.textContent=exp?`1년 회원권 이용 중 · ${exp}까지`:'1년 회원권 이용 중';return;
         }
       }else{
         if(!last.answer||!reportId){state.textContent='선택한 상품으로 AI 상담을 완료하면 결제 버튼이 활성화됩니다.';return}
-        if(await valid(reportId)){const m=await membership();state.textContent=m?.admin?'관리자 무료 이용 · 결제 없이 정식 열람 가능':'이 상담은 결제가 완료되어 정식 열람이 가능합니다.';document.dispatchEvent(new CustomEvent('hwadam:report-entitled',{detail:{reportId,admin:!!m?.admin}}));return}
+        if(await valid(reportId)){state.textContent='이 상담은 결제가 완료되어 정식 열람이 가능합니다.';document.dispatchEvent(new CustomEvent('hwadam:report-entitled',{detail:{reportId}}));return}
       }
       const r=await fetch('/api/payment-config?productId='+encodeURIComponent(sel.id),{cache:'no-store'}),nextCfg=await r.json();
       if(!nextCfg.enabled){state.textContent='결제 기능은 준비되어 있습니다. 토스페이먼츠 키를 연결하면 바로 사용할 수 있습니다.';return}

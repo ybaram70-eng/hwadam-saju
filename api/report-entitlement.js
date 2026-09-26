@@ -7,7 +7,9 @@ const PRODUCTS={
   'money-business':5900,
   'compatibility':7900,
   'comprehensive':9900,
-  'lifetime-fortune':14900
+  'lifetime-fortune':14900,
+  'palm-detail':5900,
+  'palm-saju':9900
 };
 function safeEq(a,b){const x=Buffer.from(a),y=Buffer.from(b);return x.length===y.length&&crypto.timingSafeEqual(x,y)}
 export default async function handler(req,res){

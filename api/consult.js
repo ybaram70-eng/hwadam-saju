@@ -36,6 +36,30 @@ export default async function handler(req,res){
       if(!answer)return res.status(502).json({error:'손금 분석 결과를 확인할 수 없습니다.'});
       return res.status(200).json({answer});
     }
+    if(mode==='face'){
+      if(!image.startsWith('data:image/'))return res.status(400).json({error:'얼굴 사진을 올려 주세요.'});
+      const detail=body.detail===true||body.detail==='detail';
+      const faceInstructions=detail
+        ? '당신은 화담철학관의 관상 문화해설 보조 AI입니다. 업로드된 얼굴 사진에서 실제로 보이는 시각적 특징만 객관적으로 묘사하세요. 이마의 높이와 폭, 눈썹의 모양과 간격, 눈의 형태와 배치, 코의 형태, 입술과 입 모양, 턱과 얼굴 윤곽, 좌우 균형처럼 사진에서 확인 가능한 특징을 구체적으로 설명하세요. 그 다음 전통 관상학에서 이런 형태를 어떻게 해석해 왔는지 반드시 “전통적 관상 해석에서는”이라고 구분하여 문화적·오락적 참고로만 설명하세요. 사진만으로 실제 성격, 지능, 건강, 수명, 범죄성, 재산, 정신상태, 민족·인종, 종교, 정치성향 같은 민감하거나 개인적인 특성을 추정하거나 단정하지 마세요. 또한 미래의 결혼·재물·직업 성공을 사실처럼 예언하지 마세요. 확인이 어려운 부위는 “사진상 명확히 확인되지 않습니다”라고 말하세요. 구성은 ① 사진 상태 ② 얼굴형과 윤곽 ③ 이마 ④ 눈썹 ⑤ 눈 ⑥ 코 ⑦ 입 ⑧ 턱·하관 ⑨ 전체 균형 ⑩ 전통 관상학에서의 문화적 해석 ⑪ 현실적인 활용 조언 순서로 작성하고 약 2200~3500자로 자세히 작성하세요.'
+        : '업로드된 얼굴 사진에서 실제로 보이는 시각적 특징만 객관적으로 묘사하세요. 얼굴형, 이마, 눈썹, 눈, 코, 입, 턱 가운데 사진에서 잘 보이는 3~4가지를 간단히 설명하세요. 전통 관상학의 해석은 사실 판단이 아니라 문화적·오락적 참고임을 분명히 하세요. 사진만으로 성격, 지능, 건강, 수명, 범죄성, 재산, 정신상태, 민족·인종, 종교, 정치성향 같은 개인적 특성을 추정하거나 단정하지 마세요. 약 400~700자로 작성하세요.';
+      const facePayload={
+        model:process.env.OPENAI_MODEL||'gpt-5.6-luna',
+        instructions:faceInstructions,
+        input:[{role:'user',content:[
+          {type:'input_text',text:detail?'이 얼굴 사진을 전통 관상 문화해설 형식으로 자세히 설명해 주세요.':'이 얼굴 사진의 기본적인 관상 문화해설을 간단히 보여 주세요.'},
+          {type:'input_image',image_url:image}
+        ]}],
+        max_output_tokens:detail?2200:650
+      };
+      const fr=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify(facePayload)});
+      const fd=await fr.json();
+      if(!fr.ok)return res.status(fr.status).json({error:fd?.error?.message||'관상 AI 분석에 실패했습니다.'});
+      let answer='';
+      for(const item of fd.output||[]){if(item?.type==='message'){for(const x of item.content||[]){if(x?.type==='output_text'&&x.text)answer+=x.text}}}
+      if(!answer&&typeof fd.output_text==='string')answer=fd.output_text;
+      if(!answer)return res.status(502).json({error:'관상 분석 결과를 확인할 수 없습니다.'});
+      return res.status(200).json({answer});
+    }
     if(!question)return res.status(400).json({error:'상담 질문을 입력해 주세요.'});
 
     const isLifetime=/평생운세 장문 리포트|평생 총운|말년운/.test(question);

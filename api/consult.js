@@ -14,15 +14,18 @@ export default async function handler(req,res){
     if(mode==='palm'){
       if(!image.startsWith('data:image/'))return res.status(400).json({error:'손바닥 사진을 올려 주세요.'});
       const hand=body.hand==='left'?'왼손':body.hand==='right'?'오른손':'손 구분 미선택';
-      const palmInstructions='당신은 화담철학관의 손금 해설 보조 AI입니다. 업로드된 손바닥 사진에서 실제로 보이는 선과 형태만 관찰하세요. 생명선, 두뇌선, 감정선, 운명선, 태양선, 재물 관련 보조선의 위치·선명도·끊김·가지선처럼 사진에서 확인 가능한 특징을 설명하세요. 사진이 흐리거나 선이 보이지 않으면 솔직히 판독이 어렵다고 말하세요. 수명, 질병, 사망 시기, 임신, 범죄성, 성격의 확정적 진단을 하지 마세요. 손금은 전통적 해석의 참고·오락적 콘텐츠임을 분명히 하고 단정적 예언을 피하세요. 한국어로 모바일에서 읽기 쉽게 작성하고 마크다운 표는 쓰지 마세요. 구성은 ① 사진 상태 ② 주요 손금 관찰 ③ 전통적 의미 ④ 종합 흐름 ⑤ 현실적인 활용 조언 순서로 작성하세요.';
+      const detail=body.detail===true||body.detail==='detail';
+      const palmInstructions=detail
+        ? '당신은 화담철학관의 손금 상세 해설 보조 AI입니다. 업로드된 손바닥 사진에서 실제로 보이는 선과 형태만 관찰하세요. 생명선, 두뇌선, 감정선, 운명선, 태양선, 재물 관련 보조선, 가지선과 보조선, 주요 손의 구를 가능한 범위에서 자세히 설명하세요. 사진이 흐리거나 선이 보이지 않으면 솔직히 판독이 어렵다고 말하세요. 수명, 질병, 사망 시기, 임신, 범죄성, 성격의 확정적 진단을 하지 마세요. 손금은 전통적 해석의 참고·오락적 콘텐츠임을 분명히 하고 단정적 예언을 피하세요. 한국어로 모바일에서 읽기 쉽게 작성하고 마크다운 표는 쓰지 마세요. 구성은 ① 사진 상태 ② 생명선 ③ 두뇌선 ④ 감정선 ⑤ 운명선 ⑥ 태양선·재물 관련 보조선 ⑦ 손의 구와 보조 특징 ⑧ 종합 흐름 ⑨ 현실적인 활용 조언 순서로 충분히 자세히 작성하세요.'
+        : '당신은 화담철학관의 손금 기본 해설 보조 AI입니다. 업로드된 손바닥 사진에서 실제로 보이는 특징만 간단히 관찰하세요. 사진 상태와 가장 잘 보이는 주요 손금 2~3개의 특징만 짧게 설명하세요. 상세한 재물·직업·관계 해석은 하지 말고 유료 상세분석에서 확인할 수 있다고 안내하세요. 사진이 흐리면 판독이 어렵다고 말하세요. 수명, 질병, 사망 시기, 임신, 범죄성, 성격의 확정적 진단을 하지 마세요. 손금은 전통적 해석의 참고·오락적 콘텐츠임을 분명히 하세요. 한국어로 약 300~500자 정도로 작성하세요.';
       const palmPayload={
         model:process.env.OPENAI_MODEL||'gpt-5.6-luna',
         instructions:palmInstructions,
         input:[{role:'user',content:[
-          {type:'input_text',text:'손 구분: '+hand+'\n이 손바닥 사진을 관찰해서 손금의 주요 특징을 설명해 주세요.'},
+          {type:'input_text',text:'손 구분: '+hand+'\n'+(detail?'이 손바닥 사진을 상세하게 분석해 주세요.':'이 손바닥 사진의 기본 특징만 간단히 분석해 주세요.')},
           {type:'input_image',image_url:image}
         ]}],
-        max_output_tokens:1400
+        max_output_tokens:detail?2200:650
       };
       const pr=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify(palmPayload)});
       const pd=await pr.json();

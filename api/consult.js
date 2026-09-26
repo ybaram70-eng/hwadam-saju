@@ -9,6 +9,30 @@ export default async function handler(req,res){
     const body=req.body||{};
     const question=String(body.question||'').trim();
     const chart=body.chart||{};
+    const mode=String(body.mode||'saju');
+    const image=String(body.image||'');
+    if(mode==='palm'){
+      if(!image.startsWith('data:image/'))return res.status(400).json({error:'손바닥 사진을 올려 주세요.'});
+      const hand=body.hand==='left'?'왼손':body.hand==='right'?'오른손':'손 구분 미선택';
+      const palmInstructions='당신은 화담철학관의 손금 해설 보조 AI입니다. 업로드된 손바닥 사진에서 실제로 보이는 선과 형태만 관찰하세요. 생명선, 두뇌선, 감정선, 운명선, 태양선, 재물 관련 보조선의 위치·선명도·끊김·가지선처럼 사진에서 확인 가능한 특징을 설명하세요. 사진이 흐리거나 선이 보이지 않으면 솔직히 판독이 어렵다고 말하세요. 수명, 질병, 사망 시기, 임신, 범죄성, 성격의 확정적 진단을 하지 마세요. 손금은 전통적 해석의 참고·오락적 콘텐츠임을 분명히 하고 단정적 예언을 피하세요. 한국어로 모바일에서 읽기 쉽게 작성하고 마크다운 표는 쓰지 마세요. 구성은 ① 사진 상태 ② 주요 손금 관찰 ③ 전통적 의미 ④ 종합 흐름 ⑤ 현실적인 활용 조언 순서로 작성하세요.';
+      const palmPayload={
+        model:process.env.OPENAI_MODEL||'gpt-5.6-luna',
+        instructions:palmInstructions,
+        input:[{role:'user',content:[
+          {type:'input_text',text:'손 구분: '+hand+'\n이 손바닥 사진을 관찰해서 손금의 주요 특징을 설명해 주세요.'},
+          {type:'input_image',image_url:image}
+        ]}],
+        max_output_tokens:1400
+      };
+      const pr=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify(palmPayload)});
+      const pd=await pr.json();
+      if(!pr.ok)return res.status(pr.status).json({error:pd?.error?.message||'손금 AI 분석에 실패했습니다.'});
+      let answer='';
+      for(const item of pd.output||[]){if(item?.type==='message'){for(const x of item.content||[]){if(x?.type==='output_text'&&x.text)answer+=x.text}}}
+      if(!answer&&typeof pd.output_text==='string')answer=pd.output_text;
+      if(!answer)return res.status(502).json({error:'손금 분석 결과를 확인할 수 없습니다.'});
+      return res.status(200).json({answer});
+    }
     if(!question)return res.status(400).json({error:'상담 질문을 입력해 주세요.'});
 
     const isLifetime=/평생운세 장문 리포트|평생 총운|말년운/.test(question);

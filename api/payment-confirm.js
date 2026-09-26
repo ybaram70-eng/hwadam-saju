@@ -11,7 +11,9 @@ const PRODUCTS={
   'comprehensive':{name:'종합 사주 상담',amount:9900},
   'lifetime-fortune':{name:'평생운세 장문 리포트',amount:14900},
   'palm-detail':{name:'AI 손금 상세분석',amount:5900},
-  'palm-saju':{name:'손금+사주 종합분석',amount:9900}
+  'palm-saju':{name:'손금+사주 종합분석',amount:9900},
+  'face-detail':{name:'AI 관상 상세분석',amount:5900},
+  'face-saju':{name:'관상+사주 종합분석',amount:9900}
 };
 function b64url(v){return Buffer.from(v).toString('base64url')}
 function sign(payload,secret){const body=b64url(JSON.stringify(payload));const sig=crypto.createHmac('sha256',secret).update(body).digest('base64url');return body+'.'+sig}

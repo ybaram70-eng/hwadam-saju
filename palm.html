@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#20352d">
+<title>화담 손금보기 | 화담철학관</title>
+<meta name="description" content="손바닥 사진과 주요 손금선을 보면서 생명선, 두뇌선, 감정선, 운명선, 태양선, 재물선의 일반적인 의미를 쉽게 확인하는 화담 손금보기입니다.">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f0e6;color:#20352d;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif}.wrap{max-width:760px;margin:0 auto;padding:16px 14px 40px}.top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.back{border:0;background:#fff;border-radius:14px;padding:10px 14px;font-weight:900;color:#20352d}.brand{font-weight:950;color:#8d6428}.hero{padding:25px 21px;border-radius:25px;background:linear-gradient(145deg,#153e31,#27604a);color:#fff;box-shadow:0 12px 30px rgba(22,62,49,.18)}.hero small{color:#e8ca88;font-weight:900;letter-spacing:1.2px}.hero h1{margin:8px 0 8px;font-size:31px;line-height:1.25}.hero p{margin:0;color:#e8f1ed;line-height:1.7}.card{margin-top:14px;padding:18px;border-radius:20px;background:#fffdf8;border:1px solid #dfd4c2}.card h2{margin:0 0 12px;font-size:21px}.upload{display:block;padding:22px;border:2px dashed #cbb888;border-radius:18px;text-align:center;background:#fff8e9;font-weight:900;cursor:pointer}.upload input{display:none}#preview{display:none;width:100%;max-height:420px;object-fit:contain;border-radius:16px;margin-top:12px;background:#eee}.seg,.lines{display:grid;grid-template-columns:1fr 1fr;gap:9px}.seg button,.lines button{padding:13px 9px;border-radius:14px;border:1px solid #d8cdbb;background:#fff;color:#274238;font-weight:900}.seg button.on,.lines button.on{background:#204536;color:#fff;border-color:#204536}.result{margin-top:12px;padding:16px;border-radius:16px;background:#eef5f0;line-height:1.75}.result b{display:block;margin-bottom:6px;font-size:18px}.guide{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.guide div{padding:14px;border-radius:16px;background:#fff;border:1px solid #e2d7c5}.guide b{display:block;margin-bottom:5px}.cta{display:block;margin-top:14px;padding:16px;border-radius:16px;background:#204536;color:#fff;text-align:center;text-decoration:none;font-weight:950}.note{font-size:12px;line-height:1.6;color:#777;margin-top:12px}@media(max-width:430px){.hero h1{font-size:27px}.guide{grid-template-columns:1fr}.seg,.lines{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><button class="back" onclick="history.back()">← 돌아가기</button><div class="brand">和談 · HWADAM</div></div>
+  <section class="hero">
+    <small>화담 손금보기</small>
+    <h1>내 손에 담긴<br>삶의 흐름을 읽다</h1>
+    <p>손바닥 사진을 올리고 주요 손금선을 선택해 일반적인 의미와 관찰 포인트를 쉽게 확인해 보세요.</p>
+  </section>
+
+  <section class="card">
+    <h2>1. 손바닥 사진 올리기</h2>
+    <label class="upload">📷 손바닥 사진 선택
+      <input id="file" type="file" accept="image/*">
+    </label>
+    <img id="preview" alt="손바닥 미리보기">
+    <div class="note">손 전체가 밝고 선명하게 보이도록 촬영해 주세요. 사진은 이 화면에서 미리보기용으로만 사용됩니다.</div>
+  </section>
+
+  <section class="card">
+    <h2>2. 어느 손인가요?</h2>
+    <div class="seg"><button data-hand="left">왼손</button><button data-hand="right">오른손</button></div>
+  </section>
+
+  <section class="card">
+    <h2>3. 보고 싶은 손금선</h2>
+    <div class="lines">
+      <button data-line="life">생명선</button><button data-line="head">두뇌선</button>
+      <button data-line="heart">감정선</button><button data-line="fate">운명선</button>
+      <button data-line="sun">태양선</button><button data-line="money">재물선</button>
+    </div>
+    <div class="result" id="result"><b>손금선을 선택해 주세요.</b>선택한 선의 위치와 일반적인 해석 기준을 안내해 드립니다.</div>
+  </section>
+
+  <section class="card">
+    <h2>손금 기본 안내</h2>
+    <div class="guide">
+      <div><b>생명선</b><span>엄지 쪽을 감싸며 내려오는 선으로 활력과 생활 리듬을 보는 데 활용합니다.</span></div>
+      <div><b>두뇌선</b><span>손바닥 중앙을 가로지르는 선으로 사고방식과 판단 성향을 살펴봅니다.</span></div>
+      <div><b>감정선</b><span>손가락 아래쪽을 가로지르는 선으로 감정 표현과 관계 성향을 봅니다.</span></div>
+      <div><b>운명선</b><span>손바닥 아래에서 가운데 손가락 방향으로 올라가는 세로선으로 일과 사회 흐름을 봅니다.</span></div>
+    </div>
+    <a class="cta" href="/?open=analysis">사주와 함께 보기</a>
+    <div class="note">손금 해석은 전통적인 손금 관점의 참고용 콘텐츠이며 미래를 단정하는 진단이나 보장은 아닙니다.</div>
+  </section>
+</div>
+<script>
+const data={
+ life:['생명선','엄지와 검지 사이에서 시작해 엄지 밑 금성구를 감싸 내려오는 선입니다. 길이 자체보다 굵기, 선명도, 끊김, 가지선과 보조선을 함께 살펴봅니다.'],
+ head:['두뇌선','생명선 부근에서 시작해 손바닥 중앙을 가로지르는 선입니다. 선의 방향과 길이를 통해 현실적 사고, 창의성, 집중 방식 등을 전통적으로 해석합니다.'],
+ heart:['감정선','새끼손가락 아래 수성구 부근에서 시작해 손가락 아래쪽을 따라가는 선입니다. 선의 길이, 굴곡, 끝 모양을 통해 감정 표현과 관계 성향을 봅니다.'],
+ fate:['운명선','손목 쪽에서 시작해 중지 아래 토성구 방향으로 올라가는 세로선입니다. 시작점과 선명해지는 시기, 끊김과 변화점을 중심으로 직업과 사회 흐름을 살펴봅니다.'],
+ sun:['태양선','약지 아래 태양구로 올라가는 세로선입니다. 전통적으로 만족감, 성취감, 평판과 재능의 발현을 보는 보조선으로 활용합니다.'],
+ money:['재물선','주로 새끼손가락 아래 수성구의 세로선이나 태양선·운명선과의 조합을 함께 봅니다. 한 선만으로 재물운을 단정하지 않고 여러 요소를 같이 살펴봅니다.']
+};
+document.getElementById('file').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;const p=document.getElementById('preview');p.src=URL.createObjectURL(f);p.style.display='block'});
+document.querySelectorAll('[data-hand]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-hand]').forEach(x=>x.classList.toggle('on',x===b))});
+document.querySelectorAll('[data-line]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-line]').forEach(x=>x.classList.toggle('on',x===b));const v=data[b.dataset.line];document.getElementById('result').innerHTML='<b>'+v[0]+'</b>'+v[1]});
+</script>
+</body>
+</html>

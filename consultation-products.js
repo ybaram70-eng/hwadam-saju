@@ -8,7 +8,7 @@
   const PRODUCTS = [
     {id:'annual-membership',name:'1년 회원권',price:55000,badge:'MEMBER',desc:'로그인한 회원 본인 기준 · 구매일로부터 1년 동안 화담 유료 기능 전체 이용',q:''},
     {id:'annual-fortune',name:'연도별 신년운세',price:9900,badge:'연도별',desc:`${ANNUAL_YEARS.join(' · ')}년 중 선택 · 1년 총운 · 12개월 월별운 · 재물 · 직업 · 관계 · 건강`,q:''},
-    {id:'money-business',name:'재물·사업 상담',price:5900,badge:'재물',desc:'재물운 · 사업운 · 돈의 흐름 · 시기별 기회와 주의점',q:'재물운과 사업운을 중심으로 앞으로의 돈 흐름, 기회가 들어오는 시기, 지출과 투자에서 주의할 점까지 자세히 설명해 주세요.'},
+    {id:'palm-detail',name:'AI 손금 상세분석',price:5900,badge:'손금',desc:'손바닥 사진 · 주요 손금선 · 보조선 · 손의 구 · 종합 흐름',q:''},
     {id:'compatibility',name:'궁합 상담',price:7900,badge:'궁합',desc:'연애 · 결혼 · 두 사람의 관계 흐름과 궁합',q:'궁합을 중심으로 두 사람의 성향, 잘 맞는 점, 갈등하기 쉬운 부분, 관계가 좋아지는 방법과 시기를 자세히 설명해 주세요.'},
     {id:'lifetime-fortune',name:'평생운세 장문 리포트',price:14900,badge:'PREMIUM',desc:'평생 총운 · 재물 · 직업 · 배우자 · 자녀 · 건강 · 대운 전환점 · 말년운',q:'평생운세 장문 리포트로 작성해 주세요. 사주 원국을 근거로 평생 총운, 타고난 성향과 강점, 재물운, 직업·사업운, 배우자·결혼운, 가족·자녀운, 건강에서 주의할 생활 흐름, 대운별 주요 전환점과 기회·주의 시기, 중년 이후의 변화, 말년운과 삶의 방향까지 항목별로 충분히 깊고 길게 설명해 주세요. 단정적인 예언은 피하고 실제 생활에서 활용할 수 있는 조언을 포함해 주세요.'}
   ];
@@ -48,6 +48,7 @@
     box.hidden=false;
   }
   function selectProduct(p,year){
+    if(p.id==='palm-detail'){try{parent.location.href='/palm.html'}catch{location.href='/palm.html'}return}
     p=annualVariant(p,year);
     const selected={id:p.id,name:p.name,price:p.price,year:p.id==='annual-fortune'?(year||annualYear()):undefined,at:new Date().toISOString()};
     try{

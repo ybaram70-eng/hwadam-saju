@@ -5,7 +5,9 @@ const PRODUCTS={
   'money-business':{name:'재물·사업 상담',amount:5900},
   'compatibility':{name:'궁합 상담',amount:7900},
   'comprehensive':{name:'정식 상담 리포트',amount:9900},
-  'lifetime-fortune':{name:'평생운세 장문 리포트',amount:14900}
+  'lifetime-fortune':{name:'평생운세 장문 리포트',amount:14900},
+  'palm-detail':{name:'AI 손금 상세분석',amount:5900},
+  'palm-saju':{name:'손금+사주 종합분석',amount:9900}
 };
 export default function handler(req,res){
   if(req.method!=='GET')return res.status(405).json({error:'GET 요청만 지원합니다.'});

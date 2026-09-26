@@ -127,23 +127,28 @@ function choosePalmProduct(id,name,price){
   setTimeout(()=>document.getElementById('hwadamPaidReport')?.scrollIntoView({behavior:'smooth',block:'start'}),180);
 }
 document.getElementById('palmDetailBuy').addEventListener('click',async()=>{
+  const status=document.getElementById('aiStatus'),answer=document.getElementById('aiAnswer');
+  status.textContent='상세분석 이용 권한을 확인하고 있습니다…';
+  let last={};try{last=JSON.parse(localStorage.getItem('hwadam_last_ai_consult')||'{}')||{}}catch{}
+  const reportId=last.reportId||'';
   try{
-    const mr=await fetch('/api/membership',{credentials:'same-origin',cache:'no-store'});
-    const mj=await mr.json().catch(()=>({}));
-    const m=mj?.membership;
-    if(m?.admin||m?.plan==='admin'||m?.active){
+    const vr=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:'',reportId})});
+    const vj=await vr.json().catch(()=>({}));
+    if(vr.ok&&vj?.ok&&vj?.admin){
       const image=sessionStorage.getItem('hwadam_palm_image'),hand=sessionStorage.getItem('hwadam_palm_hand');
-      const status=document.getElementById('aiStatus'),answer=document.getElementById('aiAnswer');
       if(!image||!hand){status.textContent='상세분석을 위해 손바닥 사진과 왼손/오른손 선택을 먼저 완료해 주세요.';return}
-      status.textContent=m?.admin?'관리자 무료 이용으로 상세분석을 시작합니다.':'1년 회원권으로 상세분석을 시작합니다.';
+      status.textContent='관리자 무료 이용으로 AI 손금 상세분석을 시작합니다…';
       const r=await fetch('/api/consult',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'palm',detail:'detail',hand,image})});
       const j=await r.json();if(!r.ok)throw new Error(j.error||'상세분석에 실패했습니다.');
-      answer.textContent=j.answer;answer.style.display='block';status.textContent='AI 손금 상세분석이 완료되었습니다.';
+      answer.textContent=j.answer;answer.style.display='block';
+      status.textContent='AI 손금 상세분석이 완료되었습니다.';
       document.getElementById('palmPaidOptions').style.display='none';
       answer.scrollIntoView({behavior:'smooth',block:'start'});
       return;
     }
-  }catch(e){}
+  }catch(e){
+    status.textContent=e?.message||'권한 확인 중 오류가 발생했습니다.';
+  }
   choosePalmProduct('palm-detail','AI 손금 상세분석',5900);
 });
 document.getElementById('palmSajuBuy').addEventListener('click',()=>{location.href='/?open=input&palmSaju=1'});

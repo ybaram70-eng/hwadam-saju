@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#20352d">
+<title>화담 관상보기 | 화담철학관</title>
+<meta name="description" content="얼굴 사진에서 보이는 특징을 바탕으로 전통 관상학의 문화적 해석을 참고용으로 확인하는 화담 관상보기입니다.">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f0e6;color:#20352d;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans KR",sans-serif}.wrap{max-width:760px;margin:0 auto;padding:16px 14px 44px}.top{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-bottom:12px}.topLeft{display:flex;gap:8px}.top a{display:inline-block;text-decoration:none;border:0;background:#fff;border-radius:14px;padding:10px 12px;font-weight:900;color:#20352d}.brand{font-weight:950;color:#8d6428}.hero{padding:25px 21px;border-radius:25px;background:linear-gradient(145deg,#153e31,#27604a);color:#fff;box-shadow:0 12px 30px rgba(22,62,49,.18)}.hero small{color:#e8ca88;font-weight:900;letter-spacing:1.2px}.hero h1{margin:8px 0 8px;font-size:31px;line-height:1.25}.hero p{margin:0;color:#e8f1ed;line-height:1.7}.card{margin-top:14px;padding:18px;border-radius:20px;background:#fffdf8;border:1px solid #dfd4c2}.card h2{margin:0 0 12px;font-size:21px}.upload{display:block;padding:22px;border:2px dashed #cbb888;border-radius:18px;text-align:center;background:#fff8e9;font-weight:900;cursor:pointer}.upload input{display:none}#preview{display:none;width:100%;max-height:470px;object-fit:contain;border-radius:16px;margin-top:12px;background:#eee}.tips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.tips div{padding:10px;border-radius:12px;background:#fff;font-size:12px;text-align:center;color:#5f675f;border:1px solid #eadfce}.areas{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.areas button{padding:13px 9px;border-radius:14px;border:1px solid #d8cdbb;background:#fff;color:#274238;font-weight:900}.areas button.on{background:#204536;color:#fff;border-color:#204536}.result{margin-top:12px;padding:16px;border-radius:16px;background:#eef5f0;line-height:1.75}.result b{display:block;margin-bottom:6px;font-size:18px}.aiBox{margin-top:14px;padding:16px;border-radius:18px;background:#f0f5f1;border:1px solid #cfded3}.aiBtn{width:100%;padding:15px;border:0;border-radius:14px;background:#204536;color:#fff;font-size:16px;font-weight:950}.aiBtn:disabled{opacity:.55}.aiStatus{margin-top:10px;font-size:13px;color:#6c6a64;line-height:1.6}.aiAnswer{display:none;margin-top:12px;padding:16px;border-radius:16px;background:#fff;white-space:pre-wrap;line-height:1.8;color:#273b33;border:1px solid #dfe7e2}.guide{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.guide div{padding:14px;border-radius:16px;background:#fff;border:1px solid #e2d7c5}.guide b{display:block;margin-bottom:5px}.note{font-size:12px;line-height:1.65;color:#777;margin-top:12px}@media(max-width:430px){.hero h1{font-size:27px}.guide{grid-template-columns:1fr}.tips{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="topLeft"><a href="/palm.html">손금보기</a><a href="/manse">사주·만세력</a></div><div class="brand">和談 · HWADAM</div></div>
+  <section class="hero">
+    <small>화담 관상보기</small>
+    <h1>얼굴의 특징을<br>전통 관상으로 살펴보다</h1>
+    <p>사진에서 실제로 보이는 얼굴 특징을 먼저 설명하고, 전통 관상학에서의 해석은 문화적 참고로 구분해 안내합니다.</p>
+  </section>
+
+  <section class="card">
+    <h2>1. 얼굴 사진 올리기</h2>
+    <label class="upload">📷 얼굴 사진 선택<input id="file" type="file" accept="image/*"></label>
+    <img id="preview" alt="얼굴 사진 미리보기">
+    <div class="tips"><div>정면 얼굴 권장</div><div>밝은 조명</div><div>안경·마스크 없는 사진 권장</div></div>
+    <div class="note">AI 분석을 누르면 사진이 분석을 위해 전송됩니다. 사진만으로 건강·지능·성격 같은 개인 특성을 단정하지 않습니다.</div>
+  </section>
+
+  <section class="card">
+    <h2>2. 보고 싶은 부위</h2>
+    <div class="areas">
+      <button data-area="face">얼굴형</button><button data-area="forehead">이마</button>
+      <button data-area="brow">눈썹</button><button data-area="eyes">눈</button>
+      <button data-area="nose">코</button><button data-area="mouth">입</button>
+      <button data-area="chin">턱·하관</button><button data-area="balance">전체 균형</button>
+    </div>
+    <div class="result" id="result"><b>부위를 선택해 주세요.</b>선택한 부위의 관찰 포인트를 안내합니다.</div>
+  </section>
+
+  <section class="card" id="hwadamAiConsult">
+    <h2>3. AI 관상 기본보기</h2>
+    <div class="aiBox">
+      <button id="analyze" class="aiBtn" type="button">AI로 얼굴 사진 기본분석</button>
+      <div id="aiStatus" class="aiStatus">얼굴 사진을 먼저 선택해 주세요.</div>
+      <div id="aiAnswer" class="aiAnswer"></div>
+      <div id="facePaidOptions" style="display:none;margin-top:14px">
+        <div style="font-weight:950;margin-bottom:9px">더 자세히 보고 싶다면</div>
+        <button id="faceDetailBuy" class="aiBtn" type="button" style="background:#8d6428">AI 관상 상세분석 · 5,900원</button>
+        <button id="faceSajuBuy" class="aiBtn" type="button" style="margin-top:9px;background:#315e50">관상 + 사주 종합분석 · 9,900원</button>
+        <div class="note">1년 회원권 이용자와 관리자는 유료 기능을 별도 결제 없이 이용할 수 있습니다.</div>
+      </div>
+      <input id="aiQuestion" type="hidden" value="관상 상세분석">
+      <input id="name" type="hidden" value="회원">
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>관상 기본 안내</h2>
+    <div class="guide">
+      <div><b>얼굴형</b><span>얼굴의 길이와 폭, 턱선과 윤곽처럼 눈에 보이는 형태를 살펴봅니다.</span></div>
+      <div><b>이마</b><span>높이·폭·헤어라인 형태처럼 사진에서 확인 가능한 특징을 봅니다.</span></div>
+      <div><b>눈썹·눈</b><span>모양, 간격, 방향과 좌우 배치를 객관적으로 확인합니다.</span></div>
+      <div><b>코·입·턱</b><span>비율과 윤곽을 관찰한 뒤 전통 관상학의 문화적 해석을 별도로 안내합니다.</span></div>
+    </div>
+    <div class="note">관상 해석은 전통 문화 콘텐츠이며 실제 성격·능력·건강·미래를 판정하는 자료가 아닙니다.</div>
+  </section>
+</div>
+<script>
+const areas={
+ face:['얼굴형','얼굴의 세로·가로 비율과 턱선, 전체 윤곽을 먼저 봅니다.'],
+ forehead:['이마','이마의 높이와 폭, 헤어라인과 좌우 균형을 관찰합니다.'],
+ brow:['눈썹','눈썹의 굵기, 길이, 방향, 양쪽 간격을 확인합니다.'],
+ eyes:['눈','눈의 형태와 크기, 양쪽 배치와 눈꼬리 방향을 관찰합니다.'],
+ nose:['코','콧대, 코끝, 콧방울처럼 사진에서 보이는 형태와 비율을 봅니다.'],
+ mouth:['입','입술의 두께와 길이, 입꼬리와 전체 모양을 관찰합니다.'],
+ chin:['턱·하관','턱의 길이와 폭, 각도, 하관의 윤곽을 봅니다.'],
+ balance:['전체 균형','이마·눈·코·입·턱의 상대적 비율과 좌우 균형을 함께 봅니다.']
+};
+let selectedFile=null;
+document.getElementById('file').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;selectedFile=f;const p=document.getElementById('preview');p.src=URL.createObjectURL(f);p.style.display='block';document.getElementById('aiAnswer').style.display='none';document.getElementById('aiStatus').textContent='사진이 선택되었습니다. AI 기본분석을 눌러주세요.'});
+document.querySelectorAll('[data-area]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-area]').forEach(x=>x.classList.toggle('on',x===b));const v=areas[b.dataset.area];document.getElementById('result').innerHTML='<b>'+v[0]+'</b>'+v[1]});
+async function imageData(file){return await new Promise((resolve,reject)=>{const img=new Image(),reader=new FileReader();reader.onload=()=>img.src=reader.result;reader.onerror=reject;img.onload=()=>{const max=1280,scale=Math.min(1,max/Math.max(img.width,img.height));const canvas=document.createElement('canvas');canvas.width=Math.round(img.width*scale);canvas.height=Math.round(img.height*scale);canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',0.82))};img.onerror=reject;reader.readAsDataURL(file)})}
+document.getElementById('analyze').addEventListener('click',async()=>{const btn=document.getElementById('analyze'),status=document.getElementById('aiStatus'),answer=document.getElementById('aiAnswer');if(!selectedFile){status.textContent='먼저 얼굴 사진을 선택해 주세요.';return}btn.disabled=true;status.textContent='얼굴 사진의 보이는 특징을 분석하고 있습니다…';answer.style.display='none';try{const image=await imageData(selectedFile);const r=await fetch('/api/consult',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'face',image})});const j=await r.json();if(!r.ok)throw new Error(j.error||'분석에 실패했습니다.');answer.textContent=j.answer;answer.style.display='block';status.textContent='무료 관상 기본보기가 완료되었습니다.';const reportId='RPT-FACE-'+Date.now()+'-'+Math.random().toString(36).slice(2,10).toUpperCase();sessionStorage.setItem('hwadam_face_image',image);localStorage.setItem('hwadam_last_ai_consult',JSON.stringify({reportId,answer:j.answer,question:'관상 기본분석',chart:{name:'관상 고객'},at:new Date().toISOString()}));document.getElementById('facePaidOptions').style.display='block';answer.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){status.textContent=e.message||'분석 중 오류가 발생했습니다.'}finally{btn.disabled=false}});
+function chooseProduct(id,name,price){const p={id,name,price,at:new Date().toISOString()};try{localStorage.setItem('hwadam_selected_product',JSON.stringify(p))}catch{}document.dispatchEvent(new CustomEvent('hwadam:product-selected',{detail:p}));setTimeout(()=>document.getElementById('hwadamPaidReport')?.scrollIntoView({behavior:'smooth',block:'start'}),180)}
+async function runDetail(){const status=document.getElementById('aiStatus'),answer=document.getElementById('aiAnswer'),image=sessionStorage.getItem('hwadam_face_image');if(!image){status.textContent='상세분석을 위해 얼굴 사진을 다시 올려 주세요.';return}status.textContent='AI 관상 상세분석을 진행하고 있습니다…';const r=await fetch('/api/consult',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'face',detail:'detail',image})});const j=await r.json();if(!r.ok)throw new Error(j.error||'상세분석에 실패했습니다.');answer.textContent=j.answer;answer.style.display='block';status.textContent='AI 관상 상세분석이 완료되었습니다.';document.getElementById('facePaidOptions').style.display='none';answer.scrollIntoView({behavior:'smooth',block:'start'})}
+document.getElementById('faceDetailBuy').addEventListener('click',async()=>{const status=document.getElementById('aiStatus');let last={};try{last=JSON.parse(localStorage.getItem('hwadam_last_ai_consult')||'{}')||{}}catch{}try{const vr=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:'',reportId:last.reportId||''})});const vj=await vr.json().catch(()=>({}));if(vr.ok&&vj?.ok&&vj?.admin){status.textContent='관리자 무료 이용으로 상세분석을 시작합니다.';await runDetail();return}}catch{}try{const mr=await fetch('/api/membership',{credentials:'same-origin',cache:'no-store'}),mj=await mr.json().catch(()=>({}));if(mr.ok&&mj?.membership?.active){status.textContent='1년 회원권으로 상세분석을 시작합니다.';await runDetail();return}}catch{}chooseProduct('face-detail','AI 관상 상세분석',5900)});
+document.getElementById('faceSajuBuy').addEventListener('click',()=>{location.href='/?open=input&faceSaju=1'});
+async function showPaidIfReady(){const q=new URLSearchParams(location.search),rid=q.get('paidReport');if(!rid)return;const image=sessionStorage.getItem('hwadam_face_image');if(!image){document.getElementById('aiStatus').textContent='결제는 확인되었습니다. 상세분석을 위해 얼굴 사진을 다시 올려 주세요.';return}let map={};try{map=JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{}}catch{}const ent=map[rid];try{const vr=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:ent?.token||'',reportId:rid})});const vj=await vr.json();if(!vr.ok||!vj.ok)return;await runDetail()}catch(e){document.getElementById('aiStatus').textContent=e.message||'상세분석 중 오류가 발생했습니다.'}}
+showPaidIfReady();
+</script>
+<script src="/payment.js?v=20260926-face1"></script>
+</body>
+</html>

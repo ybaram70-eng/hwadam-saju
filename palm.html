@@ -34,7 +34,7 @@
     <div class="seg"><button data-hand="left">왼손</button><button data-hand="right">오른손</button></div>
   </section>
 
-  <section class="card">
+  <section class="card" id="hwadamAiConsult">
     <h2>3. 보고 싶은 손금선</h2>
     <div class="lines">
       <button data-line="life">생명선</button><button data-line="head">두뇌선</button>
@@ -46,6 +46,14 @@
       <button id="analyze" class="aiBtn" type="button">AI로 내 손금 사진 분석하기</button>
       <div id="aiStatus" class="aiStatus">사진과 왼손/오른손을 선택한 뒤 분석 버튼을 눌러주세요.</div>
       <div id="aiAnswer" class="aiAnswer"></div>
+      <div id="palmPaidOptions" style="display:none;margin-top:14px">
+        <div style="font-weight:950;margin-bottom:9px">더 자세히 보고 싶다면</div>
+        <button id="palmDetailBuy" class="aiBtn" type="button" style="background:#8d6428">AI 손금 상세분석 · 5,900원</button>
+        <button id="palmSajuBuy" class="aiBtn" type="button" style="margin-top:9px;background:#315e50">손금 + 사주 종합분석 · 9,900원</button>
+        <div class="note">1년 회원권 이용자와 관리자는 유료 기능을 별도 결제 없이 이용할 수 있습니다.</div>
+      </div>
+      <input id="aiQuestion" type="hidden" value="손금 상세분석">
+      <input id="name" type="hidden" value="회원">
     </div>
   </section>
 
@@ -99,11 +107,49 @@ document.getElementById('analyze').addEventListener('click',async()=>{
     const r=await fetch('/api/consult',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'palm',hand:selectedHand,image})});
     const j=await r.json();
     if(!r.ok)throw new Error(j.error||'분석에 실패했습니다.');
-    answer.textContent=j.answer;answer.style.display='block';status.textContent='AI 손금 분석이 완료되었습니다.';
+    answer.textContent=j.answer;answer.style.display='block';status.textContent='무료 기본 손금 분석이 완료되었습니다.';
+    const reportId='RPT-PALM-'+Date.now()+'-'+Math.random().toString(36).slice(2,10).toUpperCase();
+    try{
+      const image=await imageData(selectedFile);
+      sessionStorage.setItem('hwadam_palm_image',image);
+      sessionStorage.setItem('hwadam_palm_hand',selectedHand);
+      localStorage.setItem('hwadam_last_ai_consult',JSON.stringify({reportId,answer:j.answer,question:'손금 기본분석',chart:{name:'손금 고객'},at:new Date().toISOString()}));
+    }catch{}
+    document.getElementById('palmPaidOptions').style.display='block';
     answer.scrollIntoView({behavior:'smooth',block:'start'});
   }catch(e){status.textContent=e.message||'분석 중 오류가 발생했습니다.'}
   finally{btn.disabled=false}
 });
+function choosePalmProduct(id,name,price){
+  const p={id,name,price,at:new Date().toISOString()};
+  try{localStorage.setItem('hwadam_selected_product',JSON.stringify(p))}catch{}
+  document.dispatchEvent(new CustomEvent('hwadam:product-selected',{detail:p}));
+  setTimeout(()=>document.getElementById('hwadamPaidReport')?.scrollIntoView({behavior:'smooth',block:'start'}),180);
+}
+document.getElementById('palmDetailBuy').addEventListener('click',()=>choosePalmProduct('palm-detail','AI 손금 상세분석',5900));
+document.getElementById('palmSajuBuy').addEventListener('click',()=>{location.href='/?open=input&palmSaju=1'});
+async function showPaidPalmIfReady(){
+  const q=new URLSearchParams(location.search),rid=q.get('paidReport');
+  if(!rid)return;
+  const image=sessionStorage.getItem('hwadam_palm_image'),hand=sessionStorage.getItem('hwadam_palm_hand');
+  if(!image||!hand){document.getElementById('aiStatus').textContent='결제는 확인되었습니다. 상세분석을 위해 손바닥 사진을 다시 올려 주세요.';return}
+  let map={};try{map=JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{}}catch{}
+  const ent=map[rid];
+  try{
+    const vr=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:ent?.token||'',reportId:rid})});
+    const vj=await vr.json();
+    if(!vr.ok||!vj.ok)return;
+    const status=document.getElementById('aiStatus'),answer=document.getElementById('aiAnswer');
+    status.textContent='결제가 확인되었습니다. 상세 손금 분석을 진행합니다…';
+    const r=await fetch('/api/consult',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'palm',detail:'detail',hand,image})});
+    const j=await r.json();if(!r.ok)throw new Error(j.error||'상세분석에 실패했습니다.');
+    answer.textContent=j.answer;answer.style.display='block';status.textContent='AI 손금 상세분석이 완료되었습니다.';
+    document.getElementById('palmPaidOptions').style.display='none';
+    answer.scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){document.getElementById('aiStatus').textContent=e.message||'상세분석 중 오류가 발생했습니다.'}
+}
+showPaidPalmIfReady();
 </script>
+<script src="/payment.js?v=20260926-palm1"></script>
 </body>
 </html>

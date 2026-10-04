@@ -15,24 +15,58 @@ export default async function handler(req,res){
       if(!image.startsWith('data:image/'))return res.status(400).json({error:'손바닥 사진을 올려 주세요.'});
       const hand=body.hand==='left'?'왼손':body.hand==='right'?'오른손':'손 구분 미선택';
       const detail=body.detail===true||body.detail==='detail';
-      const palmInstructions=detail
-        ? '당신은 화담철학관의 손금 상세 해설 보조 AI입니다. 업로드된 손바닥 사진에서 실제로 보이는 선과 형태만 관찰하세요. 애매한 표현을 반복하지 말고, 사진에서 확인 가능한 특징은 위치·길이·굵기·선명도·끊김·갈라짐·가지선·시작점·끝점을 구체적으로 명시하세요. 각 주요 선마다 반드시 ① 어디서 시작해 어디로 향하는지 ② 길이와 굵기 ③ 선명도 ④ 끊김·섬·십자·삼각·별·가지선 여부 ⑤ 다른 선과의 관계를 순서대로 설명하세요. 생명선, 두뇌선, 감정선, 운명선, 태양선, 재물 관련 보조선, 결혼선이 보이면 결혼선, 그리고 목성구·토성구·태양구·수성구·금성구·월구의 특징을 가능한 범위에서 자세히 설명하세요. 사진에서 분명히 보이면 "선명하게 보입니다", "중간에서 끊겨 보입니다", "끝이 두 갈래로 나뉩니다"처럼 명확하게 말하세요. 반대로 사진상 확인이 어려운 부분만 "사진상 명확히 확인되지 않습니다"라고 표시하고 억지로 추측하지 마세요. "좋을 수 있습니다", "그럴 가능성이 있습니다" 같은 모호한 문장을 남발하지 말고, 먼저 관찰 사실을 명확히 쓴 뒤 전통 손금 해석을 별도 문장으로 구분하세요. 수명, 질병, 사망 시기, 임신, 범죄성, 성격의 확정적 진단을 하지 마세요. 손금은 전통적 해석의 참고·오락적 콘텐츠임을 분명히 하세요. 한국어로 모바일에서 읽기 쉽게 작성하고 마크다운 표는 쓰지 마세요. 구성은 ① 사진 상태 ② 생명선 ③ 두뇌선 ④ 감정선 ⑤ 운명선 ⑥ 태양선 ⑦ 재물선·수성구 세로선 ⑧ 결혼선 ⑨ 손의 구 ⑩ 특수문양과 보조선 ⑪ 전체 종합 ⑫ 현실적인 활용 조언 순서로 작성하세요. 각 항목은 "관찰"과 "전통적 의미"를 나누어 명확히 설명하고 전체 분량은 약 2500~4000자로 충분히 자세히 작성하세요.'
-        : '당신은 화담철학관의 손금 기본 해설 보조 AI입니다. 업로드된 손바닥 사진에서 실제로 보이는 특징만 관찰하세요. 애매한 표현보다 관찰 사실을 분명하게 쓰세요. 사진 상태와 가장 잘 보이는 주요 손금 2~3개에 대해 시작 위치, 방향, 길이, 선명도, 갈라짐 또는 끊김 여부를 구체적으로 설명하세요. 확인되지 않는 특징은 억지로 추측하지 말고 "사진상 명확히 확인되지 않습니다"라고 말하세요. 상세한 재물·직업·관계 해석은 하지 말고 유료 상세분석에서 확인할 수 있다고 안내하세요. 수명, 질병, 사망 시기, 임신, 범죄성, 성격의 확정적 진단을 하지 마세요. 손금은 전통적 해석의 참고·오락적 콘텐츠임을 분명히 하세요. 한국어로 약 400~700자 정도로 작성하세요.';
-      const palmPayload={
-        model:process.env.OPENAI_MODEL||'gpt-5.6-luna',
-        instructions:palmInstructions,
+      const model=process.env.OPENAI_MODEL||'gpt-5.6-luna';
+
+      const extractText=(data)=>{
+        let out='';
+        for(const item of data.output||[]){if(item?.type==='message'){for(const x of item.content||[]){if(x?.type==='output_text'&&x.text)out+=x.text}}}
+        if(!out&&typeof data.output_text==='string')out=data.output_text;
+        return out;
+      };
+
+      if(detail){
+        const observePayload={
+          model,
+          instructions:'당신은 손바닥 이미지의 선 형태만 판독하는 관찰자입니다. 손금의 의미나 운세는 절대 해석하지 말고, 사진에서 실제로 보이는 형태만 기록하세요. 생명선·두뇌선·감정선·운명선·태양선·수성구 세로선·결혼선·주요 보조선과 특수문양을 각각 확인하세요. 각 항목마다 [판독등급: 명확/부분확인/확인어려움], 시작점, 끝점, 방향, 길이, 굵기, 깊이/선명도, 끊김, 갈라짐, 상승지선/하강지선, 섬·십자·삼각·별·사각형 여부, 주변선과의 연결을 구체적으로 적으세요. 사진에서 보이지 않는 특징을 추측하지 마세요. 선이 피부주름인지 주요선인지 불확실하면 반드시 확인어려움으로 표시하세요. 손가락과 손목이 잘렸거나 초점·조명·각도 때문에 판독이 떨어지면 맨 위에 사진 품질 문제를 명확히 적으세요. 해석 문장은 쓰지 마세요.',
+          input:[{role:'user',content:[
+            {type:'input_text',text:'손 구분: '+hand+'\n이 손바닥 사진을 먼저 순수 관찰 단계로 판독해 주세요.'},
+            {type:'input_image',image_url:image}
+          ]}],
+          max_output_tokens:1800
+        };
+        const or=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify(observePayload)});
+        const od=await or.json();
+        if(!or.ok)return res.status(or.status).json({error:od?.error?.message||'손금 형태 판독에 실패했습니다.'});
+        const observations=extractText(od);
+        if(!observations)return res.status(502).json({error:'손금 형태 판독 결과를 확인할 수 없습니다.'});
+
+        const interpretPayload={
+          model,
+          instructions:'당신은 화담철학관의 전통 손금 상세 해설 보조 AI입니다. 아래에 제공되는 “사진 관찰 결과”만 근거로 해석하세요. 관찰 결과에 없는 선이나 문양을 새로 만들어내지 마세요. 판독등급이 확인어려움이면 해석하지 말고 “사진상 판독이 어려워 해석에서 제외합니다”라고 쓰세요. 부분확인은 제한적으로만 설명하고, 명확 항목은 형태를 다시 정확히 요약한 뒤 전통 손금학의 의미를 분리해 설명하세요. 관찰과 해석을 절대 섞지 마세요. 각 선마다 반드시 “관찰 결과”와 “전통적 해석” 두 부분을 둡니다. 생명선은 수명으로 해석하지 말고 활력·생활 리듬의 전통적 상징으로만 설명하세요. 건강·질병·사망시기·임신·범죄성은 판단하지 마세요. 재물·직업·관계도 확정적 예언이 아니라 전통 손금학의 상징적 경향으로 설명하세요. 모호한 문장보다 구체적인 형태와 근거를 먼저 제시하세요. 구성은 ① 사진 판독 품질 ② 생명선 ③ 두뇌선 ④ 감정선 ⑤ 운명선 ⑥ 태양선 ⑦ 재물 관련 수성구 세로선 ⑧ 결혼선 ⑨ 보조선·특수문양 ⑩ 손의 구 ⑪ 전체 종합 ⑫ 확인이 어려운 부분 ⑬ 현실적인 활용 조언 순서로 작성하세요. 약 3000~4500자로 충분히 자세히 작성하세요.',
+          input:'[손 구분]\n'+hand+'\n\n[사진 관찰 결과]\n'+observations,
+          max_output_tokens:3000
+        };
+        const ir=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify(interpretPayload)});
+        const id=await ir.json();
+        if(!ir.ok)return res.status(ir.status).json({error:id?.error?.message||'손금 상세 해석에 실패했습니다.'});
+        const answer=extractText(id);
+        if(!answer)return res.status(502).json({error:'손금 상세 해석 결과를 확인할 수 없습니다.'});
+        return res.status(200).json({answer,observations});
+      }
+
+      const basicPayload={
+        model,
+        instructions:'당신은 화담철학관의 손금 기본 해설 보조 AI입니다. 업로드된 손바닥 사진에서 실제로 보이는 특징만 관찰하세요. 사진 상태와 가장 잘 보이는 주요 손금 2~3개에 대해 시작 위치, 방향, 길이, 선명도, 갈라짐 또는 끊김 여부를 구체적으로 설명하세요. 보이지 않는 특징은 추측하지 말고 “사진상 명확히 확인되지 않습니다”라고 말하세요. 먼저 관찰 사실을 쓰고, 그 다음 전통 손금학의 의미를 짧게 분리해서 설명하세요. 상세한 재물·직업·관계 해석은 유료 상세분석에서 확인할 수 있다고 안내하세요. 수명, 질병, 사망 시기, 임신, 범죄성, 성격의 확정적 진단을 하지 마세요. 손금은 전통적 해석의 참고·오락적 콘텐츠임을 분명히 하세요. 한국어로 약 500~800자로 작성하세요.',
         input:[{role:'user',content:[
-          {type:'input_text',text:'손 구분: '+hand+'\n'+(detail?'이 손바닥 사진을 상세하게 분석해 주세요.':'이 손바닥 사진의 기본 특징만 간단히 분석해 주세요.')},
+          {type:'input_text',text:'손 구분: '+hand+'\n이 손바닥 사진의 기본 특징을 실제로 보이는 선만 기준으로 설명해 주세요.'},
           {type:'input_image',image_url:image}
         ]}],
-        max_output_tokens:detail?2200:650
+        max_output_tokens:850
       };
-      const pr=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify(palmPayload)});
+      const pr=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify(basicPayload)});
       const pd=await pr.json();
       if(!pr.ok)return res.status(pr.status).json({error:pd?.error?.message||'손금 AI 분석에 실패했습니다.'});
-      let answer='';
-      for(const item of pd.output||[]){if(item?.type==='message'){for(const x of item.content||[]){if(x?.type==='output_text'&&x.text)answer+=x.text}}}
-      if(!answer&&typeof pd.output_text==='string')answer=pd.output_text;
+      const answer=extractText(pd);
       if(!answer)return res.status(502).json({error:'손금 분석 결과를 확인할 수 없습니다.'});
       return res.status(200).json({answer});
     }

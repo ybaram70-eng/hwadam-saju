@@ -56,19 +56,32 @@ export default async function handler(req,res){
 
       const basicPayload={
         model,
-        instructions:'당신은 화담철학관의 손금 기본 해설 보조 AI입니다. 업로드된 손바닥 사진에서 실제로 보이는 특징만 관찰하세요. 사진 상태와 가장 잘 보이는 주요 손금 2~3개에 대해 시작 위치, 방향, 길이, 선명도, 갈라짐 또는 끊김 여부를 구체적으로 설명하세요. 보이지 않는 특징은 추측하지 말고 “사진상 명확히 확인되지 않습니다”라고 말하세요. 먼저 관찰 사실을 쓰고, 그 다음 전통 손금학의 의미를 짧게 분리해서 설명하세요. 상세한 재물·직업·관계 해석은 유료 상세분석에서 확인할 수 있다고 안내하세요. 수명, 질병, 사망 시기, 임신, 범죄성, 성격의 확정적 진단을 하지 마세요. 손금은 전통적 해석의 참고·오락적 콘텐츠임을 분명히 하세요. 한국어로 약 500~800자로 작성하세요.',
+        instructions:'당신은 화담철학관의 손금 기본 해설 보조 AI입니다. 업로드된 손바닥 사진에서 실제로 보이는 특징만 관찰하세요. 결과는 반드시 JSON 하나만 출력하세요. 형식은 {"photoStatus":"사진 상태 한 줄","lines":[{"name":"생명선","location":"어디서 시작해 어디로 향하는지","point":"사진에서 눈에 띄는 지점 또는 특징 한 줄","meaning":"그 지점의 전통 손금학적 의미 한 줄","confidence":"명확|부분확인|확인어려움"}],"notice":"참고 안내"} 입니다. lines에는 실제로 확인되는 주요선 중 최대 4개만 넣고 생명선·두뇌선·감정선·운명선을 우선하세요. 각 문장은 짧고 구체적으로 쓰세요. 보이지 않는 특징은 만들지 마세요. 수명, 질병, 사망 시기, 임신, 범죄성, 성격을 확정적으로 판단하지 마세요. meaning은 반드시 전통 손금학의 참고적 해석으로만 쓰세요.',
         input:[{role:'user',content:[
-          {type:'input_text',text:'손 구분: '+hand+'\n이 손바닥 사진의 기본 특징을 실제로 보이는 선만 기준으로 설명해 주세요.'},
+          {type:'input_text',text:'손 구분: '+hand+'\n이 손바닥 사진을 간단하고 명확하게, 선 위치와 눈에 띄는 지점 중심으로 정리해 주세요.'},
           {type:'input_image',image_url:image}
         ]}],
-        max_output_tokens:850
+        max_output_tokens:900
       };
       const pr=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify(basicPayload)});
       const pd=await pr.json();
       if(!pr.ok)return res.status(pr.status).json({error:pd?.error?.message||'손금 AI 분석에 실패했습니다.'});
-      const answer=extractText(pd);
-      if(!answer)return res.status(502).json({error:'손금 분석 결과를 확인할 수 없습니다.'});
-      return res.status(200).json({answer});
+      const raw=extractText(pd).trim();
+      if(!raw)return res.status(502).json({error:'손금 분석 결과를 확인할 수 없습니다.'});
+      let summary=null;
+      try{
+        const cleaned=raw.replace(/^\`\`\`(?:json)?\s*/i,'').replace(/\s*\`\`\`$/,'');
+        summary=JSON.parse(cleaned);
+      }catch{}
+      if(!summary||!Array.isArray(summary.lines)){
+        return res.status(200).json({answer:raw});
+      }
+      const answer=[
+        summary.photoStatus||'',
+        ...summary.lines.map(x=>[x.name,x.location,x.point,x.meaning].filter(Boolean).join(' · ')),
+        summary.notice||''
+      ].filter(Boolean).join('\n\n');
+      return res.status(200).json({answer,summary});
     }
     if(mode==='face'){
       if(!image.startsWith('data:image/'))return res.status(400).json({error:'얼굴 사진을 올려 주세요.'});

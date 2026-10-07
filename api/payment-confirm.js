@@ -15,6 +15,9 @@ const PRODUCTS={
   'face-detail':{name:'AI 관상 상세분석',amount:5900},
   'face-saju':{name:'관상+사주 종합분석',amount:9900}
 };
+const SALE_END_MS=Date.parse('2026-12-31T23:59:59+09:00');
+function saleActive(){return Date.now()<=SALE_END_MS}
+function payableAmount(amount){return saleActive()?Math.floor(Number(amount)/2):Number(amount)}
 function b64url(v){return Buffer.from(v).toString('base64url')}
 function sign(payload,secret){const body=b64url(JSON.stringify(payload));const sig=crypto.createHmac('sha256',secret).update(body).digest('base64url');return body+'.'+sig}
 export default async function handler(req,res){
@@ -27,7 +30,7 @@ export default async function handler(req,res){
     const pid=String(productId||'comprehensive');
     const product=PRODUCTS[pid];
     if(!product)return res.status(400).json({error:'상담 상품 정보가 올바르지 않습니다.'});
-    const expected=product.amount;
+    const expected=payableAmount(product.amount);
     if(!paymentKey||!orderId||!amount||!reportId)return res.status(400).json({error:'결제 승인 정보가 부족합니다.'});
     if(!/^RPT-[A-Za-z0-9_-]{10,80}$/.test(String(reportId)))return res.status(400).json({error:'리포트 식별값이 올바르지 않습니다.'});
     if(Number(amount)!==expected)return res.status(400).json({error:'결제 금액이 일치하지 않습니다.'});
@@ -47,8 +50,8 @@ export default async function handler(req,res){
       const user=await currentUser(req);
       membership=await activateAnnualMembership({userId:user.id,orderId:data.orderId,amount:expected,source:'toss'});
     }
-    const payload={v:2,reportId:String(reportId),orderId:data.orderId,amount:expected,productId:pid,approvedAt};
+    const payload={v:2,reportId:String(reportId),orderId:data.orderId,amount:expected,productId:pid,approvedAt,sale:expected!==product.amount?'50% 할인':''};
     const entitlementToken=sign(payload,secret);
-    return res.status(200).json({ok:true,paymentKey:data.paymentKey,orderId:data.orderId,status:data.status,totalAmount:data.totalAmount,approvedAt:data.approvedAt,method:data.method,reportId,productId:pid,productName:product.name,mode,isTest:mode==='test',entitlementToken,membership});
+    return res.status(200).json({ok:true,paymentKey:data.paymentKey,orderId:data.orderId,status:data.status,totalAmount:data.totalAmount,originalAmount:product.amount,discountRate:expected!==product.amount?50:0,saleActive:expected!==product.amount,approvedAt:data.approvedAt,method:data.method,reportId,productId:pid,productName:product.name,mode,isTest:mode==='test',entitlementToken,membership});
   }catch(e){return res.status(500).json({error:e?.message||String(e)})}
 }

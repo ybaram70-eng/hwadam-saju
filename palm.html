@@ -13,6 +13,7 @@
 <body>
 <div class="wrap">
   <div class="top"><div style="display:flex;gap:8px"><button class="back" onclick="location.href='/face.html'">관상보기</button><button class="back" onclick="location.href='/manse'">사주·만세력</button></div><div class="brand">和談 · HWADAM</div></div>
+  <div id="saleBanner" style="display:none;margin-bottom:12px;padding:12px 14px;border-radius:14px;background:#fff1df;border:1px solid #efc98d;color:#9b5f13;font-weight:950;text-align:center">🎉 연말 감사 전상품 50% 할인 · 12월 31일까지</div>
   <section class="hero">
     <small>화담 손금보기</small>
     <h1>내 손에 담긴<br>삶의 흐름을 읽다</h1>
@@ -48,8 +49,8 @@
       <div id="palmVisual" class="palmVisual"><div class="palmPhotoCard"><img id="palmResultPhoto" alt="분석한 손바닥 사진"></div><div id="palmQuickGrid" class="palmQuickGrid"></div></div><div id="aiAnswer" class="aiAnswer"></div>
       <div id="palmPaidOptions" style="display:none;margin-top:14px">
         <div style="font-weight:950;margin-bottom:9px">더 자세히 보고 싶다면</div>
-        <button id="palmDetailBuy" class="aiBtn" type="button" style="background:#8d6428">AI 손금 상세분석 · 5,900원</button>
-        <button id="palmSajuBuy" class="aiBtn" type="button" style="margin-top:9px;background:#315e50">손금 + 사주 종합분석 · 9,900원</button>
+        <button id="palmDetailBuy" class="aiBtn" type="button" style="background:#8d6428">AI 손금 상세분석 · <span id="palmDetailPrice">5,900원</span></button>
+        <button id="palmSajuBuy" class="aiBtn" type="button" style="margin-top:9px;background:#315e50">손금 + 사주 종합분석 · <span id="palmSajuPrice">9,900원</span></button>
         <div class="note">1년 회원권 이용자와 관리자는 유료 기능을 별도 결제 없이 이용할 수 있습니다.</div>
       </div>
       <input id="aiQuestion" type="hidden" value="손금 상세분석">
@@ -70,6 +71,13 @@
   </section>
 </div>
 <script>
+const SALE_END=Date.parse('2026-12-31T23:59:59+09:00'),SALE_ACTIVE=Date.now()<=SALE_END;
+const salePrice=n=>SALE_ACTIVE?Math.floor(Number(n)/2):Number(n);
+if(SALE_ACTIVE){
+  document.getElementById('saleBanner').style.display='block';
+  document.getElementById('palmDetailPrice').innerHTML='<del style="opacity:.7">5,900원</del> 2,950원';
+  document.getElementById('palmSajuPrice').innerHTML='<del style="opacity:.7">9,900원</del> 4,950원';
+}
 const data={
  life:['생명선','엄지와 검지 사이에서 시작해 엄지 밑 금성구를 감싸 내려오는 선입니다. 길이 자체보다 굵기, 선명도, 끊김, 가지선과 보조선을 함께 살펴봅니다.'],
  head:['두뇌선','생명선 부근에서 시작해 손바닥 중앙을 가로지르는 선입니다. 선의 방향과 길이를 통해 현실적 사고, 창의성, 집중 방식 등을 전통적으로 해석합니다.'],
@@ -188,7 +196,7 @@ document.getElementById('palmDetailBuy').addEventListener('click',async()=>{
         return;
       }
     }catch{}
-    choosePalmProduct('palm-detail','AI 손금 상세분석',5900);
+    choosePalmProduct('palm-detail','AI 손금 상세분석',salePrice(5900));
     status.textContent='결제 영역으로 이동합니다.';
     setTimeout(()=>document.getElementById('hwadamPaidReport')?.scrollIntoView({behavior:'smooth',block:'start'}),220);
   }catch(e){

@@ -29,13 +29,15 @@ export default async function handler(req,res){
     const expectedSig=crypto.createHmac('sha256',secret).update(body).digest('base64url');
     if(!safeEq(sig,expectedSig))return res.status(403).json({ok:false,error:'유효하지 않은 리포트 이용권입니다.'});
     const payload=JSON.parse(Buffer.from(body,'base64url').toString('utf8'));
-    const allowedAmount=payload?.v===2?PRODUCTS[payload?.productId]:[5900,7900,9900,14900].includes(Number(payload?.amount))?Number(payload.amount):0;
-    if(![1,2].includes(payload?.v)||payload?.reportId!==reportId||!allowedAmount||Number(payload?.amount)!==allowedAmount)return res.status(403).json({ok:false,error:'이 리포트에 사용할 수 없는 이용권입니다.'});
-    if(process.env.POSTGRES_URL||process.env.DATABASE_URL){const row=await getEntitlement(reportId);if(!row||row.payment_status!=='DONE'||Number(row.amount)!==allowedAmount||row.order_id!==payload.orderId)return res.status(403).json({ok:false,error:'서버 결제기록을 확인할 수 없습니다.'})}
+    const base=payload?.v===2?PRODUCTS[payload?.productId]:0;
+    const validAmounts=base?[Number(base),Math.floor(Number(base)/2)]:[2950,3950,4950,7450,5900,7900,9900,14900];
+    const paidAmount=Number(payload?.amount);
+    if(![1,2].includes(payload?.v)||payload?.reportId!==reportId||!validAmounts.includes(paidAmount))return res.status(403).json({ok:false,error:'이 리포트에 사용할 수 없는 이용권입니다.'});
+    if(process.env.POSTGRES_URL||process.env.DATABASE_URL){const row=await getEntitlement(reportId);if(!row||row.payment_status!=='DONE'||Number(row.amount)!==paidAmount||row.order_id!==payload.orderId)return res.status(403).json({ok:false,error:'서버 결제기록을 확인할 수 없습니다.'})}
     const auth=Buffer.from(secret+':').toString('base64');
     const pr=await fetch('https://api.tosspayments.com/v1/payments/orders/'+encodeURIComponent(payload.orderId),{headers:{Authorization:'Basic '+auth}});
     const pay=await pr.json().catch(()=>({}));
-    if(!pr.ok||pay.status!=='DONE'||Number(pay.totalAmount)!==allowedAmount)return res.status(403).json({ok:false,error:'현재 유효한 결제 상태를 확인할 수 없습니다.'});
+    if(!pr.ok||pay.status!=='DONE'||Number(pay.totalAmount)!==paidAmount)return res.status(403).json({ok:false,error:'현재 유효한 결제 상태를 확인할 수 없습니다.'});
     return res.status(200).json({ok:true,reportId:payload.reportId,orderId:payload.orderId,approvedAt:payload.approvedAt,productId:payload.productId||''});
   }catch(e){return res.status(400).json({ok:false,error:'리포트 이용권을 확인할 수 없습니다.'})}
 }

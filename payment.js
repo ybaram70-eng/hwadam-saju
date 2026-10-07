@@ -83,7 +83,9 @@
       await ensureWidgets(cfg.clientKey);
       await widgets.setAmount({currency:'KRW',value:cfg.amount});
       await renderOnce();
-      state.textContent=`${cfg.productName} · ${Number(cfg.amount).toLocaleString('ko-KR')}원`;
+      state.innerHTML=cfg.saleActive
+        ? `<b>연말 감사 50% 할인</b><br>${cfg.productName} · <del>${Number(cfg.originalAmount).toLocaleString('ko-KR')}원</del> → <strong>${Number(cfg.amount).toLocaleString('ko-KR')}원</strong><br><small>2026년 12월 31일까지</small>`
+        : `${cfg.productName} · ${Number(cfg.amount).toLocaleString('ko-KR')}원`;
       btn.hidden=false;btn.textContent=`${Number(cfg.amount).toLocaleString('ko-KR')}원 결제하기`;
       btn.onclick=async()=>{
         const latest=lastReport(),latestSel=selectedProduct();

@@ -1,5 +1,9 @@
 (()=>{
   const d=document;
+  const SALE_END=Date.parse('2026-12-31T23:59:59+09:00');
+  const SALE_ACTIVE=Date.now()<=SALE_END;
+  const salePrice=n=>SALE_ACTIVE?Math.floor(Number(n)/2):Number(n);
+  const saleLabel=n=>SALE_ACTIVE?`<del style="font-size:12px;color:#999">${Number(n).toLocaleString('ko-KR')}원</del> <b style="color:#d04f2d">${salePrice(n).toLocaleString('ko-KR')}원</b>`:`${Number(n).toLocaleString('ko-KR')}원`;
 
   function addBusinessInfo(){
     if(d.getElementById('hwadamBusinessInfo')) return true;
@@ -44,20 +48,20 @@
   const canonicalProducts=()=>{
     const year=new Date().getFullYear();
     return `
-      <a class="hdPromoCard" data-cat="fortune" target="_top" href="/?product=annual-fortune"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>NEW</span><span>연도별</span></div><strong>${year}년<br>나의 신년운세</strong></div><div class="hdPromoBody"><b>${year}년 신년운세</b><p>1년 총운과 12개월 월별 흐름을 자세히 살펴봅니다.</p><div class="hdPromoPrice">9,900원 <span>상담 선택 ›</span></div></div></a>
-      <a class="hdPromoCard" data-cat="consult" target="_top" href="/palm.html"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>추천</span><span>손금</span></div><strong>내 손에 담긴<br>삶의 흐름 분석</strong></div><div class="hdPromoBody"><b>AI 손금 상세분석</b><p>손바닥 사진으로 주요 손금선과 보조선을 자세히 살펴봅니다.</p><div class="hdPromoPrice">5,900원 <span>손금 보기 ›</span></div></div></a>
-      <a class="hdPromoCard" data-cat="consult" target="_top" href="/?product=compatibility"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>관계</span><span>궁합</span></div><strong>두 사람의<br>관계 흐름과 궁합</strong></div><div class="hdPromoBody"><b>궁합 상담</b><p>잘 맞는 점과 갈등을 줄이는 방법을 살펴봅니다.</p><div class="hdPromoPrice">7,900원 <span>상담 선택 ›</span></div></div></a>
-      <a class="hdPromoCard" data-cat="fortune" target="_top" href="/?product=lifetime-fortune"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>PREMIUM</span><span>평생</span></div><strong>평생의 흐름과<br>대운 전환점 분석</strong></div><div class="hdPromoBody"><b>평생운세 장문 리포트</b><p>재물·직업·배우자·자녀·건강·말년운과 대운 전환점을 깊게 살펴봅니다.</p><div class="hdPromoPrice">14,900원 <span>상담 선택 ›</span></div></div></a>
-      <a class="hdPromoCard" data-cat="consult" target="_top" href="/?product=annual-membership"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>MEMBER</span><span>1년</span></div><strong>1년 동안<br>모든 유료 기능 이용</strong></div><div class="hdPromoBody"><b>1년 회원권</b><p>구매일로부터 1년간 화담 유료 기능 전체를 이용합니다.</p><div class="hdPromoPrice">55,000원 <span>회원권 선택 ›</span></div></div></a>`;
+      <a class="hdPromoCard" data-cat="fortune" target="_top" href="/?product=annual-fortune"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>NEW</span><span>연도별</span></div><strong>${year}년<br>나의 신년운세</strong></div><div class="hdPromoBody"><b>${year}년 신년운세</b><p>1년 총운과 12개월 월별 흐름을 자세히 살펴봅니다.</p><div class="hdPromoPrice">${saleLabel(9900)} <span>상담 선택 ›</span></div></div></a>
+      <a class="hdPromoCard" data-cat="consult" target="_top" href="/palm.html"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>추천</span><span>손금</span></div><strong>내 손에 담긴<br>삶의 흐름 분석</strong></div><div class="hdPromoBody"><b>AI 손금 상세분석</b><p>손바닥 사진으로 주요 손금선과 보조선을 자세히 살펴봅니다.</p><div class="hdPromoPrice">${saleLabel(5900)} <span>손금 보기 ›</span></div></div></a>
+      <a class="hdPromoCard" data-cat="consult" target="_top" href="/?product=compatibility"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>관계</span><span>궁합</span></div><strong>두 사람의<br>관계 흐름과 궁합</strong></div><div class="hdPromoBody"><b>궁합 상담</b><p>잘 맞는 점과 갈등을 줄이는 방법을 살펴봅니다.</p><div class="hdPromoPrice">${saleLabel(7900)} <span>상담 선택 ›</span></div></div></a>
+      <a class="hdPromoCard" data-cat="fortune" target="_top" href="/?product=lifetime-fortune"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>PREMIUM</span><span>평생</span></div><strong>평생의 흐름과<br>대운 전환점 분석</strong></div><div class="hdPromoBody"><b>평생운세 장문 리포트</b><p>재물·직업·배우자·자녀·건강·말년운과 대운 전환점을 깊게 살펴봅니다.</p><div class="hdPromoPrice">${saleLabel(14900)} <span>상담 선택 ›</span></div></div></a>
+      <a class="hdPromoCard" data-cat="consult" target="_top" href="/?product=annual-membership"><div class="hdPromoVisual"><div class="hdPromoBadges"><span>MEMBER</span><span>1년</span></div><strong>1년 동안<br>모든 유료 기능 이용</strong></div><div class="hdPromoBody"><b>1년 회원권</b><p>구매일로부터 1년간 화담 유료 기능 전체를 이용합니다.</p><div class="hdPromoPrice">${saleLabel(55000)} <span>회원권 선택 ›</span></div></div></a>`;
   };
 
   function openLifetimeFortune(e){
     e?.preventDefault?.();
-    const p={id:'lifetime-fortune',name:'평생운세 장문 리포트',price:14900,at:new Date().toISOString()};
+    const p={id:'lifetime-fortune',name:'평생운세 장문 리포트',price:salePrice(14900),at:new Date().toISOString()};
     try{localStorage.setItem('hwadam_selected_product',JSON.stringify(p));localStorage.removeItem('hwadam_formal_report_payment')}catch{}
     const q='평생운세 장문 리포트로 작성해 주세요. 사주 원국을 근거로 평생 총운, 타고난 성향과 강점, 재물운, 직업·사업운, 배우자·결혼운, 가족·자녀운, 건강에서 주의할 생활 흐름, 대운별 주요 전환점과 기회·주의 시기, 중년 이후의 변화, 말년운과 삶의 방향까지 항목별로 충분히 깊고 길게 설명해 주세요. 단정적인 예언은 피하고 실제 생활에서 활용할 수 있는 조언을 포함해 주세요.';
     const ta=d.getElementById('aiQuestion');if(ta)ta.value=q;
-    const status=d.getElementById('aiStatus');if(status)status.textContent='평생운세 장문 리포트 · 14,900원 상품을 선택했습니다. AI 상담을 완료하면 아래 카드결제 영역에서 결제할 수 있습니다.';
+    const status=d.getElementById('aiStatus');if(status)status.textContent='평생운세 장문 리포트 · '+salePrice(14900).toLocaleString('ko-KR')+'원'+(SALE_ACTIVE?' (50% 할인)':'')+' 상품을 선택했습니다. AI 상담을 완료하면 아래 카드결제 영역에서 결제할 수 있습니다.';
     d.dispatchEvent(new CustomEvent('hwadam:product-selected',{detail:p}));
     try{parent.document.querySelector('.navItem[data-target="ai"]')?.click()}catch{}
     setTimeout(()=>{

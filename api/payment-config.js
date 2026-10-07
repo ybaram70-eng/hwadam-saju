@@ -11,6 +11,9 @@ const PRODUCTS={
   'face-detail':{name:'AI 관상 상세분석',amount:5900},
   'face-saju':{name:'관상+사주 종합분석',amount:9900}
 };
+const SALE_END_MS=Date.parse('2026-12-31T23:59:59+09:00');
+function saleActive(){return Date.now()<=SALE_END_MS}
+function saleAmount(amount){return saleActive()?Math.floor(Number(amount)/2):Number(amount)}
 export default function handler(req,res){
   if(req.method!=='GET')return res.status(405).json({error:'GET 요청만 지원합니다.'});
   const clientKey=process.env.TOSS_CLIENT_KEY||'';
@@ -18,5 +21,6 @@ export default function handler(req,res){
   const product=PRODUCTS[productId]||PRODUCTS.comprehensive;
   const mode=clientKey.startsWith('test_')?'test':clientKey.startsWith('live_')?'live':'unknown';
   res.setHeader('Cache-Control','no-store, max-age=0');
-  res.status(200).json({enabled:!!clientKey,clientKey,mode,isTest:mode==='test',productId:PRODUCTS[productId]?productId:'comprehensive',amount:product.amount,currency:'KRW',orderName:`화담 ${product.name}`,productName:product.name});
+  const discounted=saleActive(),amount=saleAmount(product.amount);
+  res.status(200).json({enabled:!!clientKey,clientKey,mode,isTest:mode==='test',productId:PRODUCTS[productId]?productId:'comprehensive',amount,originalAmount:product.amount,discountRate:discounted?50:0,saleActive:discounted,saleEndsAt:'2026-12-31T23:59:59+09:00',currency:'KRW',orderName:`화담 ${product.name}`,productName:product.name});
 }

@@ -13,6 +13,7 @@
 <body>
 <div class="wrap">
   <div class="top"><div class="topLeft"><a href="/palm.html">손금보기</a><a href="/manse">사주·만세력</a></div><div class="brand">和談 · HWADAM</div></div>
+  <div id="saleBanner" style="display:none;margin-bottom:12px;padding:12px 14px;border-radius:14px;background:#fff1df;border:1px solid #efc98d;color:#9b5f13;font-weight:950;text-align:center">🎉 연말 감사 전상품 50% 할인 · 12월 31일까지</div>
   <section class="hero">
     <small>화담 관상보기</small>
     <h1>얼굴의 특징을<br>전통 관상으로 살펴보다</h1>
@@ -46,8 +47,8 @@
       <div id="aiAnswer" class="aiAnswer"></div>
       <div id="facePaidOptions" style="display:none;margin-top:14px">
         <div style="font-weight:950;margin-bottom:9px">더 자세히 보고 싶다면</div>
-        <button id="faceDetailBuy" class="aiBtn" type="button" style="background:#8d6428">AI 관상 상세분석 · 5,900원</button>
-        <button id="faceSajuBuy" class="aiBtn" type="button" style="margin-top:9px;background:#315e50">관상 + 사주 종합분석 · 9,900원</button>
+        <button id="faceDetailBuy" class="aiBtn" type="button" style="background:#8d6428">AI 관상 상세분석 · <span id="faceDetailPrice">5,900원</span></button>
+        <button id="faceSajuBuy" class="aiBtn" type="button" style="margin-top:9px;background:#315e50">관상 + 사주 종합분석 · <span id="faceSajuPrice">9,900원</span></button>
         <div class="note">1년 회원권 이용자와 관리자는 유료 기능을 별도 결제 없이 이용할 수 있습니다.</div>
       </div>
       <input id="aiQuestion" type="hidden" value="관상 상세분석">
@@ -67,6 +68,13 @@
   </section>
 </div>
 <script>
+const SALE_END=Date.parse('2026-12-31T23:59:59+09:00'),SALE_ACTIVE=Date.now()<=SALE_END;
+const salePrice=n=>SALE_ACTIVE?Math.floor(Number(n)/2):Number(n);
+if(SALE_ACTIVE){
+  document.getElementById('saleBanner').style.display='block';
+  document.getElementById('faceDetailPrice').innerHTML='<del style="opacity:.7">5,900원</del> 2,950원';
+  document.getElementById('faceSajuPrice').innerHTML='<del style="opacity:.7">9,900원</del> 4,950원';
+}
 const areas={
  face:['얼굴형','얼굴의 세로·가로 비율과 턱선, 전체 윤곽을 먼저 봅니다.'],
  forehead:['이마','이마의 높이와 폭, 헤어라인과 좌우 균형을 관찰합니다.'],
@@ -84,7 +92,7 @@ async function imageData(file){return await new Promise((resolve,reject)=>{const
 document.getElementById('analyze').addEventListener('click',async()=>{const btn=document.getElementById('analyze'),status=document.getElementById('aiStatus'),answer=document.getElementById('aiAnswer');if(!selectedFile){status.textContent='먼저 얼굴 사진을 선택해 주세요.';return}btn.disabled=true;status.textContent='얼굴 사진의 보이는 특징을 분석하고 있습니다…';answer.style.display='none';try{const image=await imageData(selectedFile);const r=await fetch('/api/consult',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'face',image})});const j=await r.json();if(!r.ok)throw new Error(j.error||'분석에 실패했습니다.');answer.textContent=j.answer;answer.style.display='block';status.textContent='무료 관상 기본보기가 완료되었습니다.';const reportId='RPT-FACE-'+Date.now()+'-'+Math.random().toString(36).slice(2,10).toUpperCase();sessionStorage.setItem('hwadam_face_image',image);localStorage.setItem('hwadam_last_ai_consult',JSON.stringify({reportId,answer:j.answer,question:'관상 기본분석',chart:{name:'관상 고객'},at:new Date().toISOString()}));document.getElementById('facePaidOptions').style.display='block';answer.scrollIntoView({behavior:'smooth',block:'start'})}catch(e){status.textContent=e.message||'분석 중 오류가 발생했습니다.'}finally{btn.disabled=false}});
 function chooseProduct(id,name,price){const p={id,name,price,at:new Date().toISOString()};try{localStorage.setItem('hwadam_selected_product',JSON.stringify(p))}catch{}document.dispatchEvent(new CustomEvent('hwadam:product-selected',{detail:p}));setTimeout(()=>document.getElementById('hwadamPaidReport')?.scrollIntoView({behavior:'smooth',block:'start'}),180)}
 async function runDetail(){const status=document.getElementById('aiStatus'),answer=document.getElementById('aiAnswer'),image=sessionStorage.getItem('hwadam_face_image');if(!image){status.textContent='상세분석을 위해 얼굴 사진을 다시 올려 주세요.';return}status.textContent='AI 관상 상세분석을 진행하고 있습니다…';const r=await fetch('/api/consult',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'face',detail:'detail',image})});const j=await r.json();if(!r.ok)throw new Error(j.error||'상세분석에 실패했습니다.');answer.textContent=j.answer;answer.style.display='block';status.textContent='AI 관상 상세분석이 완료되었습니다.';document.getElementById('facePaidOptions').style.display='none';answer.scrollIntoView({behavior:'smooth',block:'start'})}
-document.getElementById('faceDetailBuy').addEventListener('click',async()=>{const status=document.getElementById('aiStatus');let last={};try{last=JSON.parse(localStorage.getItem('hwadam_last_ai_consult')||'{}')||{}}catch{}try{const vr=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:'',reportId:last.reportId||''})});const vj=await vr.json().catch(()=>({}));if(vr.ok&&vj?.ok&&vj?.admin){status.textContent='관리자 무료 이용으로 상세분석을 시작합니다.';await runDetail();return}}catch{}try{const mr=await fetch('/api/membership',{credentials:'same-origin',cache:'no-store'}),mj=await mr.json().catch(()=>({}));if(mr.ok&&mj?.membership?.active){status.textContent='1년 회원권으로 상세분석을 시작합니다.';await runDetail();return}}catch{}chooseProduct('face-detail','AI 관상 상세분석',5900)});
+document.getElementById('faceDetailBuy').addEventListener('click',async()=>{const status=document.getElementById('aiStatus');let last={};try{last=JSON.parse(localStorage.getItem('hwadam_last_ai_consult')||'{}')||{}}catch{}try{const vr=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:'',reportId:last.reportId||''})});const vj=await vr.json().catch(()=>({}));if(vr.ok&&vj?.ok&&vj?.admin){status.textContent='관리자 무료 이용으로 상세분석을 시작합니다.';await runDetail();return}}catch{}try{const mr=await fetch('/api/membership',{credentials:'same-origin',cache:'no-store'}),mj=await mr.json().catch(()=>({}));if(mr.ok&&mj?.membership?.active){status.textContent='1년 회원권으로 상세분석을 시작합니다.';await runDetail();return}}catch{}chooseProduct('face-detail','AI 관상 상세분석',salePrice(5900))});
 document.getElementById('faceSajuBuy').addEventListener('click',()=>{location.href='/?open=input&faceSaju=1'});
 async function showPaidIfReady(){const q=new URLSearchParams(location.search),rid=q.get('paidReport');if(!rid)return;const image=sessionStorage.getItem('hwadam_face_image');if(!image){document.getElementById('aiStatus').textContent='결제는 확인되었습니다. 상세분석을 위해 얼굴 사진을 다시 올려 주세요.';return}let map={};try{map=JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{}}catch{}const ent=map[rid];try{const vr=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:ent?.token||'',reportId:rid})});const vj=await vr.json();if(!vr.ok||!vj.ok)return;await runDetail()}catch(e){document.getElementById('aiStatus').textContent=e.message||'상세분석 중 오류가 발생했습니다.'}}
 showPaidIfReady();

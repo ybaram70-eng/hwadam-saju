@@ -156,7 +156,22 @@ export default async function handler(req,res){
       }
     }
     if(!answer&&typeof data.output_text==='string')answer=data.output_text;
-    if(!answer)return res.status(502).json({error:'AI 응답 텍스트를 확인할 수 없습니다.'});
+    if(!answer){
+      const texts=[];
+      const walk=(v)=>{
+        if(!v)return;
+        if(typeof v==='string')return;
+        if(Array.isArray(v)){for(const x of v)walk(x);return}
+        if(typeof v==='object'){
+          if(typeof v.text==='string'&&v.text.trim())texts.push(v.text);
+          if(typeof v.output_text==='string'&&v.output_text.trim())texts.push(v.output_text);
+          for(const [k,x] of Object.entries(v)){if(k!=='text'&&k!=='output_text')walk(x)}
+        }
+      };
+      walk(data?.output);
+      answer=[...new Set(texts)].join('\n').trim();
+    }
+    if(!answer)return res.status(502).json({error:'AI 응답을 받지 못했습니다. 잠시 후 다시 눌러 주세요.'});
     return res.status(200).json({answer});
   }catch(e){
     return res.status(500).json({error:e?.message||String(e)});

@@ -66,7 +66,7 @@
       <div><b>감정선</b><span>손가락 아래쪽을 가로지르는 선으로 감정 표현과 관계 성향을 봅니다.</span></div>
       <div><b>운명선</b><span>손바닥 아래에서 가운데 손가락 방향으로 올라가는 세로선으로 일과 사회 흐름을 봅니다.</span></div>
     </div>
-    <a class="cta" href="/?open=analysis">사주와 함께 보기</a>
+    <a class="cta" href="/manse?open=analysis">사주와 함께 보기</a>
     <div class="note">손금 해석은 전통적인 손금 관점의 참고용 콘텐츠이며 미래를 단정하는 진단이나 보장은 아닙니다.</div>
   </section>
 </div>
@@ -206,7 +206,7 @@ document.getElementById('palmDetailBuy').addEventListener('click',async()=>{
     if(document.body.contains(btn))btn.textContent=original;
   }
 });
-document.getElementById('palmSajuBuy').addEventListener('click',()=>{location.href='/?open=input&palmSaju=1'});
+document.getElementById('palmSajuBuy').addEventListener('click',()=>{location.href='/manse?open=input&palmSaju=1'});
 async function showPaidPalmIfReady(){
   const q=new URLSearchParams(location.search),rid=q.get('paidReport');
   if(!rid)return;

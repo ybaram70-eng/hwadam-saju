@@ -56,12 +56,12 @@ export default async function handler(req,res){
 
       const basicPayload={
         model,
-        instructions:'당신은 화담철학관의 손금 기본 해설 보조 AI입니다. 업로드된 손바닥 사진에서 실제로 보이는 특징만 관찰하세요. 결과는 반드시 JSON 하나만 출력하세요. 형식은 {"photoStatus":"사진 상태 한 줄","lines":[{"name":"생명선","location":"어디서 시작해 어디로 향하는지","point":"사진에서 눈에 띄는 지점 또는 특징 한 줄","meaning":"그 지점의 전통 손금학적 의미 한 줄","confidence":"명확|부분확인|확인어려움"}],"notice":"참고 안내"} 입니다. lines에는 실제로 확인되는 주요선 중 최대 4개만 넣고 생명선·두뇌선·감정선·운명선을 우선하세요. 각 문장은 짧고 구체적으로 쓰세요. 보이지 않는 특징은 만들지 마세요. 수명, 질병, 사망 시기, 임신, 범죄성, 성격을 확정적으로 판단하지 마세요. meaning은 반드시 전통 손금학의 참고적 해석으로만 쓰세요.',
+        instructions:'당신은 화담철학관의 손금 기본 해설 보조 AI입니다. 업로드된 손바닥 사진에서 실제로 보이는 특징만 관찰하세요. 결과는 반드시 JSON 하나만 출력하세요. 형식은 {"photoStatus":"사진 상태 한 줄","lines":[{"name":"생명선","location":"어디서 시작해 어디로 향하는지 1문장","point":"사진에서 실제로 보이는 선의 길이·굵기·선명도·갈라짐·끊김·교차·가지선 중 눈에 띄는 특징을 1~2문장","meaning":"그 특징이 전통 손금학에서 어떤 의미로 해석되는지 2~3문장. 재물·직업·관계·생활 리듬과 연결할 수 있으면 구체적으로 설명","confidence":"명확|부분확인|확인어려움"}],"notice":"참고 안내"} 입니다. lines에는 실제로 확인되는 주요선 중 최대 4개만 넣고 생명선·두뇌선·감정선·운명선을 우선하세요. 각 선의 meaning은 너무 짧게 한 문장으로 끝내지 말고, 2~3문장으로 충분히 설명하세요. 단, 보이지 않는 특징은 만들지 마세요. 확인이 어려운 선은 억지로 해석하지 말고 사진상 확인 어려움이라고 쓰세요. 수명, 질병, 사망 시기, 임신, 범죄성, 성격을 확정적으로 판단하지 마세요. meaning은 반드시 전통 손금학의 참고적 해석으로만 쓰세요.',
         input:[{role:'user',content:[
           {type:'input_text',text:'손 구분: '+hand+'\n이 손바닥 사진을 간단하고 명확하게, 선 위치와 눈에 띄는 지점 중심으로 정리해 주세요.'},
           {type:'input_image',image_url:image}
         ]}],
-        max_output_tokens:900
+        max_output_tokens:1300
       };
       const pr=await fetch('https://api.openai.com/v1/responses',{method:'POST',headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},body:JSON.stringify(basicPayload)});
       const pd=await pr.json();

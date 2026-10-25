@@ -66,7 +66,7 @@
       <div><b>감정선</b><span>손가락 아래쪽을 가로지르는 선으로 감정 표현과 관계 성향을 봅니다.</span></div>
       <div><b>운명선</b><span>손바닥 아래에서 가운데 손가락 방향으로 올라가는 세로선으로 일과 사회 흐름을 봅니다.</span></div>
     </div>
-    <a class="cta" href="/manse?open=analysis">사주와 함께 보기</a>
+    <a class="cta" id="palmSajuCta" href="/manse?open=input&palmSaju=1">사주와 함께 보기</a>
     <div class="note">손금 해석은 전통적인 손금 관점의 참고용 콘텐츠이며 미래를 단정하는 진단이나 보장은 아닙니다.</div>
   </section>
 </div>
@@ -206,7 +206,13 @@ document.getElementById('palmDetailBuy').addEventListener('click',async()=>{
     if(document.body.contains(btn))btn.textContent=original;
   }
 });
-document.getElementById('palmSajuBuy').addEventListener('click',()=>{location.href='/manse?open=input&palmSaju=1'});
+function storePalmSajuIntent(){
+      let last={};try{last=JSON.parse(localStorage.getItem('hwadam_last_ai_consult')||'{}')||{}}catch{}
+      const payload={at:new Date().toISOString(),hand:sessionStorage.getItem('hwadam_palm_hand')||selectedHand||'',answer:last.answer||document.getElementById('aiAnswer')?.textContent||'',reportId:last.reportId||''};
+      try{localStorage.setItem('hwadam_palm_saju_pending',JSON.stringify(payload));localStorage.setItem('hwadam_selected_product',JSON.stringify({id:'palm-saju',name:'손금+사주 종합분석',price:salePrice(9900),originalPrice:9900,discountRate:SALE_ACTIVE?50:0,at:new Date().toISOString()}))}catch{}
+    }
+    document.getElementById('palmSajuCta')?.addEventListener('click',()=>storePalmSajuIntent());
+    document.getElementById('palmSajuBuy').addEventListener('click',()=>{storePalmSajuIntent();location.href='/manse?open=input&palmSaju=1'});
 async function showPaidPalmIfReady(){
   const q=new URLSearchParams(location.search),rid=q.get('paidReport');
   if(!rid)return;

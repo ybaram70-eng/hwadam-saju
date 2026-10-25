@@ -1,39 +1,102 @@
 {
   "rewrites": [
-    { "source": "/api/auth-me", "destination": "/api/auth-session" },
-    { "source": "/api/auth-logout", "destination": "/api/auth-session" },
-    { "source": "/api/auth-login", "destination": "/api/auth-session?action=login" },
-    { "source": "/api/auth-signup", "destination": "/api/auth-session?action=signup" },
-    { "source": "/", "destination": "/index.html" }
+    {
+      "source": "/api/auth-me",
+      "destination": "/api/auth-session"
+    },
+    {
+      "source": "/api/auth-logout",
+      "destination": "/api/auth-session"
+    },
+    {
+      "source": "/api/auth-login",
+      "destination": "/api/auth-session?action=login"
+    },
+    {
+      "source": "/api/auth-signup",
+      "destination": "/api/auth-session?action=signup"
+    },
+    {
+      "source": "/manse",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    }
   ],
   "headers": [
     {
       "source": "/",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
     },
     {
       "source": "/index.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
     },
     {
       "source": "/stable.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
     },
     {
       "source": "/(.*).js",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
     },
     {
       "source": "/face.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
     },
     {
       "source": "/palm.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
     },
     {
       "source": "/calendar-v1.html",
-      "headers": [{ "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate, max-age=0" }]
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
+    },
+    {
+      "source": "/manse",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, no-cache, must-revalidate, max-age=0"
+        }
+      ]
     }
   ]
 }

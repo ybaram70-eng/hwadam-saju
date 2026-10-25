@@ -133,9 +133,14 @@ export default async function handler(req,res){
    - 손금에서 실제로 확인된 변화 지점이 있으면 “손금상 변화 지점”으로 표현
    - 사주는 대운 시작 나이와 세운을 기준으로 연령대별 흐름을 설명
    - 손금만으로 정확한 나이를 단정하지 말고, 사주의 대운·세운과 겹치는 구간만 “함께 주목할 시기”로 정리
-8. 강점과 주의점
-9. 현실적인 활용 조언
-10. 최종 종합 결론
+8. 상담 포인트
+   - 반드시 6~8개로 작성하세요.
+   - 재물, 사업·직업, 관계, 이동·변화, 계약·문서, 시기 판단, 생활 리듬, 보완점 가운데 실제 손금·사주 근거가 있는 항목을 골라 작성하세요.
+   - 각 포인트는 “근거 → 해석 → 실제 상담 조언” 순서로 2~3문장씩 설명하세요.
+   - 예: “운명선 변화와 현재 대운의 변동 신호가 함께 보입니다. 전통적으로는 직업·역할 재정비가 필요한 흐름으로 봅니다. 실제 결정은 세운·월운이 겹치는 시점을 확인해 단계적으로 진행하는 편이 좋습니다.”
+9. 강점과 주의점
+10. 현실적인 활용 조언
+11. 최종 종합 결론
 
 중요 규칙:
 - 손금 결과에 없는 선이나 문양을 새로 만들지 마세요.
@@ -144,7 +149,8 @@ export default async function handler(req,res){
 - 수명, 질병, 사망 시기, 임신, 범죄성은 판단하지 마세요.
 - 재물·직업·관계의 미래를 확정적으로 예언하지 말고 전통 해석상 경향과 활용 방향으로 설명하세요.
 - 모바일에서 읽기 쉽게 소제목과 짧은 단락으로 작성하되 너무 짧게 끝내지 마세요.
-- 전체 분량은 약 2,500~4,000자로 충분히 자세하게 작성하세요.`;
+- 전체 분량은 약 3,200~4,800자로 충분히 자세하게 작성하세요.
+- 특히 “상담 포인트”는 한두 줄로 끝내지 말고 6~8개 항목을 각각 구체적으로 작성하세요.`;
 
 
 
@@ -171,7 +177,7 @@ export default async function handler(req,res){
       model:process.env.OPENAI_MODEL||'gpt-5.6-luna',
       instructions:isLifetime?lifetimeInstructions:(isPalmSaju?palmSajuInstructions:normalInstructions),
       input:`[사주 데이터]\n${JSON.stringify(chart)}\n\n[사용자 질문]\n${question}`,
-      max_output_tokens:isLifetime?12000:(isPalmSaju?3000:900)
+      max_output_tokens:isLifetime?12000:(isPalmSaju?3600:900)
     };
 
     const r=await fetch('https://api.openai.com/v1/responses',{

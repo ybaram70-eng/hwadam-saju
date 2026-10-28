@@ -97,6 +97,6 @@ document.getElementById('faceSajuBuy').addEventListener('click',()=>{location.hr
 async function showPaidIfReady(){const q=new URLSearchParams(location.search),rid=q.get('paidReport');if(!rid)return;const image=sessionStorage.getItem('hwadam_face_image');if(!image){document.getElementById('aiStatus').textContent='결제는 확인되었습니다. 상세분석을 위해 얼굴 사진을 다시 올려 주세요.';return}let map={};try{map=JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{}}catch{}const ent=map[rid];try{const vr=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:ent?.token||'',reportId:rid})});const vj=await vr.json();if(!vr.ok||!vj.ok)return;await runDetail()}catch(e){document.getElementById('aiStatus').textContent=e.message||'상세분석 중 오류가 발생했습니다.'}}
 showPaidIfReady();
 </script>
-<script src="/payment.js?v=20260926-face1"></script>
+<script src="/payment.js?v=20261028-livefix2"></script>
 </body>
 </html>

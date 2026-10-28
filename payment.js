@@ -95,7 +95,9 @@
         const name=String(latest.chart?.name||$('name')?.value||'회원').trim()||'회원';
         const orderId='HWADAM-'+Date.now()+'-'+Math.random().toString(36).slice(2,8).toUpperCase();
         try{localStorage.setItem('hwadam_pending_payment',JSON.stringify({orderId,amount:cfg.amount,reportId:currentReportId,productId:cfg.productId,productName:cfg.productName,paymentMode:cfg.mode,question:q,name,at:new Date().toISOString()}))}catch{}
-        await widgets.requestPayment({orderId,orderName:cfg.orderName,successUrl:location.origin+'/payment-success.html',failUrl:location.origin+'/payment-fail.html',customerName:name});
+        const successUrl=location.origin+'/payment-success.html?reportId='+encodeURIComponent(currentReportId)+'&productId='+encodeURIComponent(cfg.productId)+'&productName='+encodeURIComponent(cfg.productName);
+        const failUrl=location.origin+'/payment-fail.html?reportId='+encodeURIComponent(currentReportId)+'&productId='+encodeURIComponent(cfg.productId);
+        await widgets.requestPayment({orderId,orderName:cfg.orderName,successUrl,failUrl,customerName:name});
       };
     }catch(e){state.textContent='결제 모듈을 준비하지 못했습니다: '+(e?.message||String(e))}finally{busy=false}
   }

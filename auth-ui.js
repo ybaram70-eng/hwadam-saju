@@ -10,7 +10,7 @@
     d.head.appendChild(s);
   }
 
-  function msgFor(e){return({DB_NOT_CONFIGURED:'회원가입 저장소 연결이 아직 필요합니다.',NAME_REQUIRED:'이름을 입력해 주세요.',PHONE_INVALID:'휴대폰번호를 확인해 주세요.',PHONE_EXISTS:'이미 가입된 휴대폰번호입니다.',PASSWORD_TOO_SHORT:'비밀번호는 8자 이상 입력해 주세요.',AGREEMENT_REQUIRED:'이용약관에 동의해 주세요.',LOGIN_INVALID:'휴대폰번호 또는 비밀번호를 확인해 주세요.',LOGIN_REQUIRED:'다시 로그인해 주세요.',DELETE_FAILED:'회원탈퇴 처리 중 오류가 발생했습니다.',REQUEST_TIMEOUT:'서버 응답이 늦어지고 있습니다.'})[e]||'처리 중 오류가 발생했습니다.'}
+  function msgFor(e){return({DB_NOT_CONFIGURED:'회원가입 저장소 연결이 아직 필요합니다.',NAME_REQUIRED:'이름을 입력해 주세요.',PHONE_INVALID:'휴대폰번호를 확인해 주세요.',PHONE_EXISTS:'이미 가입된 휴대폰번호입니다.',PASSWORD_TOO_SHORT:'비밀번호는 8자 이상 입력해 주세요.',AGREEMENT_REQUIRED:'이용약관에 동의해 주세요.',LOGIN_INVALID:'휴대폰번호 또는 비밀번호를 확인해 주세요.',LOGIN_REQUIRED:'다시 로그인해 주세요.',CURRENT_PASSWORD_INVALID:'현재 비밀번호가 맞지 않습니다.',PASSWORD_CHANGE_FAILED:'비밀번호 변경 중 오류가 발생했습니다.',DELETE_FAILED:'회원탈퇴 처리 중 오류가 발생했습니다.',REQUEST_TIMEOUT:'서버 응답이 늦어지고 있습니다.'})[e]||'처리 중 오류가 발생했습니다.'}
   function birth(v){const x=String(v||'').replace(/\D/g,'');if(!x)return null;if(!/^\d{8}$/.test(x))return false;const y=+x.slice(0,4),m=+x.slice(4,6),day=+x.slice(6,8),dt=new Date(y,m-1,day);if(dt.getFullYear()!==y||dt.getMonth()+1!==m||dt.getDate()!==day)return false;return `${x.slice(0,4)}-${x.slice(4,6)}-${x.slice(6,8)}`}
 
   function setCustomerNav(){
@@ -28,10 +28,11 @@
     let x=$('hwadamAccountModal');
     if(x)x.remove();
     x=d.createElement('div');x.id='hwadamAccountModal';x.className='hdAuthModal';
-    x.innerHTML=`<div class="hdAuthSheet"><div class="hdAuthHead"><h2>계정 관리</h2><button class="hdAuthClose" aria-label="닫기">×</button></div><div class="hdAccountBox"><div class="hdAccountInfo">${user.name||'회원'}님의 계정</div><div class="hdAccountDanger"><p>회원탈퇴는 계정과 저장된 회원 정보를 삭제하는 기능입니다.</p><button id="hwadamDeleteAccount" type="button">회원탈퇴</button></div></div></div>`;
+    x.innerHTML=`<div class="hdAuthSheet"><div class="hdAuthHead"><h2>계정 관리</h2><button class="hdAuthClose" aria-label="닫기">×</button></div><div class="hdAccountBox"><div class="hdAccountInfo">${user.name||'회원'}님의 계정</div><form id="hwadamPasswordChangeForm" class="hdAuthForm"><label>현재 비밀번호<input name="currentPassword" type="password" autocomplete="current-password" required></label><label>새 비밀번호<input name="newPassword" type="password" minlength="8" autocomplete="new-password" placeholder="8자 이상" required></label><label>새 비밀번호 확인<input name="confirmPassword" type="password" minlength="8" autocomplete="new-password" placeholder="한 번 더 입력" required></label><div class="hdAuthMsg"></div><button class="hdAuthSubmit">비밀번호 변경</button></form><div class="hdAccountDanger"><p>회원탈퇴는 계정과 저장된 회원 정보를 삭제하는 기능입니다.</p><button id="hwadamDeleteAccount" type="button">회원탈퇴</button></div></div></div>`;
     d.body.appendChild(x);
     x.querySelector('.hdAuthClose').onclick=()=>x.remove();
     x.addEventListener('click',e=>{if(e.target===x)x.remove()});
+    x.querySelector('#hwadamPasswordChangeForm')?.addEventListener('submit',changePassword);
     x.querySelector('#hwadamDeleteAccount')?.addEventListener('click',deleteAccount);
   }
   function bar(){
@@ -75,6 +76,18 @@
   async function submitLogin(e){e.preventDefault();const form=e.currentTarget,f=new FormData(form),box=form.querySelector('.hdAuthMsg'),btn=form.querySelector('.hdAuthSubmit');btn.disabled=true;box.textContent='로그인 중…';const {r,j}=await post('/api/auth-session?action=login',{phone:f.get('phone'),password:f.get('password')});btn.disabled=false;if(!r.ok){box.textContent=msgFor(j.error);return}await refreshIdentity();$('hwadamAuthModal')?.remove()}
   async function submitSignup(e){e.preventDefault();const form=e.currentTarget,f=new FormData(form),box=form.querySelector('.hdAuthMsg'),btn=form.querySelector('.hdAuthSubmit'),bd=birth(f.get('birthDate'));if(bd===false){box.textContent='생년월일을 숫자 8자리로 정확히 입력해 주세요. 예: 19651214';return}btn.disabled=true;box.textContent='가입 중…';const {r,j}=await post('/api/auth-session?action=signup',{name:f.get('name'),phone:f.get('phone'),birthDate:bd,gender:f.get('gender'),password:f.get('password'),agree:f.get('agree')==='on'});btn.disabled=false;if(!r.ok){box.textContent=msgFor(j.error);return}await refreshIdentity();$('hwadamAuthModal')?.remove();const n=d.getElementById('name');if(n&&!n.value)n.value=user?.name||''}
   async function logout(){await post('/api/auth-session?action=logout',{});user=null;isAdmin=false;bar()}
+  async function changePassword(e){
+    e.preventDefault();
+    const form=e.currentTarget,f=new FormData(form),box=form.querySelector('.hdAuthMsg'),btn=form.querySelector('.hdAuthSubmit');
+    const a=String(f.get('newPassword')||''),b=String(f.get('confirmPassword')||'');
+    if(a.length<8){box.textContent='새 비밀번호는 8자 이상 입력해 주세요.';return}
+    if(a!==b){box.textContent='새 비밀번호가 서로 다릅니다.';return}
+    btn.disabled=true;box.textContent='변경 중…';
+    const {r,j}=await post('/api/auth-session?action=change-password',{currentPassword:f.get('currentPassword'),newPassword:a});
+    btn.disabled=false;
+    if(!r.ok){box.textContent=msgFor(j.error);return}
+    form.reset();box.textContent='비밀번호가 변경되었습니다.';
+  }
   async function deleteAccount(){if(!user)return;if(!window.confirm(`${user.name}님의 회원 계정을 탈퇴하시겠습니까?`))return;if(!window.confirm('정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.'))return;const {r,j}=await post('/api/auth-session?action=delete',{});if(!r.ok){window.alert(msgFor(j.error));return}user=null;isAdmin=false;$('hwadamAccountModal')?.remove();bar();window.alert('회원탈퇴가 완료되었습니다.')}
   function boot(){style();refreshIdentity()}
   if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',boot,{once:true});else boot();

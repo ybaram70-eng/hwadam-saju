@@ -13,27 +13,24 @@
     d.body.appendChild(x);x.querySelector('.hdAuthClose').onclick=()=>x.remove();x.onclick=e=>{if(e.target===x)x.remove()};return x;
   }
   function openRequest(){
-    const x=sheet('비밀번호 재설정 요청',`<form class="hdResetForm"><div class="hdResetNotice">회원정보를 확인한 뒤 관리자가 임시 비밀번호를 발급합니다.</div><label>이름<input name="name" required></label><label>휴대폰번호<input name="phone" inputmode="numeric" placeholder="01012345678" required></label><label>생년월일<input name="birthDate" inputmode="numeric" maxlength="8" placeholder="예: 19651214" required></label><div class="hdAuthMsg"></div><button class="hdAuthSubmit">재설정 요청하기</button></form>`);
+    const x=sheet('이메일로 비밀번호 재설정',`<form class="hdResetForm"><div class="hdResetNotice">회원가입 때 등록한 이메일을 입력하면 비밀번호 재설정 링크를 보내드립니다.</div><label>이메일<input name="email" type="email" autocomplete="email" placeholder="example@email.com" required></label><div class="hdAuthMsg"></div><button class="hdAuthSubmit">재설정 링크 받기</button></form>`);
     x.querySelector('form').onsubmit=async e=>{
-      e.preventDefault();const f=new FormData(e.currentTarget),msg=x.querySelector('.hdAuthMsg'),digits=String(f.get('birthDate')||'').replace(/\D/g,'');
-      if(digits.length!==8){msg.textContent='생년월일 숫자 8자리를 입력해 주세요.';return}
-      msg.textContent='요청 중…';
-      const btn=e.currentTarget.querySelector('button');btn.disabled=true;
+      e.preventDefault();const form=e.currentTarget,f=new FormData(form),msg=x.querySelector('.hdAuthMsg'),btn=form.querySelector('button');
+      btn.disabled=true;msg.textContent='메일 발송 중…';
       const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),15000);
       try{
-        const r=await fetch('/api/auth-session?action=reset-request',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',signal:ctrl.signal,body:JSON.stringify({name:f.get('name'),phone:f.get('phone'),birthDate:`${digits.slice(0,4)}-${digits.slice(4,6)}-${digits.slice(6,8)}`})});
+        const r=await fetch('/api/auth-session?action=forgot-email',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',signal:ctrl.signal,body:JSON.stringify({email:f.get('email')})});
         let j={};try{j=await r.json()}catch{}
-        if(r.ok){msg.textContent=j.message||'관리자 확인 요청이 접수되었습니다.'}
-        else if(j.error==='DB_NOT_CONFIGURED')msg.textContent='회원정보 저장소 연결을 확인해 주세요.';
-        else if(j.error==='RESET_INFO_REQUIRED')msg.textContent='이름·휴대폰번호·생년월일을 다시 확인해 주세요.';
-        else msg.textContent='재설정 요청을 처리하지 못했습니다. 다시 눌러 주세요.';
-        if(!r.ok)btn.disabled=false;
-      }catch(err){
+        if(r.ok){msg.textContent=j.message||'재설정 링크를 이메일로 보냈습니다.';return}
+        if(j.error==='EMAIL_NOT_CONFIGURED')msg.textContent='이메일 발송 설정이 아직 완료되지 않았습니다.';
+        else if(j.error==='EMAIL_INVALID')msg.textContent='이메일 주소를 확인해 주세요.';
+        else msg.textContent='메일 발송에 실패했습니다. 다시 시도해 주세요.';
         btn.disabled=false;
-        msg.textContent=err?.name==='AbortError'?'서버 응답이 늦습니다. 다시 눌러 주세요.':'연결이 지연되고 있습니다. 다시 눌러 주세요.';
-      }finally{clearTimeout(timer)}
+      }catch(err){btn.disabled=false;msg.textContent=err?.name==='AbortError'?'서버 응답이 늦습니다. 다시 눌러 주세요.':'연결이 지연되고 있습니다.'}
+      finally{clearTimeout(timer)}
     };
   }
+
   async function openAdmin(){
     const x=sheet('비밀번호 재설정 요청',`<div id="hdResetList" class="hdResetList">요청을 불러오는 중…</div>`),box=x.querySelector('#hdResetList');
     try{const r=await fetch('/api/auth-reset-admin'),j=await r.json();if(!r.ok){box.textContent='관리자만 확인할 수 있습니다.';return}if(!j.requests?.length){box.textContent='대기 중인 요청이 없습니다.';return}
@@ -43,8 +40,8 @@
   }
   function decorate(){
     style();const form=$('hwadamLoginForm');
-    if(form&&!form.querySelector('.hdForgotBtn')){const b=d.createElement('button');b.type='button';b.className='hdForgotBtn';b.textContent='비밀번호를 잊으셨나요?';b.onclick=openRequest;form.querySelector('.hdAuthSubmit')?.insertAdjacentElement('afterend',b)}
-    const bar=$('hwadamAuthBar'),userKey=bar?.querySelector('.hdAuthUser')?.textContent||'';if(bar&&userKey&&!bar.querySelector('#hwadamResetAdmin')&&bar.dataset.resetAdminChecked!==userKey){bar.dataset.resetAdminChecked=userKey;fetch('/api/auth-reset-admin').then(r=>{if(!r.ok)return;const b=d.createElement('button');b.id='hwadamResetAdmin';b.type='button';b.className='hdAuthBtn hdAdminResetBtn';b.textContent='비번요청 확인';b.onclick=openAdmin;const deleteButton=bar.querySelector('#hwadamDeleteAccount');if(deleteButton){deleteButton.className='hdAuthBtn hdAdminResetBtn';bar.insertBefore(b,deleteButton)}else bar.appendChild(b)}).catch(()=>{})}
+    if(form&&!form.querySelector('.hdForgotBtn')){const b=d.createElement('button');b.type='button';b.className='hdForgotBtn';b.textContent='비밀번호를 잊으셨나요? 이메일로 재설정';b.onclick=openRequest;form.querySelector('.hdAuthSubmit')?.insertAdjacentElement('afterend',b)}
+    const bar=$('hwadamAuthBar');
   }
   function boot(){style();decorate();let t;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(decorate,80)}).observe(d.body,{subtree:true,childList:true});}
   if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',boot,{once:true});else boot();

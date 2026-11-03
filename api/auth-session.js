@@ -32,6 +32,29 @@ export default async function handler(req,res){
     }
   }
 
+  if(req.method==='POST'&&action==='reset-direct'){
+    const s=db();
+    if(!s)return res.status(503).json({ok:false,error:'DB_NOT_CONFIGURED'});
+    try{
+      const {name,phone,birthDate,newPassword}=req.body||{};
+      const p=normalizePhone(phone),n=String(name||'').trim(),bd=String(birthDate||'').trim(),pw=String(newPassword||'');
+      if(!n||!validPhone(p)||!/\d{4}-\d{2}-\d{2}/.test(bd))return res.status(400).json({ok:false,error:'RESET_INFO_REQUIRED'});
+      if(pw.length<8)return res.status(400).json({ok:false,error:'PASSWORD_TOO_SHORT'});
+      await ensureAuthTables();
+      const rows=await s`select id from hwadam_users where phone=${p} and name=${n} and birth_date=${bd} limit 1`;
+      if(!rows[0])return res.status(400).json({ok:false,error:'RESET_INFO_MISMATCH'});
+      const {salt,hash}=hashPassword(pw),userId=rows[0].id;
+      await s.begin(async tx=>{
+        await tx`update hwadam_users set password_salt=${salt},password_hash=${hash} where id=${userId}`;
+        await tx`delete from hwadam_sessions where user_id=${userId}`;
+      });
+      return res.status(200).json({ok:true,message:'비밀번호가 변경되었습니다. 새 비밀번호로 로그인해 주세요.'});
+    }catch(e){
+      console.error('auth-reset-direct',e);
+      return res.status(500).json({ok:false,error:'RESET_DIRECT_FAILED'});
+    }
+  }
+
   if(req.method==='POST'&&action==='reset-request'){
     const s=db();
     if(!s)return res.status(503).json({ok:false,error:'DB_NOT_CONFIGURED'});

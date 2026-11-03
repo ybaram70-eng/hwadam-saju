@@ -18,7 +18,20 @@
       e.preventDefault();const f=new FormData(e.currentTarget),msg=x.querySelector('.hdAuthMsg'),digits=String(f.get('birthDate')||'').replace(/\D/g,'');
       if(digits.length!==8){msg.textContent='생년월일 숫자 8자리를 입력해 주세요.';return}
       msg.textContent='요청 중…';
-      try{const r=await fetch('/api/auth-reset-request',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:f.get('name'),phone:f.get('phone'),birthDate:`${digits.slice(0,4)}-${digits.slice(4,6)}-${digits.slice(6,8)}`})}),j=await r.json();msg.textContent=r.ok?j.message:'입력 내용을 확인해 주세요.';if(r.ok)e.currentTarget.querySelector('button').disabled=true}catch{msg.textContent='연결이 지연되고 있습니다. 다시 눌러 주세요.'}
+      const btn=e.currentTarget.querySelector('button');btn.disabled=true;
+      const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),15000);
+      try{
+        const r=await fetch('/api/auth-session?action=reset-request',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',signal:ctrl.signal,body:JSON.stringify({name:f.get('name'),phone:f.get('phone'),birthDate:`${digits.slice(0,4)}-${digits.slice(4,6)}-${digits.slice(6,8)}`})});
+        let j={};try{j=await r.json()}catch{}
+        if(r.ok){msg.textContent=j.message||'관리자 확인 요청이 접수되었습니다.'}
+        else if(j.error==='DB_NOT_CONFIGURED')msg.textContent='회원정보 저장소 연결을 확인해 주세요.';
+        else if(j.error==='RESET_INFO_REQUIRED')msg.textContent='이름·휴대폰번호·생년월일을 다시 확인해 주세요.';
+        else msg.textContent='재설정 요청을 처리하지 못했습니다. 다시 눌러 주세요.';
+        if(!r.ok)btn.disabled=false;
+      }catch(err){
+        btn.disabled=false;
+        msg.textContent=err?.name==='AbortError'?'서버 응답이 늦습니다. 다시 눌러 주세요.':'연결이 지연되고 있습니다. 다시 눌러 주세요.';
+      }finally{clearTimeout(timer)}
     };
   }
   async function openAdmin(){

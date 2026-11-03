@@ -10,7 +10,7 @@
     d.head.appendChild(s);
   }
 
-  function msgFor(e){return({DB_NOT_CONFIGURED:'회원가입 저장소 연결이 아직 필요합니다.',NAME_REQUIRED:'이름을 입력해 주세요.',PHONE_INVALID:'휴대폰번호를 확인해 주세요.',PHONE_EXISTS:'이미 가입된 휴대폰번호입니다.',PASSWORD_TOO_SHORT:'비밀번호는 8자 이상 입력해 주세요.',AGREEMENT_REQUIRED:'이용약관에 동의해 주세요.',LOGIN_INVALID:'휴대폰번호 또는 비밀번호를 확인해 주세요.',LOGIN_REQUIRED:'다시 로그인해 주세요.',DELETE_FAILED:'회원탈퇴 처리 중 오류가 발생했습니다.',REQUEST_TIMEOUT:'서버 응답이 늦어지고 있습니다.',SIGNUP_FAILED:'회원가입 저장 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.',SIGNUP_SCHEMA_REQUIRED:'회원정보 저장소를 정리하는 중입니다. 새로고침 후 다시 가입해 주세요.',DB_CONNECTION_FAILED:'회원정보 저장 서버 연결에 실패했습니다. 잠시 후 다시 시도해 주세요.',LOGIN_FAILED:'로그인 처리 중 오류가 발생했습니다.'})[e]||'처리 중 오류가 발생했습니다.'}
+  function msgFor(e){return({DB_NOT_CONFIGURED:'회원가입 저장소 연결이 아직 필요합니다.',NAME_REQUIRED:'이름을 입력해 주세요.',PHONE_INVALID:'휴대폰번호를 확인해 주세요.',PHONE_EXISTS:'이미 가입된 휴대폰번호입니다.',PASSWORD_TOO_SHORT:'비밀번호는 8자 이상 입력해 주세요.',AGREEMENT_REQUIRED:'이용약관에 동의해 주세요.',LOGIN_INVALID:'휴대폰번호 또는 비밀번호를 확인해 주세요.',LOGIN_REQUIRED:'다시 로그인해 주세요.',DELETE_FAILED:'회원탈퇴 처리 중 오류가 발생했습니다.',REQUEST_TIMEOUT:'서버 응답이 늦어지고 있습니다.'})[e]||'처리 중 오류가 발생했습니다.'}
   function birth(v){const x=String(v||'').replace(/\D/g,'');if(!x)return null;if(!/^\d{8}$/.test(x))return false;const y=+x.slice(0,4),m=+x.slice(4,6),day=+x.slice(6,8),dt=new Date(y,m-1,day);if(dt.getFullYear()!==y||dt.getMonth()+1!==m||dt.getDate()!==day)return false;return `${x.slice(0,4)}-${x.slice(4,6)}-${x.slice(6,8)}`}
 
   function setCustomerNav(){

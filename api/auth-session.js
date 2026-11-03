@@ -1,5 +1,5 @@
 import { db } from './_db.js';
-import { cookie, hashToken, clearSessionCookie, currentUser, isAdminUser, normalizePhone, verifyPassword, createSession, setSessionCookie, ensureAuthTables, validPhone, hashPassword } from './_auth.js';
+import { cookie, hashToken, clearSessionCookie, currentUser, isAdminUser, normalizePhone, verifyPassword, createSession, setSessionCookie, ensureAuthTables, ensurePasswordResetTable, validPhone, hashPassword } from './_auth.js';
 
 export default async function handler(req,res){
   const action=String(req.query?.action||req.body?.action||'').trim();
@@ -29,6 +29,26 @@ export default async function handler(req,res){
     }catch(e){
       console.error(e);
       return res.status(500).json({ok:false,error:'ME_FAILED',user:null,isAdmin:false});
+    }
+  }
+
+  if(req.method==='POST'&&action==='reset-request'){
+    const s=db();
+    if(!s)return res.status(503).json({ok:false,error:'DB_NOT_CONFIGURED'});
+    try{
+      const {name,phone,birthDate}=req.body||{};
+      const p=normalizePhone(phone),n=String(name||'').trim(),bd=String(birthDate||'').trim();
+      if(!n||!validPhone(p)||!/\d{4}-\d{2}-\d{2}/.test(bd))return res.status(400).json({ok:false,error:'RESET_INFO_REQUIRED'});
+      await ensurePasswordResetTable();
+      const rows=await s`select id from hwadam_users where phone=${p} and name=${n} and birth_date=${bd} limit 1`;
+      if(rows[0]){
+        const old=await s`select id from hwadam_password_reset_requests where user_id=${rows[0].id} and status='pending' limit 1`;
+        if(!old.length)await s`insert into hwadam_password_reset_requests(user_id) values(${rows[0].id})`;
+      }
+      return res.status(200).json({ok:true,message:'관리자 확인 요청이 접수되었습니다.'});
+    }catch(e){
+      console.error('auth-reset-request',e);
+      return res.status(500).json({ok:false,error:'RESET_REQUEST_FAILED'});
     }
   }
 

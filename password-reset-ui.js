@@ -13,27 +13,41 @@
     d.body.appendChild(x);x.querySelector('.hdAuthClose').onclick=()=>x.remove();x.onclick=e=>{if(e.target===x)x.remove()};return x;
   }
   function openRequest(){
-    const x=sheet('비밀번호 재설정 요청',`<form class="hdResetForm"><div class="hdResetNotice">회원정보를 확인한 뒤 관리자가 임시 비밀번호를 발급합니다.</div><label>이름<input name="name" required></label><label>휴대폰번호<input name="phone" inputmode="numeric" placeholder="01012345678" required></label><label>생년월일<input name="birthDate" inputmode="numeric" maxlength="8" placeholder="예: 19651214" required></label><div class="hdAuthMsg"></div><button class="hdAuthSubmit">재설정 요청하기</button></form>`);
-    x.querySelector('form').onsubmit=async e=>{
-      e.preventDefault();const f=new FormData(e.currentTarget),msg=x.querySelector('.hdAuthMsg'),digits=String(f.get('birthDate')||'').replace(/\D/g,'');
-      if(digits.length!==8){msg.textContent='생년월일 숫자 8자리를 입력해 주세요.';return}
-      msg.textContent='요청 중…';
-      const btn=e.currentTarget.querySelector('button');btn.disabled=true;
+    const x=sheet('휴대폰 인증으로 비밀번호 변경',`<form class="hdResetForm"><div class="hdResetNotice">가입한 휴대폰번호로 인증번호를 받은 뒤 새 비밀번호를 바로 설정할 수 있습니다.</div><label>휴대폰번호<input name="phone" inputmode="numeric" placeholder="01012345678" required></label><button type="button" class="hdAuthSubmit" id="hdOtpSend">인증번호 받기</button><label>인증번호<input name="otp" inputmode="numeric" maxlength="6" placeholder="6자리 인증번호" required></label><label>새 비밀번호<input name="newPassword" type="password" minlength="8" placeholder="8자 이상" required></label><label>새 비밀번호 확인<input name="confirmPassword" type="password" minlength="8" placeholder="한 번 더 입력" required></label><div class="hdAuthMsg"></div><button class="hdAuthSubmit">비밀번호 변경하기</button></form>`);
+    const form=x.querySelector('form'),msg=x.querySelector('.hdAuthMsg'),send=x.querySelector('#hdOtpSend');
+    send.onclick=async()=>{
+      const phone=new FormData(form).get('phone');
+      send.disabled=true;msg.textContent='인증번호 발송 중…';
       const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),15000);
       try{
-        const r=await fetch('/api/auth-session?action=reset-request',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',signal:ctrl.signal,body:JSON.stringify({name:f.get('name'),phone:f.get('phone'),birthDate:`${digits.slice(0,4)}-${digits.slice(4,6)}-${digits.slice(6,8)}`})});
+        const r=await fetch('/api/auth-session?action=password-otp-send',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',signal:ctrl.signal,body:JSON.stringify({phone})});
         let j={};try{j=await r.json()}catch{}
-        if(r.ok){msg.textContent=j.message||'관리자 확인 요청이 접수되었습니다.'}
-        else if(j.error==='DB_NOT_CONFIGURED')msg.textContent='회원정보 저장소 연결을 확인해 주세요.';
-        else if(j.error==='RESET_INFO_REQUIRED')msg.textContent='이름·휴대폰번호·생년월일을 다시 확인해 주세요.';
-        else msg.textContent='재설정 요청을 처리하지 못했습니다. 다시 눌러 주세요.';
-        if(!r.ok)btn.disabled=false;
-      }catch(err){
+        if(r.ok){msg.textContent=j.message||'인증번호를 발송했습니다.';send.textContent='인증번호 다시 받기';setTimeout(()=>{send.disabled=false},60000)}
+        else{msg.textContent=j.error==='SMS_AUTH_NOT_CONFIGURED'?'문자 인증 설정이 아직 완료되지 않았습니다.':j.error==='PHONE_INVALID'?'휴대폰번호를 확인해 주세요.':'인증번호 발송에 실패했습니다.';send.disabled=false}
+      }catch(err){msg.textContent=err?.name==='AbortError'?'서버 응답이 늦습니다. 다시 눌러 주세요.':'연결이 지연되고 있습니다.';send.disabled=false}
+      finally{clearTimeout(timer)}
+    };
+    form.onsubmit=async e=>{
+      e.preventDefault();
+      const fd=new FormData(form),pw=String(fd.get('newPassword')||''),pw2=String(fd.get('confirmPassword')||''),otp=String(fd.get('otp')||'').replace(/\D/g,'');
+      if(otp.length!==6){msg.textContent='인증번호 6자리를 입력해 주세요.';return}
+      if(pw.length<8){msg.textContent='새 비밀번호는 8자 이상 입력해 주세요.';return}
+      if(pw!==pw2){msg.textContent='새 비밀번호가 서로 다릅니다.';return}
+      const btn=form.querySelector('button[type="submit"]')||form.querySelectorAll('.hdAuthSubmit')[1];btn.disabled=true;msg.textContent='비밀번호 변경 중…';
+      const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),15000);
+      try{
+        const r=await fetch('/api/auth-session?action=password-otp-reset',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',cache:'no-store',signal:ctrl.signal,body:JSON.stringify({phone:fd.get('phone'),otp,newPassword:pw})});
+        let j={};try{j=await r.json()}catch{}
+        if(r.ok){msg.textContent=j.message||'비밀번호가 변경되었습니다.';btn.textContent='변경 완료';return}
+        if(j.error==='OTP_INVALID')msg.textContent='인증번호가 올바르지 않거나 만료되었습니다.';
+        else if(j.error==='SMS_AUTH_NOT_CONFIGURED')msg.textContent='문자 인증 설정이 아직 완료되지 않았습니다.';
+        else msg.textContent='비밀번호를 변경하지 못했습니다. 다시 확인해 주세요.';
         btn.disabled=false;
-        msg.textContent=err?.name==='AbortError'?'서버 응답이 늦습니다. 다시 눌러 주세요.':'연결이 지연되고 있습니다. 다시 눌러 주세요.';
-      }finally{clearTimeout(timer)}
+      }catch(err){btn.disabled=false;msg.textContent=err?.name==='AbortError'?'서버 응답이 늦습니다. 다시 눌러 주세요.':'연결이 지연되고 있습니다.'}
+      finally{clearTimeout(timer)}
     };
   }
+
   async function openAdmin(){
     const x=sheet('비밀번호 재설정 요청',`<div id="hdResetList" class="hdResetList">요청을 불러오는 중…</div>`),box=x.querySelector('#hdResetList');
     try{const r=await fetch('/api/auth-reset-admin'),j=await r.json();if(!r.ok){box.textContent='관리자만 확인할 수 있습니다.';return}if(!j.requests?.length){box.textContent='대기 중인 요청이 없습니다.';return}
@@ -43,7 +57,7 @@
   }
   function decorate(){
     style();const form=$('hwadamLoginForm');
-    if(form&&!form.querySelector('.hdForgotBtn')){const b=d.createElement('button');b.type='button';b.className='hdForgotBtn';b.textContent='비밀번호를 잊으셨나요?';b.onclick=openRequest;form.querySelector('.hdAuthSubmit')?.insertAdjacentElement('afterend',b)}
+    if(form&&!form.querySelector('.hdForgotBtn')){const b=d.createElement('button');b.type='button';b.className='hdForgotBtn';b.textContent='비밀번호를 잊으셨나요? 휴대폰 인증';b.onclick=openRequest;form.querySelector('.hdAuthSubmit')?.insertAdjacentElement('afterend',b)}
     const bar=$('hwadamAuthBar'),userKey=bar?.querySelector('.hdAuthUser')?.textContent||'';if(bar&&userKey&&!bar.querySelector('#hwadamResetAdmin')&&bar.dataset.resetAdminChecked!==userKey){bar.dataset.resetAdminChecked=userKey;fetch('/api/auth-reset-admin').then(r=>{if(!r.ok)return;const b=d.createElement('button');b.id='hwadamResetAdmin';b.type='button';b.className='hdAuthBtn hdAdminResetBtn';b.textContent='비번요청 확인';b.onclick=openAdmin;const deleteButton=bar.querySelector('#hwadamDeleteAccount');if(deleteButton){deleteButton.className='hdAuthBtn hdAdminResetBtn';bar.insertBefore(b,deleteButton)}else bar.appendChild(b)}).catch(()=>{})}
   }
   function boot(){style();decorate();let t;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(decorate,80)}).observe(d.body,{subtree:true,childList:true});}

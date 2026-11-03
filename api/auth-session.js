@@ -75,6 +75,55 @@ export default async function handler(req,res){
     }
   }
 
+  if(req.method==='POST'&&action==='password-otp-send'){
+    const {url,key}=supabaseAuthConfig();
+    if(!url||!key)return res.status(503).json({ok:false,error:'SMS_AUTH_NOT_CONFIGURED'});
+    const p=normalizePhone(req.body?.phone),phone=toE164KR(p);
+    if(!validPhone(p)||!phone)return res.status(400).json({ok:false,error:'PHONE_INVALID'});
+    try{
+      const s=db();if(!s)return res.status(503).json({ok:false,error:'DB_NOT_CONFIGURED'});
+      const exists=await s`select id from hwadam_users where phone=${p} limit 1`;
+      if(!exists.length)return res.status(200).json({ok:true,message:'가입된 번호라면 인증번호가 발송됩니다.'});
+      const r=await fetch(url+'/auth/v1/otp',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+key},body:JSON.stringify({phone,create_user:false})});
+      if(!r.ok){
+        let j={};try{j=await r.json()}catch{}
+        console.error('password-otp-send',r.status,j);
+        return res.status(502).json({ok:false,error:'SMS_SEND_FAILED'});
+      }
+      return res.status(200).json({ok:true,message:'인증번호를 발송했습니다.'});
+    }catch(e){
+      console.error('password-otp-send',e);
+      return res.status(500).json({ok:false,error:'SMS_SEND_FAILED'});
+    }
+  }
+
+  if(req.method==='POST'&&action==='password-otp-reset'){
+    const {url,key}=supabaseAuthConfig();
+    if(!url||!key)return res.status(503).json({ok:false,error:'SMS_AUTH_NOT_CONFIGURED'});
+    const p=normalizePhone(req.body?.phone),phone=toE164KR(p),token=String(req.body?.otp||'').trim(),pw=String(req.body?.newPassword||'');
+    if(!validPhone(p)||!phone)return res.status(400).json({ok:false,error:'PHONE_INVALID'});
+    if(!/^\d{6}$/.test(token))return res.status(400).json({ok:false,error:'OTP_INVALID'});
+    if(pw.length<8)return res.status(400).json({ok:false,error:'PASSWORD_TOO_SHORT'});
+    try{
+      const vr=await fetch(url+'/auth/v1/verify',{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':'Bearer '+key},body:JSON.stringify({phone,token,type:'sms'})});
+      let vj={};try{vj=await vr.json()}catch{}
+      if(!vr.ok)return res.status(400).json({ok:false,error:'OTP_INVALID'});
+      const verifiedPhone=normalizePhone(vj?.user?.phone||'');
+      const expectedKR='0'+verifiedPhone.replace(/^82/,'');
+      if(normalizePhone(expectedKR)!==p)return res.status(400).json({ok:false,error:'OTP_INVALID'});
+      const s=db();if(!s)return res.status(503).json({ok:false,error:'DB_NOT_CONFIGURED'});
+      const rows=await s`select id from hwadam_users where phone=${p} limit 1`;
+      if(!rows[0])return res.status(400).json({ok:false,error:'RESET_INFO_MISMATCH'});
+      const {salt,hash}=hashPassword(pw),userId=rows[0].id;
+      await s`update hwadam_users set password_salt=${salt},password_hash=${hash} where id=${userId}`;
+      await s`delete from hwadam_sessions where user_id=${userId}`;
+      return res.status(200).json({ok:true,message:'비밀번호가 변경되었습니다. 새 비밀번호로 로그인해 주세요.'});
+    }catch(e){
+      console.error('password-otp-reset',e);
+      return res.status(500).json({ok:false,error:'RESET_DIRECT_FAILED'});
+    }
+  }
+
   if(req.method==='POST'&&action==='login'){
     const s=db();
     if(!s)return res.status(503).json({ok:false,error:'DB_NOT_CONFIGURED'});

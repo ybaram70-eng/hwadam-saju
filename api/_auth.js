@@ -16,3 +16,19 @@ export function setSessionCookie(res,token,expires){res.setHeader('Set-Cookie',`
 export function clearSessionCookie(res){res.setHeader('Set-Cookie','hwadam_session=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0')}
 export function cookie(req,name){const raw=req.headers?.cookie||'';for(const p of raw.split(';')){const [k,...rest]=p.trim().split('=');if(k===name)return rest.join('=')}return''}
 export async function currentUser(req){const token=cookie(req,'hwadam_session');if(!token)return null;const s=db();if(!s)return null;const rows=await s`select u.id,u.name,u.email,u.phone,u.birth_date,u.gender,u.calendar_type from hwadam_sessions ss join hwadam_users u on u.id=ss.user_id where ss.token_hash=${hashToken(token)} and ss.expires_at>now() limit 1`;return rows[0]||null}
+
+
+export async function ensureEmailResetTable(){
+  const s=db();if(!s)return false;
+  await ensureAuthTables();
+  await s`create table if not exists hwadam_email_reset_tokens (
+    id bigserial primary key,
+    user_id bigint not null references hwadam_users(id) on delete cascade,
+    token_hash text not null unique,
+    expires_at timestamptz not null,
+    used_at timestamptz,
+    created_at timestamptz not null default now()
+  )`;
+  await s`create index if not exists hwadam_email_reset_user_idx on hwadam_email_reset_tokens(user_id,created_at desc)`;
+  return true
+}

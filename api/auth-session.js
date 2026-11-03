@@ -66,16 +66,7 @@ export default async function handler(req,res){
       const u=rows[0],session=await createSession(u.id);
       setSessionCookie(res,session.token,session.expires);
       return res.status(200).json({ok:true,user:u});
-    }catch(e){
-      console.error('auth-signup',e);
-      const code=String(e?.code||'');
-      const msg=String(e?.message||'');
-      if(code==='23505'||/duplicate key|unique constraint/i.test(msg))return res.status(409).json({ok:false,error:'PHONE_EXISTS'});
-      if(code==='23502'||/not-null constraint/i.test(msg))return res.status(500).json({ok:false,error:'SIGNUP_SCHEMA_REQUIRED'});
-      if(code==='42703'||/column .* does not exist/i.test(msg))return res.status(500).json({ok:false,error:'SIGNUP_SCHEMA_REQUIRED'});
-      if(/connect|timeout|ECONN|database/i.test(msg))return res.status(503).json({ok:false,error:'DB_CONNECTION_FAILED'});
-      return res.status(500).json({ok:false,error:'SIGNUP_FAILED'});
-    }
+    }catch(e){console.error('auth-signup',e);return res.status(500).json({ok:false,error:'SIGNUP_FAILED'})}
   }
 
   if(req.method==='POST'){

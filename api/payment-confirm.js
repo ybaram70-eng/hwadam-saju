@@ -41,7 +41,7 @@ export default async function handler(req,res){
     const auth=Buffer.from(secret+':').toString('base64');
     const r=await fetch('https://api.tosspayments.com/v1/payments/confirm',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Basic '+auth,'Idempotency-Key':orderId},body:JSON.stringify({paymentKey,orderId,amount:expected})});
     const data=await r.json();
-    if(!r.ok)return res.status(r.status).json({error:data?.message||'결제 승인에 실패했습니다.',code:data?.code||''});
+    if(!r.ok){console.error('toss-confirm-failed',{status:r.status,code:data?.code||'',message:data?.message||'',orderId,pid,mode});return res.status(r.status).json({error:data?.message||'결제 승인에 실패했습니다.',code:data?.code||''});}
     if(data.status!=='DONE'||Number(data.totalAmount)!==expected)return res.status(400).json({error:'결제 승인 상태를 확인할 수 없습니다.'});
     const approvedAt=data.approvedAt||new Date().toISOString();
     try{await saveEntitlement({reportId:String(reportId),orderId:data.orderId,amount:expected,approvedAt,status:data.status})}catch(dbErr){console.error('entitlement save failed',dbErr)}

@@ -13,7 +13,7 @@ await s`alter table hwadam_users add column if not exists password_salt text`;
 await s`alter table hwadam_users add column if not exists password_hash text`;
 await s`alter table hwadam_users add column if not exists created_at timestamptz not null default now()`;
 await s`alter table hwadam_users alter column email drop not null`;
-await s`create unique index if not exists hwadam_users_phone_uidx on hwadam_users(phone) where phone is not null`;
+try{await s`create index if not exists hwadam_users_phone_idx on hwadam_users(phone) where phone is not null`}catch(e){console.error('auth phone index migration',e)}
 await s`create table if not exists hwadam_sessions (token_hash text primary key, user_id bigint not null references hwadam_users(id) on delete cascade, expires_at timestamptz not null, created_at timestamptz not null default now())`;
 return true}
 export async function ensurePasswordResetTable(){const s=db();if(!s)return false;await ensureAuthTables();await s`create table if not exists hwadam_password_reset_requests (id bigserial primary key, user_id bigint not null references hwadam_users(id) on delete cascade, status text not null default 'pending', requested_at timestamptz not null default now(), completed_at timestamptz, completed_by bigint references hwadam_users(id) on delete set null)`;await s`create index if not exists hwadam_password_reset_status_idx on hwadam_password_reset_requests(status,requested_at desc)`;return true}

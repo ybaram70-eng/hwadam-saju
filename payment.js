@@ -38,7 +38,7 @@
     if(!$('hwadamPayStyle')){const st=d.createElement('style');st.id='hwadamPayStyle';st.textContent=`#hwadamPaidReport{margin-top:18px}#hwadamPaidReport h2{margin:0 0 8px;color:#20352d}.payIntro{font-size:13px;line-height:1.7;color:#6f6b64}.payMode{margin:10px 0;padding:11px 12px;border-radius:12px;font-size:13px;font-weight:900;line-height:1.55}.payMode.test{background:#fff3cf;color:#99621a;border:1px solid #edcf7d}.payMode.live{background:#e9f4ee;color:#1f5d42;border:1px solid #bcd9c9}.payState{margin-top:10px;padding:11px 12px;border-radius:12px;background:#f4f0e8;color:#6f6b64;font-size:13px;line-height:1.6}#payStart{width:100%;margin-top:10px;padding:13px;border:0;border-radius:13px;background:#20352d;color:#fff;font-size:15px;font-weight:800}`;d.head.appendChild(st)}
     return sec;
   }
-  async function ensureWidgets(clientKey){if(widgets)return widgets;await loadSdk();const toss=window.TossPayments(clientKey);widgets=toss.widgets({customerKey:'ANONYMOUS'});return widgets}
+  async function ensureWidgets(clientKey){if(widgets)return widgets;await loadSdk();const toss=window.TossPayments(clientKey);widgets=toss.widgets({customerKey:window.TossPayments.ANONYMOUS});return widgets}
   async function renderOnce(){
     if(rendered)return;
     const pm=$('payMethods'),pa=$('payAgreement');if(!pm||!pa||!widgets)return;

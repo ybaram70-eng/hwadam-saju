@@ -2,7 +2,7 @@
   if(window.__hwadamPaymentBooted)return;
   window.__hwadamPaymentBooted=true;
   const d=document,$=id=>d.getElementById(id);
-  let widgets=null,cfg=null,rendered=false,busy=false,lastKey='';
+  let widgets=null,cfg=null,rendered=false,busy=false,lastKey='',widgetClientKey='';
   async function loadSdk(){
     if(window.TossPayments)return true;
     await new Promise((resolve,reject)=>{
@@ -38,7 +38,19 @@
     if(!$('hwadamPayStyle')){const st=d.createElement('style');st.id='hwadamPayStyle';st.textContent=`#hwadamPaidReport{margin-top:18px}#hwadamPaidReport h2{margin:0 0 8px;color:#20352d}.payIntro{font-size:13px;line-height:1.7;color:#6f6b64}.payMode{margin:10px 0;padding:11px 12px;border-radius:12px;font-size:13px;font-weight:900;line-height:1.55}.payMode.test{background:#fff3cf;color:#99621a;border:1px solid #edcf7d}.payMode.live{background:#e9f4ee;color:#1f5d42;border:1px solid #bcd9c9}.payState{margin-top:10px;padding:11px 12px;border-radius:12px;background:#f4f0e8;color:#6f6b64;font-size:13px;line-height:1.6}#payStart{width:100%;margin-top:10px;padding:13px;border:0;border-radius:13px;background:#20352d;color:#fff;font-size:15px;font-weight:800}`;d.head.appendChild(st)}
     return sec;
   }
-  async function ensureWidgets(clientKey){if(widgets)return widgets;await loadSdk();const toss=window.TossPayments(clientKey);widgets=toss.widgets({customerKey:window.TossPayments.ANONYMOUS});return widgets}
+  async function ensureWidgets(clientKey){
+    if(widgets&&widgetClientKey===clientKey)return widgets;
+    if(widgets&&widgetClientKey!==clientKey){
+      $('payMethods')?.replaceChildren();$('payAgreement')?.replaceChildren();
+      widgets=null;rendered=false;
+    }
+    await loadSdk();
+    if(typeof window.TossPayments!=='function')throw new Error('토스 결제 SDK를 불러오지 못했습니다.');
+    const toss=window.TossPayments(clientKey);
+    widgets=toss.widgets({customerKey:window.TossPayments.ANONYMOUS});
+    widgetClientKey=clientKey;
+    return widgets;
+  }
   async function renderOnce(){
     if(rendered)return;
     const pm=$('payMethods'),pa=$('payAgreement');if(!pm||!pa||!widgets)return;
@@ -79,6 +91,8 @@
       }
       const r=await fetch('/api/payment-config?productId='+encodeURIComponent(sel.id),{cache:'no-store'}),nextCfg=await r.json();
       if(!nextCfg.enabled){state.textContent='결제 기능은 준비되어 있습니다. 토스페이먼츠 키를 연결하면 바로 사용할 수 있습니다.';return}
+      if(nextCfg.mode!=='live'&&nextCfg.mode!=='test')throw new Error('결제 환경 설정이 올바르지 않습니다.');
+      if(!nextCfg.clientKey||!Number.isSafeInteger(Number(nextCfg.amount))||Number(nextCfg.amount)<=0)throw new Error('결제 키 또는 금액 설정이 올바르지 않습니다.');
       cfg=nextCfg;showMode();
       await ensureWidgets(cfg.clientKey);
       await widgets.setAmount({currency:'KRW',value:cfg.amount});
@@ -115,7 +129,12 @@
           btn.textContent=Number(cfg.amount).toLocaleString('ko-KR')+'원 결제하기';
         }
       };
-    }catch(e){state.textContent='결제 모듈을 준비하지 못했습니다: '+(e?.message||String(e))}finally{busy=false}
+    }catch(e){
+      lastKey='';
+      btn.hidden=true;
+      console.error('hwadam-payment-widget-setup-failed',{message:String(e?.message||e)});
+      state.textContent='결제 모듈을 준비하지 못했습니다: '+(e?.message||String(e));
+    }finally{busy=false}
   }
   function boot(){
     ensureBox();sync();

@@ -1,1 +1,23 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>화담 결제 실패</title><style>body{margin:0;background:#f3efe6;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#20352d}.w{max-width:620px;margin:auto;padding:24px}.card{background:#fff;border:1px solid #ddd2c1;border-radius:20px;padding:22px}.muted{color:#6f6b64;line-height:1.7}.bad{font-size:22px;font-weight:800;color:#8f443c}button{width:100%;padding:14px;border:0;border-radius:13px;background:#20352d;color:#fff;font-size:16px;font-weight:800}</style></head><body><div class="w"><div class="card"><div class="bad">결제가 완료되지 않았습니다.</div><p id="detail" class="muted"></p><button onclick="location.href='/'">화담 만세력으로 돌아가기</button></div></div><script>const q=new URLSearchParams(location.search),code=q.get('code')||'',message=q.get('message')||'결제가 취소되었거나 실패했습니다.',detail=document.getElementById('detail');if(code==='NOT_FOUND_PAYMENT_SESSION'){detail.textContent='결제 승인 정보가 만료되었거나 토스 결제키 설정이 맞지 않습니다. 처음 화면으로 돌아가 새 결제로 다시 진행해 주세요.'}else{detail.textContent=(code?code+' · ':'')+message}</script></body></html>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>화담 결제 실패</title><style>body{margin:0;background:#f3efe6;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;color:#20352d}.w{max-width:620px;margin:auto;padding:24px}.card{background:#fff;border:1px solid #ddd2c1;border-radius:20px;padding:22px}.muted{color:#6f6b64;line-height:1.7}.bad{font-size:22px;font-weight:800;color:#8f443c}button{width:100%;padding:14px;border:0;border-radius:13px;background:#20352d;color:#fff;font-size:16px;font-weight:800}</style></head><body><div class="w"><div class="card"><div class="bad">결제가 완료되지 않았습니다.</div><p id="detail" class="muted"></p><button onclick="location.href='/'">화담 만세력으로 돌아가기</button></div></div><script>
+const q=new URLSearchParams(location.search);
+const code=q.get('code')||'';
+const message=q.get('message')||'결제가 취소되었거나 실패했습니다.';
+const detail=document.getElementById('detail');
+let pending={};
+try{pending=JSON.parse(localStorage.getItem('hwadam_pending_payment')||'{}')||{}}catch{}
+const orderId=String(pending.orderId||'');
+const createdAt=String(pending.at||'');
+const diagnostics=[
+  '오류코드: '+(code||'제공되지 않음'),
+  orderId?'주문번호: '+orderId:'',
+  createdAt?'결제 시작: '+createdAt:'',
+  '홈페이지: '+location.origin
+].filter(Boolean).join('\\n');
+if(code==='NOT_FOUND_PAYMENT_SESSION'){
+  detail.textContent='토스페이먼츠 결제 세션을 찾을 수 없습니다. 다시 결제하기 전에 승인 여부를 확인해 주세요.\\n\\n'+diagnostics;
+}else{
+  detail.textContent=message+'\\n\\n'+diagnostics;
+}
+detail.style.whiteSpace='pre-line';
+console.warn('hwadam-payment-failed',{code,orderId,createdAt,origin:location.origin});
+</script></body></html>

@@ -88,6 +88,7 @@
         : `${cfg.productName} · ${Number(cfg.amount).toLocaleString('ko-KR')}원`;
       btn.hidden=false;btn.textContent=`${Number(cfg.amount).toLocaleString('ko-KR')}원 결제하기`;
       btn.onclick=async()=>{
+        if(btn.dataset.paymentPending==='1')return;
         const latest=lastReport(),latestSel=selectedProduct();
         const currentReportId=isMember?reportId:latest.reportId;
         if((!isMember&&(!currentReportId||currentReportId!==reportId))||latestSel.id!==cfg.productId){lastKey='';state.textContent='상담 또는 상품이 변경되었습니다. 결제 정보를 다시 확인합니다.';setTimeout(sync,80);return}
@@ -97,7 +98,22 @@
         try{localStorage.setItem('hwadam_pending_payment',JSON.stringify({orderId,amount:cfg.amount,reportId:currentReportId,productId:cfg.productId,productName:cfg.productName,paymentMode:cfg.mode,question:q,name,at:new Date().toISOString()}))}catch{}
         const successUrl=location.origin+'/payment-success.html?v=20261104-payfix2&reportId='+encodeURIComponent(currentReportId)+'&productId='+encodeURIComponent(cfg.productId)+'&productName='+encodeURIComponent(cfg.productName)+'&orderRef='+encodeURIComponent(orderId);
         const failUrl=location.origin+'/payment-fail.html?v=20261104-payfix2&reportId='+encodeURIComponent(currentReportId)+'&productId='+encodeURIComponent(cfg.productId);
-        await widgets.requestPayment({orderId,orderName:cfg.orderName,successUrl,failUrl,customerName:name});
+        if(btn.dataset.paymentPending==='1')return;
+        btn.dataset.paymentPending='1';
+        btn.disabled=true;
+        btn.textContent='결제창을 여는 중입니다…';
+        try{
+          await widgets.requestPayment({orderId,orderName:cfg.orderName,successUrl,failUrl,customerName:name});
+        }catch(error){
+          const code=String(error?.code||'');
+          const message=String(error?.message||'결제 요청을 완료하지 못했습니다.');
+          console.error('hwadam-payment-request-failed',{code,message});
+          state.textContent='결제 요청이 완료되지 않았습니다. 카드 승인 여부를 확인한 뒤 다시 진행해 주세요. ('+(code||'결제 요청 오류')+')';
+        }finally{
+          btn.dataset.paymentPending='0';
+          btn.disabled=false;
+          btn.textContent=Number(cfg.amount).toLocaleString('ko-KR')+'원 결제하기';
+        }
       };
     }catch(e){state.textContent='결제 모듈을 준비하지 못했습니다: '+(e?.message||String(e))}finally{busy=false}
   }

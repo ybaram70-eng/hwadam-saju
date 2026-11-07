@@ -12,11 +12,11 @@ const diagnostics=[
   orderId?'주문번호: '+orderId:'',
   createdAt?'결제 시작: '+createdAt:'',
   '홈페이지: '+location.origin
-].filter(Boolean).join('\\n');
+].filter(Boolean).join('\n');
 if(code==='NOT_FOUND_PAYMENT_SESSION'){
-  detail.textContent='토스페이먼츠 결제 세션을 찾을 수 없습니다. 다시 결제하기 전에 승인 여부를 확인해 주세요.\\n\\n'+diagnostics;
+  detail.textContent='토스페이먼츠 결제 세션을 찾을 수 없습니다. 다시 결제하기 전에 승인 여부를 확인해 주세요.\n\n'+diagnostics;
 }else{
-  detail.textContent=message+'\\n\\n'+diagnostics;
+  detail.textContent=message+'\n\n'+diagnostics;
 }
 detail.style.whiteSpace='pre-line';
 console.warn('hwadam-payment-failed',{code,orderId,createdAt,origin:location.origin});

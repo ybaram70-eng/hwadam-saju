@@ -24,7 +24,8 @@ export default async function handler(req,res){
   if(req.method!=='POST')return res.status(405).json({error:'POST 요청만 지원합니다.'});
   const secret=process.env.TOSS_SECRET_KEY||'';
   if(!secret)return res.status(503).json({error:'결제 서버 설정이 아직 완료되지 않았습니다.'});
-  const mode=secret.startsWith('test_sk_')?'test':secret.startsWith('live_sk_')?'live':'unknown';
+  const mode=/^test_(?:gsk|sk)_/.test(secret)?'test':/^live_(?:gsk|sk)_/.test(secret)?'live':'unknown';
+  if(mode==='unknown')return res.status(503).json({error:'토스페이먼츠 서버 비밀키 형식이 올바르지 않습니다.',code:'INVALID_SECRET_KEY_FORMAT'});
   try{
     const {paymentKey,orderId,amount,reportId,productId}=req.body||{};
     const pid=String(productId||'comprehensive');

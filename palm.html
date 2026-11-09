@@ -23,7 +23,8 @@
     <p>손바닥 사진을 올리고 주요 손금선을 선택해 일반적인 의미와 관찰 포인트를 쉽게 확인해 보세요.</p>
   </section>
 
-  <section class="card">
+  <section id="paidPalmNotice" class="card" style="display:none;background:#edf8f1;border:2px solid #23664c;font-size:18px;font-weight:800;line-height:1.7"></section>
+<section class="card">
     <h2>1. 손바닥 사진 올리기</h2>
     <label class="upload">📷 손바닥 사진 선택
       <input id="file" type="file" accept="image/*">
@@ -220,12 +221,18 @@ function storePalmSajuIntent(){
     document.getElementById('palmSajuCta')?.addEventListener('click',()=>storePalmSajuIntent());
     document.getElementById('palmSajuBuy').addEventListener('click',()=>{storePalmSajuIntent();location.href='/manse?open=input&palmSaju=1'});
 async function showPaidPalmIfReady(){
-  const q=new URLSearchParams(location.search),rid=q.get('paidReport');
+  const q=new URLSearchParams(location.search);
+  let rid=q.get('paidReport');
+  if(!rid){try{const paid=JSON.parse(localStorage.getItem('hwadam_paid_report')||'null');const pid=String(paid?.productId||'').toLowerCase(),name=String(paid?.productName||'');if(paid?.reportId&&(pid.startsWith('palm-')||/손금/.test(name)))rid=paid.reportId}catch{}}
   if(!rid)return;
+  const topNotice=document.getElementById('paidPalmNotice');
+  if(topNotice){topNotice.style.display='block';topNotice.textContent='결제한 손금 상세분석 2,950원 · 추가 결제 없이 리포트를 확인합니다.';}
+  const qs=new URLSearchParams(location.search);if(qs.get('paidReport')!==rid){qs.set('paidReport',rid);history.replaceState(null,'',location.pathname+'?'+qs.toString())}
   const image=selectedFile?await imageData(selectedFile):sessionStorage.getItem('hwadam_palm_image');const hand=selectedHand||sessionStorage.getItem('hwadam_palm_hand');
-  if(!image||!hand){const status=document.getElementById('aiStatus');status.textContent='결제 기록이 있습니다. 손금 상세 리포트를 만들려면 손바닥 사진을 다시 선택하고 왼손·오른손을 확인해 주세요. 다시 결제하지 마세요.';status.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';document.getElementById('file')?.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(!image||!hand){if(topNotice){topNotice.textContent='결제 기록을 찾았습니다. 사진과 손을 선택하면 유료 상세분석을 진행합니다. 다시 결제하지 마세요.';}const status=document.getElementById('aiStatus');status.textContent='결제 기록이 있습니다. 손금 상세 리포트를 만들려면 손바닥 사진을 다시 선택하고 왼손·오른손을 확인해 주세요. 다시 결제하지 마세요.';status.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';document.getElementById('file')?.scrollIntoView({behavior:'smooth',block:'start'});return}
   let map={};try{map=JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{}}catch{}
   const ent=map[rid];
+  if(!ent?.token){if(topNotice)topNotice.textContent='결제 기록은 있지만 확인용 이용권이 없습니다. 추가 결제하지 마시고 고객지원에 문의해 주세요.';document.getElementById('aiStatus').textContent='결제 확인 정보가 누락되었습니다. 다시 결제하지 마세요.';return}
   const statusEl=document.getElementById('aiStatus');statusEl.textContent='결제한 손금 리포트를 확인하고 있습니다. 다시 결제하지 마세요.';statusEl.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';
   try{
     const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),15000);

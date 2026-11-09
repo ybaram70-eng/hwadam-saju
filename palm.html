@@ -34,6 +34,11 @@
     <div class="note">손 전체가 밝고 선명하게 보이도록 촬영해 주세요. AI 분석을 누르면 사진이 분석을 위해 전송됩니다.</div>
   </section>
 
+  <section id="paidReportRecovery" class="card" style="display:none;border:2px solid #24523f;background:#f0f8f2">
+    <h2>결제한 손금 리포트</h2>
+    <p id="paidRecoveryMessage" style="font-size:16px;line-height:1.8;white-space:pre-line">결제 내역을 확인하고 있습니다.</p>
+    <button type="button" id="paidRecoveryButton" class="aiBtn">결제한 상세 리포트 열기 (추가 결제 없음)</button>
+  </section>
   <section class="card">
     <h2>2. 어느 손인가요?</h2>
     <div class="seg"><button data-hand="left">왼손</button><button data-hand="right">오른손</button></div>
@@ -225,33 +230,39 @@ async function showPaidPalmIfReady(){
   let rid=q.get('paidReport');
   if(!rid){try{const paid=JSON.parse(localStorage.getItem('hwadam_paid_report')||'null');const pid=String(paid?.productId||'').toLowerCase(),name=String(paid?.productName||'');if(paid?.reportId&&(pid.startsWith('palm-')||/손금/.test(name)))rid=paid.reportId}catch{}}
   if(!rid)return;
+  const recovery=document.getElementById('paidReportRecovery');
+  const recoveryMsg=document.getElementById('paidRecoveryMessage');
+  const recoveryBtn=document.getElementById('paidRecoveryButton');
+  recovery.style.display='block';
+  recoveryBtn.onclick=()=>showPaidPalmIfReady();
+  recoveryMsg.textContent='결제한 손금 상세분석을 불러옵니다. 다시 결제하지 마세요.';
   const topNotice=document.getElementById('paidPalmNotice');
   if(topNotice){topNotice.style.display='block';topNotice.textContent='결제한 손금 상세분석 · 추가 결제 없이 리포트를 확인합니다.';}
   const qs=new URLSearchParams(location.search);if(qs.get('paidReport')!==rid){qs.set('paidReport',rid);history.replaceState(null,'',location.pathname+'?'+qs.toString())}
   const image=selectedFile?await imageData(selectedFile):(sessionStorage.getItem('hwadam_palm_image')||localStorage.getItem('hwadam_palm_image_backup'));const hand=selectedHand||sessionStorage.getItem('hwadam_palm_hand')||localStorage.getItem('hwadam_palm_hand_backup');
   const cacheKey='hwadam_paid_palm_result_'+rid;
   let cached=null;try{cached=JSON.parse(localStorage.getItem(cacheKey)||'null')}catch{}
-  if(!cached?.answer&&!image||!cached?.answer&&!hand){if(topNotice){topNotice.textContent='결제 기록을 찾았습니다. 사진과 손을 선택하면 유료 상세분석을 진행합니다. 다시 결제하지 마세요.';}const status=document.getElementById('aiStatus');status.textContent='결제 기록이 있습니다. 손금 상세 리포트를 만들려면 손바닥 사진을 다시 선택하고 왼손·오른손을 확인해 주세요. 다시 결제하지 마세요.';status.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';topNotice?.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if((!cached?.answer&&!image)||(!cached?.answer&&!hand)){recoveryMsg.textContent='결제 기록을 확인했습니다. 손바닥 사진과 왼손·오른손 선택이 필요합니다.\n사진을 선택하면 추가 결제 없이 상세 리포트를 만들겠습니다.';recoveryBtn.textContent='사진 선택 후 결제한 리포트 열기';if(topNotice){topNotice.textContent='결제 기록을 찾았습니다. 사진과 손을 선택하면 유료 상세분석을 진행합니다. 다시 결제하지 마세요.';}const status=document.getElementById('aiStatus');status.textContent='결제 기록이 있습니다. 손금 상세 리포트를 만들려면 손바닥 사진을 다시 선택하고 왼손·오른손을 확인해 주세요. 다시 결제하지 마세요.';status.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';topNotice?.scrollIntoView({behavior:'smooth',block:'start'});return}
   let map={};try{map=JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{}}catch{}
   const ent=map[rid];
-  if(!ent?.token){if(topNotice)topNotice.textContent='결제 기록은 있지만 확인용 이용권이 없습니다. 추가 결제하지 마시고 고객지원에 문의해 주세요.';document.getElementById('aiStatus').textContent='결제 확인 정보가 누락되었습니다. 다시 결제하지 마세요.';return}
-  const statusEl=document.getElementById('aiStatus');statusEl.textContent='결제한 손금 리포트를 확인하고 있습니다. 다시 결제하지 마세요.';statusEl.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';
+  if(!ent?.token){recoveryMsg.textContent='결제 기록은 있지만 결제 확인 정보가 누락되었습니다. 다시 결제하지 마세요.';if(topNotice)topNotice.textContent='결제 기록은 있지만 확인용 이용권이 없습니다. 추가 결제하지 마시고 고객지원에 문의해 주세요.';document.getElementById('aiStatus').textContent='결제 확인 정보가 누락되었습니다. 다시 결제하지 마세요.';return}
+  recoveryMsg.textContent='결제 확인 중입니다. 잠시만 기다려 주세요.';const statusEl=document.getElementById('aiStatus');statusEl.textContent='결제한 손금 리포트를 확인하고 있습니다. 다시 결제하지 마세요.';statusEl.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';
   try{
     const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),15000);
     let vr;try{vr=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',signal:controller.signal,body:JSON.stringify({token:ent?.token||'',reportId:rid})})}finally{clearTimeout(timer)}
     const vj=await vr.json();
-    if(!vr.ok||!vj.ok){document.getElementById('aiStatus').textContent=vj.error||'결제 확인에 실패했습니다. 다시 결제하지 마세요.';return}
+    if(!vr.ok||!vj.ok){recoveryMsg.textContent=vj.error||'결제 확인이 지연되고 있습니다. 다시 결제하지 마세요.';document.getElementById('aiStatus').textContent=recoveryMsg.textContent;return}
     const status=document.getElementById('aiStatus'),answer=document.getElementById('aiAnswer');
-    if(cached?.answer){answer.textContent=cached.answer;answer.style.display='block';status.textContent='결제한 손금 상세 리포트입니다. 다시 결제하지 않아도 됩니다.';if(topNotice)topNotice.textContent='결제한 손금 상세 리포트 · 저장된 분석 결과';answer.scrollIntoView({behavior:'smooth',block:'start'});return}
-    status.textContent='결제가 확인되었습니다. 상세 손금 분석을 진행합니다…';
+    if(cached?.answer){recoveryMsg.textContent='결제한 상세 리포트를 찾았습니다. 아래에 표시합니다.';answer.textContent=cached.answer;answer.style.display='block';status.textContent='결제한 손금 상세 리포트입니다. 다시 결제하지 않아도 됩니다.';if(topNotice)topNotice.textContent='결제한 손금 상세 리포트 · 저장된 분석 결과';answer.scrollIntoView({behavior:'smooth',block:'start'});return}
+    recoveryMsg.textContent='결제 확인 완료. AI가 상세 손금 리포트를 작성하고 있습니다.';status.textContent='결제가 확인되었습니다. 상세 손금 분석을 진행합니다…';
     const r=await fetch('/api/consult',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mode:'palm',detail:'detail',hand,image})});
     const j=await r.json();if(!r.ok)throw new Error(j.error||'상세분석에 실패했습니다.');
-    answer.textContent=j.answer;answer.style.display='block';status.textContent='AI 손금 상세분석이 완료되었습니다.';
+    answer.textContent=j.answer;answer.style.display='block';recoveryMsg.textContent='유료 상세 손금 리포트가 완성되었습니다. 아래에서 확인하세요.';status.textContent='AI 손금 상세분석이 완료되었습니다.';
     try{localStorage.setItem(cacheKey,JSON.stringify({answer:j.answer,savedAt:new Date().toISOString()}))}catch{}
     if(topNotice)topNotice.textContent='결제한 손금 상세 리포트 · 분석 결과가 저장되었습니다.';
     document.getElementById('palmPaidOptions').style.display='none';
     answer.scrollIntoView({behavior:'smooth',block:'start'});
-  }catch(e){document.getElementById('aiStatus').textContent=e.name==='AbortError'?'결제 확인 서버의 응답이 늦어지고 있습니다. 결제는 다시 하지 마시고 잠시 후 리포트 열기를 다시 눌러 주세요.':(e.message||'상세분석 중 오류가 발생했습니다. 다시 결제하지 마세요.')}
+  }catch(e){recoveryMsg.textContent=e.name==='AbortError'?'결제 확인 서버가 지연되고 있습니다. 추가 결제하지 마세요.':(e.message||'리포트를 불러오지 못했습니다. 다시 결제하지 마세요.');document.getElementById('aiStatus').textContent=recoveryMsg.textContent}
 }
 document.getElementById('file').addEventListener('change',()=>{if(new URLSearchParams(location.search).has('paidReport'))setTimeout(showPaidPalmIfReady,200)});
 document.querySelectorAll('[data-hand]').forEach(el=>el.addEventListener('click',()=>{if(new URLSearchParams(location.search).has('paidReport'))setTimeout(showPaidPalmIfReady,200)}));

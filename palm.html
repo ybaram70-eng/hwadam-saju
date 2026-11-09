@@ -226,8 +226,10 @@ async function showPaidPalmIfReady(){
   if(!image||!hand){const status=document.getElementById('aiStatus');status.textContent='결제 기록이 있습니다. 손금 상세 리포트를 만들려면 손바닥 사진을 다시 선택하고 왼손·오른손을 확인해 주세요. 다시 결제하지 마세요.';status.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';document.getElementById('file')?.scrollIntoView({behavior:'smooth',block:'start'});return}
   let map={};try{map=JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{}}catch{}
   const ent=map[rid];
+  const statusEl=document.getElementById('aiStatus');statusEl.textContent='결제한 손금 리포트를 확인하고 있습니다. 다시 결제하지 마세요.';statusEl.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';
   try{
-    const vr=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:ent?.token||'',reportId:rid})});
+    const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),15000);
+    let vr;try{vr=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',signal:controller.signal,body:JSON.stringify({token:ent?.token||'',reportId:rid})})}finally{clearTimeout(timer)}
     const vj=await vr.json();
     if(!vr.ok||!vj.ok){document.getElementById('aiStatus').textContent=vj.error||'결제 확인에 실패했습니다. 다시 결제하지 마세요.';return}
     const status=document.getElementById('aiStatus'),answer=document.getElementById('aiAnswer');
@@ -237,7 +239,7 @@ async function showPaidPalmIfReady(){
     answer.textContent=j.answer;answer.style.display='block';status.textContent='AI 손금 상세분석이 완료되었습니다.';
     document.getElementById('palmPaidOptions').style.display='none';
     answer.scrollIntoView({behavior:'smooth',block:'start'});
-  }catch(e){document.getElementById('aiStatus').textContent=e.message||'상세분석 중 오류가 발생했습니다.'}
+  }catch(e){document.getElementById('aiStatus').textContent=e.name==='AbortError'?'결제 확인 서버의 응답이 늦어지고 있습니다. 결제는 다시 하지 마시고 잠시 후 리포트 열기를 다시 눌러 주세요.':(e.message||'상세분석 중 오류가 발생했습니다. 다시 결제하지 마세요.')}
 }
 document.getElementById('file').addEventListener('change',()=>{if(new URLSearchParams(location.search).has('paidReport'))setTimeout(showPaidPalmIfReady,200)});
 document.querySelectorAll('[data-hand]').forEach(el=>el.addEventListener('click',()=>{if(new URLSearchParams(location.search).has('paidReport'))setTimeout(showPaidPalmIfReady,200)}));

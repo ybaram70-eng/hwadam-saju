@@ -84,6 +84,14 @@
         d.dispatchEvent(new CustomEvent('hwadam:report-entitled',{detail:{reportId,admin:true}}));
         return;
       }
+      if(m?.active){
+        const exp=m.expires_at?new Date(m.expires_at).toLocaleDateString('ko-KR'):'';
+        state.textContent='1년 회원권 이용 중'+(exp?' · '+exp+'까지':'')+' · 추가 결제 없이 상세분석을 이용할 수 있습니다.';
+        btn.hidden=true;
+        const reportBtn=$('aiReport');if(reportBtn){reportBtn.dataset.entitled='1';reportBtn.textContent='회원권으로 정식 리포트 열기'}
+        d.dispatchEvent(new CustomEvent('hwadam:report-entitled',{detail:{reportId,membership:true}}));
+        return;
+      }
       if(isMember){
         if(m?.active){
           const exp=m.expires_at?new Date(m.expires_at).toLocaleDateString('ko-KR'):'';
@@ -112,6 +120,8 @@
         : `${cfg.productName} · ${Number(cfg.amount).toLocaleString('ko-KR')}원`;
       btn.hidden=false;btn.textContent=`${Number(cfg.amount).toLocaleString('ko-KR')}원 결제하기`;
       btn.onclick=async()=>{
+        const memberNow=await membership();
+        if(memberNow?.active||memberNow?.admin){state.textContent='회원권 이용 중입니다. 중복 결제하지 않아도 됩니다.';btn.hidden=true;return}
         if(btn.dataset.paymentPending==='1'||paymentInProgress)return;
         const latest=lastReport(),latestSel=selectedProduct();
         const currentReportId=isMember?reportId:latest.reportId;

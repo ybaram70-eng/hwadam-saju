@@ -4,7 +4,7 @@ let sql=null;
 function db(){const url=process.env.POSTGRES_URL||process.env.DATABASE_URL||process.env.POSTGRES_URL_NON_POOLING||'';if(!url)return null;if(!sql)sql=postgres(url,{ssl:'require',max:1,prepare:false,connect_timeout:5,idle_timeout:20});return sql}
 async function getEntitlement(reportId){const s=db();if(!s)return null;const rows=await s`select report_id,order_id,amount,payment_status from hwadam_report_entitlements where report_id=${reportId} limit 1`;return rows[0]||null}
 async function currentUser(req){const raw=req.headers?.cookie||'';const part=raw.split(';').map(x=>x.trim()).find(x=>x.startsWith('hwadam_session='));if(!part)return null;const token=part.slice('hwadam_session='.length);const s=db();if(!s)return null;const hash=crypto.createHash('sha256').update(token).digest('hex');const rows=await s`select u.phone from hwadam_sessions ss join hwadam_users u on u.id=ss.user_id where ss.token_hash=${hash} and ss.expires_at>now() limit 1`;return rows[0]||null}
-function isAdminUser(user){if(!user?.phone)return false;const phone=String(user.phone).replace(/\\D/g,'');return crypto.createHash('sha256').update('hwadam-admin-v1:'+phone).digest('hex')==='9a04a23863306bed15abc362c442c9e9d2a5fba058cba93f2481d892db4b72b9'}
+function isAdminUser(user){if(!user?.phone)return false;const phone=String(user.phone).replace(/\D/g,'');return crypto.createHash('sha256').update('hwadam-admin-v1:'+phone).digest('hex')==='9a04a23863306bed15abc362c442c9e9d2a5fba058cba93f2481d892db4b72b9'}
 const PRODUCTS={
   'yongsin':5900,
   'annual-fortune':9900,

@@ -2,7 +2,7 @@
   if(window.__hwadamPaymentBooted)return;
   window.__hwadamPaymentBooted=true;
   const d=document,$=id=>d.getElementById(id);
-  let widgets=null,cfg=null,rendered=false,busy=false,lastKey='',widgetClientKey='',paymentInProgress=false;
+  let widgets=null,standardPayment=null,cfg=null,rendered=false,busy=false,lastKey='',widgetClientKey='',paymentInProgress=false;
   async function loadSdk(){
     if(window.TossPayments)return true;
     await new Promise((resolve,reject)=>{
@@ -39,17 +39,21 @@
     return sec;
   }
   async function ensureWidgets(clientKey){
-    if(widgets&&widgetClientKey===clientKey)return widgets;
+    if(widgetClientKey===clientKey&&(widgets||standardPayment))return widgets||standardPayment;
     if(widgets&&widgetClientKey!==clientKey){
       $('payMethods')?.replaceChildren();$('payAgreement')?.replaceChildren();
-      widgets=null;rendered=false;
+      widgets=null;standardPayment=null;rendered=false;
     }
     await loadSdk();
     if(typeof window.TossPayments!=='function')throw new Error('토스 결제 SDK를 불러오지 못했습니다.');
     const toss=window.TossPayments(clientKey);
-    widgets=toss.widgets({customerKey:window.TossPayments.ANONYMOUS});
+    if(clientKey.startsWith('live_ck_')||clientKey.startsWith('test_ck_')){
+      standardPayment=toss.payment({customerKey:window.TossPayments.ANONYMOUS});
+    }else if(clientKey.startsWith('live_gck_')||clientKey.startsWith('test_gck_')){
+      widgets=toss.widgets({customerKey:window.TossPayments.ANONYMOUS});
+    }else throw new Error('지원하지 않는 토스 결제 키 형식입니다.');
     widgetClientKey=clientKey;
-    return widgets;
+    return widgets||standardPayment;
   }
   async function renderOnce(){
     if(rendered)return;
@@ -95,8 +99,14 @@
       if(!nextCfg.clientKey||!Number.isSafeInteger(Number(nextCfg.amount))||Number(nextCfg.amount)<=0)throw new Error('결제 키 또는 금액 설정이 올바르지 않습니다.');
       cfg=nextCfg;showMode();
       await ensureWidgets(cfg.clientKey);
-      await widgets.setAmount({currency:'KRW',value:cfg.amount});
-      await renderOnce();
+      if(widgets){
+        await widgets.setAmount({currency:'KRW',value:cfg.amount});
+        await renderOnce();
+      }else{
+        const pm=$('payMethods'),pa=$('payAgreement');
+        if(pm){pm.hidden=true;pm.replaceChildren()}
+        if(pa){pa.hidden=true;pa.replaceChildren()}
+      }
       state.innerHTML=cfg.saleActive
         ? `<b>연말 감사 50% 할인</b><br>${cfg.productName} · <del>${Number(cfg.originalAmount).toLocaleString('ko-KR')}원</del> → <strong>${Number(cfg.amount).toLocaleString('ko-KR')}원</strong><br><small>2026년 12월 31일까지</small>`
         : `${cfg.productName} · ${Number(cfg.amount).toLocaleString('ko-KR')}원`;
@@ -118,7 +128,11 @@
         btn.disabled=true;
         btn.textContent='결제창을 여는 중입니다…';
         try{
-          await widgets.requestPayment({orderId,orderName:cfg.orderName,successUrl,failUrl,customerName:name});
+          if(standardPayment){
+            await standardPayment.requestPayment({method:'CARD',amount:{currency:'KRW',value:cfg.amount},orderId,orderName:cfg.orderName,successUrl,failUrl,customerName:name,card:{useEscrow:false,flowMode:'DEFAULT'}});
+          }else{
+            await widgets.requestPayment({orderId,orderName:cfg.orderName,successUrl,failUrl,customerName:name});
+          }
         }catch(error){
           const code=String(error?.code||'');
           const message=String(error?.message||'결제 요청을 완료하지 못했습니다.');

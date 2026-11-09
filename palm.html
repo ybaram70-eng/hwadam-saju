@@ -223,7 +223,7 @@ async function showPaidPalmIfReady(){
   const q=new URLSearchParams(location.search),rid=q.get('paidReport');
   if(!rid)return;
   const image=sessionStorage.getItem('hwadam_palm_image'),hand=sessionStorage.getItem('hwadam_palm_hand');
-  if(!image||!hand){document.getElementById('aiStatus').textContent='결제는 확인되었습니다. 상세분석을 위해 손바닥 사진을 다시 올려 주세요.';return}
+  if(!image||!hand){const status=document.getElementById('aiStatus');status.textContent='결제 기록이 있습니다. 손금 상세 리포트를 만들려면 손바닥 사진을 다시 선택하고 왼손·오른손을 확인해 주세요. 다시 결제하지 마세요.';status.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';document.querySelector('.upload')?.scrollIntoView({behavior:'smooth',block:'start'});return}
   let map={};try{map=JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{}}catch{}
   const ent=map[rid];
   try{

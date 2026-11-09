@@ -39,7 +39,14 @@ module.exports=async function handler(req,res){
     const validAmounts=base?[Number(base),Math.floor(Number(base)/2)]:[2950,3950,4950,7450,5900,7900,9900,14900];
     const paidAmount=Number(payload?.amount);
     if(![1,2].includes(payload?.v)||payload?.reportId!==reportId||!validAmounts.includes(paidAmount))return res.status(403).json({ok:false,error:'이 리포트에 사용할 수 없는 이용권입니다.'});
-    if(process.env.POSTGRES_URL||process.env.DATABASE_URL){const row=await Promise.race([getEntitlement(reportId),new Promise((_,reject)=>setTimeout(()=>reject(new Error('DB_TIMEOUT')),4000))]);if(!row||row.payment_status!=='DONE'||Number(row.amount)!==paidAmount||row.order_id!==payload.orderId)return res.status(403).json({ok:false,error:'서버 결제기록을 확인할 수 없습니다.'})}
+    // A DONE row is written only after Toss confirms the payment in /api/payment-confirm.
+    // Prefer the persisted confirmation for report reads: repeated Toss lookups may
+    // return errors after payment and must not block an already paid customer.
+    if(process.env.POSTGRES_URL||process.env.DATABASE_URL){
+      const row=await Promise.race([getEntitlement(reportId),new Promise((_,reject)=>setTimeout(()=>reject(new Error('DB_TIMEOUT')),4000))]);
+      if(!row||row.payment_status!=='DONE'||Number(row.amount)!==paidAmount||row.order_id!==payload.orderId)return res.status(403).json({ok:false,error:'서버 결제기록을 확인할 수 없습니다.'});
+      return res.status(200).json({ok:true,reportId:payload.reportId,orderId:payload.orderId,approvedAt:payload.approvedAt,productId:payload.productId||'',source:'confirmed-payment-record'});
+    }
     const auth=Buffer.from(secret+':').toString('base64');
     const pr=await fetch('https://api.tosspayments.com/v1/payments/orders/'+encodeURIComponent(payload.orderId),{headers:{Authorization:'Basic '+auth},signal:AbortSignal.timeout(6000)});
     const pay=await pr.json().catch(()=>({}));

@@ -91,8 +91,8 @@ const data={
  money:['재물선','주로 새끼손가락 아래 수성구의 세로선이나 태양선·운명선과의 조합을 함께 봅니다. 한 선만으로 재물운을 단정하지 않고 여러 요소를 같이 살펴봅니다.']
 };
 let selectedFile=null,selectedHand='';
-document.getElementById('file').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;selectedFile=f;const p=document.getElementById('preview');p.src=URL.createObjectURL(f);p.style.display='block';document.getElementById('aiAnswer').style.display='none';document.getElementById('aiStatus').textContent='사진이 선택되었습니다. 왼손/오른손을 선택해 주세요.'});
-document.querySelectorAll('[data-hand]').forEach(b=>b.onclick=()=>{selectedHand=b.dataset.hand;document.querySelectorAll('[data-hand]').forEach(x=>x.classList.toggle('on',x===b));document.getElementById('aiStatus').textContent=(selectedHand==='left'?'왼손':'오른손')+'으로 선택되었습니다. AI 분석을 눌러주세요.'});
+document.getElementById('file').addEventListener('change',e=>{const f=e.target.files?.[0];if(!f)return;selectedFile=f;imageData(f).then(data=>{try{localStorage.setItem('hwadam_palm_image_backup',data)}catch{}}).catch(()=>{});const p=document.getElementById('preview');p.src=URL.createObjectURL(f);p.style.display='block';document.getElementById('aiAnswer').style.display='none';document.getElementById('aiStatus').textContent='사진이 선택되었습니다. 왼손/오른손을 선택해 주세요.'});
+document.querySelectorAll('[data-hand]').forEach(b=>b.onclick=()=>{selectedHand=b.dataset.hand;try{localStorage.setItem('hwadam_palm_hand_backup',selectedHand)}catch{}document.querySelectorAll('[data-hand]').forEach(x=>x.classList.toggle('on',x===b));document.getElementById('aiStatus').textContent=(selectedHand==='left'?'왼손':'오른손')+'으로 선택되었습니다. AI 분석을 눌러주세요.'});
 document.querySelectorAll('[data-line]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-line]').forEach(x=>x.classList.toggle('on',x===b));const v=data[b.dataset.line];document.getElementById('result').innerHTML='<b>'+v[0]+'</b>'+v[1]});
 async function imageData(file){
   return await new Promise((resolve,reject)=>{
@@ -226,12 +226,12 @@ async function showPaidPalmIfReady(){
   if(!rid){try{const paid=JSON.parse(localStorage.getItem('hwadam_paid_report')||'null');const pid=String(paid?.productId||'').toLowerCase(),name=String(paid?.productName||'');if(paid?.reportId&&(pid.startsWith('palm-')||/손금/.test(name)))rid=paid.reportId}catch{}}
   if(!rid)return;
   const topNotice=document.getElementById('paidPalmNotice');
-  if(topNotice){topNotice.style.display='block';topNotice.textContent='결제한 손금 상세분석 2,950원 · 추가 결제 없이 리포트를 확인합니다.';}
+  if(topNotice){topNotice.style.display='block';topNotice.textContent='결제한 손금 상세분석 · 추가 결제 없이 리포트를 확인합니다.';}
   const qs=new URLSearchParams(location.search);if(qs.get('paidReport')!==rid){qs.set('paidReport',rid);history.replaceState(null,'',location.pathname+'?'+qs.toString())}
-  const image=selectedFile?await imageData(selectedFile):sessionStorage.getItem('hwadam_palm_image');const hand=selectedHand||sessionStorage.getItem('hwadam_palm_hand');
+  const image=selectedFile?await imageData(selectedFile):(sessionStorage.getItem('hwadam_palm_image')||localStorage.getItem('hwadam_palm_image_backup'));const hand=selectedHand||sessionStorage.getItem('hwadam_palm_hand')||localStorage.getItem('hwadam_palm_hand_backup');
   const cacheKey='hwadam_paid_palm_result_'+rid;
   let cached=null;try{cached=JSON.parse(localStorage.getItem(cacheKey)||'null')}catch{}
-  if(!cached?.answer&&!image||!cached?.answer&&!hand){if(topNotice){topNotice.textContent='결제 기록을 찾았습니다. 사진과 손을 선택하면 유료 상세분석을 진행합니다. 다시 결제하지 마세요.';}const status=document.getElementById('aiStatus');status.textContent='결제 기록이 있습니다. 손금 상세 리포트를 만들려면 손바닥 사진을 다시 선택하고 왼손·오른손을 확인해 주세요. 다시 결제하지 마세요.';status.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';document.getElementById('file')?.scrollIntoView({behavior:'smooth',block:'start'});return}
+  if(!cached?.answer&&!image||!cached?.answer&&!hand){if(topNotice){topNotice.textContent='결제 기록을 찾았습니다. 사진과 손을 선택하면 유료 상세분석을 진행합니다. 다시 결제하지 마세요.';}const status=document.getElementById('aiStatus');status.textContent='결제 기록이 있습니다. 손금 상세 리포트를 만들려면 손바닥 사진을 다시 선택하고 왼손·오른손을 확인해 주세요. 다시 결제하지 마세요.';status.style.fontWeight='700';document.getElementById('palmPaidOptions').style.display='none';topNotice?.scrollIntoView({behavior:'smooth',block:'start'});return}
   let map={};try{map=JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{}}catch{}
   const ent=map[rid];
   if(!ent?.token){if(topNotice)topNotice.textContent='결제 기록은 있지만 확인용 이용권이 없습니다. 추가 결제하지 마시고 고객지원에 문의해 주세요.';document.getElementById('aiStatus').textContent='결제 확인 정보가 누락되었습니다. 다시 결제하지 마세요.';return}

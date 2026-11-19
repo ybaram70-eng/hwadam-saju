@@ -72,6 +72,7 @@
   async function refreshIdentity(){
     try{const r=await fetch('/api/auth-session',{credentials:'same-origin',cache:'no-store'});const j=await r.json();user=j.user||null;isAdmin=!!j.isAdmin}catch{user=null;isAdmin=false}
     bar();
+    d.defaultView?.dispatchEvent(new CustomEvent('hwadam-auth-changed',{detail:{loggedIn:!!user}}));
   }
   async function submitLogin(e){e.preventDefault();const form=e.currentTarget,f=new FormData(form),box=form.querySelector('.hdAuthMsg'),btn=form.querySelector('.hdAuthSubmit');btn.disabled=true;box.textContent='로그인 중…';const {r,j}=await post('/api/auth-session?action=login',{phone:f.get('phone'),password:f.get('password')});btn.disabled=false;if(!r.ok){box.textContent=msgFor(j.error);return}await refreshIdentity();$('hwadamAuthModal')?.remove()}
   async function submitSignup(e){e.preventDefault();const form=e.currentTarget,f=new FormData(form),box=form.querySelector('.hdAuthMsg'),btn=form.querySelector('.hdAuthSubmit'),bd=birth(f.get('birthDate'));if(bd===false){box.textContent='생년월일을 숫자 8자리로 정확히 입력해 주세요. 예: 19651214';return}btn.disabled=true;box.textContent='가입 중…';const {r,j}=await post('/api/auth-session?action=signup',{name:f.get('name'),phone:f.get('phone'),birthDate:bd,gender:f.get('gender'),password:f.get('password'),agree:f.get('agree')==='on'});btn.disabled=false;if(!r.ok){box.textContent=msgFor(j.error);return}await refreshIdentity();$('hwadamAuthModal')?.remove();const n=d.getElementById('name');if(n&&!n.value)n.value=user?.name||''}

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>화담철학관 | 결제한 상담 리포트</title>
+<style>body{margin:0;background:#f3efe6;color:#20352d;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif;line-height:1.8}.wrap{max-width:800px;margin:auto;padding:20px}.paper{background:white;padding:28px;border-radius:16px;box-shadow:0 2px 12px #0001}h1{font-size:24px;border-bottom:3px solid #20352d;padding-bottom:12px}#answer{white-space:pre-wrap;overflow-wrap:anywhere;color:#252525;font-size:15px}button,a.action{display:inline-block;margin:12px 8px 0 0;padding:12px 20px;background:#20352d;color:white;border:0;border-radius:10px;text-decoration:none;font-weight:700;cursor:pointer}#state{font-weight:700}#meta{color:#666}#report{display:none}@media print{body{background:white}.wrap{padding:0}.paper{box-shadow:none;padding:0}#actions,#state{display:none!important}#report{display:block!important}}</style></head>
+<body><div class="wrap"><div class="paper"><div id="state" role="status">결제한 리포트를 확인하고 있습니다…</div><div id="report"><h1>화담철학관 정식 상담 리포트</h1><p id="meta"></p><h3>상담 질문</h3><p id="question"></p><h3>상담 결과</h3><div id="answer"></div><p style="font-size:12px;color:#777">명리학 해석은 참고용입니다.</p></div><div id="actions"><button id="print" hidden>PDF 저장 / 인쇄</button><a class="action" href="/?open=journal">상담 기록·리포트</a></div></div></div>
+<script>
+(async()=>{
+const state=document.getElementById('state'),report=document.getElementById('report'),print=document.getElementById('print');
+const rid=new URLSearchParams(location.search).get('paidReport')||new URLSearchParams(location.search).get('reportId')||'';
+try{
+if(!/^RPT-[A-Za-z0-9_-]{10,80}$/.test(rid))throw Error('리포트 번호가 없습니다. 결제 내역에서 다시 열어 주세요.');
+let map={},last={};
+try{map=JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{}}catch{}
+try{last=JSON.parse(localStorage.getItem('hwadam_last_ai_consult')||'{}')||{}}catch{}
+const token=map[rid]?.token;
+if(!token)throw Error('이 기기에 결제 확인 정보가 없습니다. 다시 결제하지 마시고 결제했던 기기에서 열어 주세요.');
+const res=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token,reportId:rid})});
+const check=await res.json();
+if(!res.ok||!check.ok)throw Error('결제 확인이 지연되거나 이용권을 확인할 수 없습니다. 다시 결제하지 마세요.');
+if(last.reportId!==rid||!last.answer)throw Error('결제는 확인되었지만 이 기기에 상담 결과가 남아 있지 않습니다. 다시 결제하지 마시고 고객지원에 문의해 주세요.');
+document.getElementById('meta').textContent=[last.chart?.name||'고객',last.at?new Date(last.at).toLocaleDateString('ko-KR'):''].filter(Boolean).join(' · ');
+document.getElementById('question').textContent=last.question||'종합 상담';
+document.getElementById('answer').textContent=last.answer;
+report.style.display='block';print.hidden=false;print.onclick=()=>window.print();
+state.textContent='결제가 확인되었습니다. 아래에서 정식 리포트를 확인하고 PDF로 저장할 수 있습니다.';
+}catch(e){state.textContent=(e?.message||'리포트를 불러오지 못했습니다.')+' 고객님께 추가 결제를 요청하지 않습니다.';}
+})();
+</script></body></html>

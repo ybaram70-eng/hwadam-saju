@@ -5,14 +5,14 @@
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
     <meta name="theme-color" content="#20352d" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-    <title>화담철학관 | AI 손금보기·사주·운세</title>
-    <meta name="description" content="화담철학관은 손바닥 사진으로 주요 손금선을 살펴보는 AI 손금보기와 사주·대운·세운·신년운세 서비스를 제공합니다." />
+    <title>화담철학관 | 손금보기·사주·운세</title>
+    <meta name="description" content="화담철학관은 손바닥 사진으로 주요 손금선을 살펴보는 손금보기와 사주·대운·세운·신년운세 서비스를 제공합니다." />
     <link rel="canonical" href="https://화담철학관.com/" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ko_KR" />
     <meta property="og:site_name" content="화담철학관" />
-    <meta property="og:title" content="화담철학관 | AI 손금보기·사주·운세" />
-    <meta property="og:description" content="손바닥 사진을 통한 AI 손금보기와 사주·궁합·신년운세·대운·세운을 함께 확인하는 화담철학관입니다." />
+    <meta property="og:title" content="화담철학관 | 손금보기·사주·운세" />
+    <meta property="og:description" content="손바닥 사진을 통한 손금보기와 사주·궁합·신년운세·대운·세운을 함께 확인하는 화담철학관입니다." />
     <meta property="og:url" content="https://화담철학관.com/" />
     <script type="application/ld+json">
       {
@@ -20,9 +20,9 @@
         "@type":"ProfessionalService",
         "name":"화담철학관",
         "url":"https://화담철학관.com/",
-        "description":"AI 손금보기와 사주팔자, 궁합, 신년운세, 용신, 대운, 세운을 제공하는 화담철학관입니다.",
+        "description":"손금보기와 사주팔자, 궁합, 신년운세, 용신, 대운, 세운을 제공하는 화담철학관입니다.",
         "areaServed":{"@type":"City","name":"순천"},
-        "serviceType":["AI 손금보기","손금 해설","사주 상담","궁합 상담","신년운세","용신 분석","대운·세운 분석"]
+        "serviceType":["손금보기","손금 해설","사주 상담","궁합 상담","신년운세","용신 분석","대운·세운 분석"]
       }
     </script>
     <style>
@@ -31,7 +31,7 @@
   </head>
   <body>
     <iframe id="app" src="/stable.html?v=20260909-ui67" title="화담철학관 만세력"></iframe>
-    <nav class="bottomNav"><button class="navItem active" data-target="home"><span class="ico">⌂</span><span class="txt">홈</span></button><button class="navItem" data-target="input"><span class="ico">✎</span><span class="txt">사주·분석</span></button><button class="navItem" data-target="ai"><span class="ico">◉</span><span class="txt">AI상담</span></button><button class="navItem" data-target="calendar"><span class="ico">▣</span><span class="txt">무료택일</span></button><button class="navItem" data-target="journal"><span class="ico">✦</span><span class="txt">상담 기록·리포트</span></button><button class="navItem" data-target="customers"><span class="ico">♙♙</span><span class="txt">고객목록</span></button></nav>
+    <nav class="bottomNav"><button class="navItem active" data-target="home"><span class="ico">⌂</span><span class="txt">홈</span></button><button class="navItem" data-target="input"><span class="ico">✎</span><span class="txt">사주·분석</span></button><button class="navItem" data-target="ai"><span class="ico">◉</span><span class="txt">상담</span></button><button class="navItem" data-target="calendar"><span class="ico">▣</span><span class="txt">무료택일</span></button><button class="navItem" data-target="journal"><span class="ico">✦</span><span class="txt">상담 기록·리포트</span></button><button class="navItem" data-target="customers"><span class="ico">♙♙</span><span class="txt">고객목록</span></button></nav>
     <script>
       const f=document.getElementById("app"),navOrder=["home","input","analysis","ai","calendar","journal","customers"];let d=null,mode="main",currentTarget="home",transitioning=false,pendingProduct=new URLSearchParams(location.search).get("product"),pendingOpen=new URLSearchParams(location.search).get("open"),pendingPalmSaju=new URLSearchParams(location.search).get("palmSaju")==="1";
       function setActiveTarget(t){document.querySelectorAll(".navItem").forEach(x=>x.classList.toggle("active",x.dataset.target===t));currentTarget=t}

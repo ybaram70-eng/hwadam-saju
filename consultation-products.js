@@ -11,7 +11,7 @@
   const PRODUCTS = [
     {id:'annual-membership',name:'1년 회원권',price:55000,badge:'MEMBER',desc:'로그인한 회원 본인 기준 · 구매일로부터 1년 동안 화담 유료 기능 전체 이용',q:''},
     {id:'annual-fortune',name:'연도별 신년운세',price:9900,badge:'연도별',desc:`${ANNUAL_YEARS.join(' · ')}년 중 선택 · 1년 총운 · 12개월 월별운 · 재물 · 직업 · 관계 · 건강`,q:''},
-    {id:'palm-detail',name:'AI 손금 상세분석',price:5900,badge:'손금',desc:'손바닥 사진 · 주요 손금선 · 보조선 · 손의 구 · 종합 흐름',q:''},
+    {id:'palm-detail',name:'손금 상세분석',price:5900,badge:'손금',desc:'손바닥 사진 · 주요 손금선 · 보조선 · 손의 구 · 종합 흐름',q:''},
     {id:'compatibility',name:'궁합 상담',price:7900,badge:'궁합',desc:'연애 · 결혼 · 두 사람의 관계 흐름과 궁합',q:'궁합을 중심으로 두 사람의 성향, 잘 맞는 점, 갈등하기 쉬운 부분, 관계가 좋아지는 방법과 시기를 자세히 설명해 주세요.'},
     {id:'lifetime-fortune',name:'평생운세 장문 리포트',price:14900,badge:'PREMIUM',desc:'평생 총운 · 재물 · 직업 · 배우자 · 자녀 · 건강 · 대운 전환점 · 말년운',q:'평생운세 장문 리포트로 작성해 주세요. 사주 원국을 근거로 평생 총운, 타고난 성향과 강점, 재물운, 직업·사업운, 배우자·결혼운, 가족·자녀운, 건강에서 주의할 생활 흐름, 대운별 주요 전환점과 기회·주의 시기, 중년 이후의 변화, 말년운과 삶의 방향까지 항목별로 충분히 깊고 길게 설명해 주세요. 단정적인 예언은 피하고 실제 생활에서 활용할 수 있는 조언을 포함해 주세요.'}
   ];
@@ -72,7 +72,7 @@
       return;
     }
     if(ta)ta.value=p.q;
-    if(status)status.textContent=`${p.name} · ${money(salePrice(p.price))}${SALE_ACTIVE?' (50% 할인)':''}을 선택했습니다. AI 상담하기를 누르면 상담 완료 후 해당 금액의 결제 버튼이 활성화됩니다.`;
+    if(status)status.textContent=`${p.name} · ${money(salePrice(p.price))}${SALE_ACTIVE?' (50% 할인)':''}을 선택했습니다. 상담하기를 누르면 상담 완료 후 해당 금액의 결제 버튼이 활성화됩니다.`;
     setTimeout(()=>{ta?.scrollIntoView({behavior:'smooth',block:'center'});ta?.focus()},100);
   }
   function card(p){return `<button type="button" class="hwadamProduct" data-id="${p.id}"><div class="hpTop"><b>${p.name}</b><em>${SALE_ACTIVE?'50% 할인':p.badge}</em></div><strong>${priceHtml(p.price)}</strong><small>${p.desc}</small><span class="selectLink">${p.id==='annual-membership'?'회원권 선택':'상담 선택'} ›</span></button>`}
@@ -81,7 +81,7 @@
     let sec=$('hwadamProductCatalog');
     if(sec)sec.remove();
     sec=d.createElement('section');sec.id='hwadamProductCatalog';
-    sec.innerHTML=`<div class="hpcHead"><div><span>HWADAM SERVICE</span><h3>화담 상담 상품</h3></div><b>5개 상품</b></div>${SALE_ACTIVE?'<div class="hpcSale">🎉 연말 감사 50% 할인 · 2026년 12월 31일까지</div>':''}<div class="hpcGrid">${PRODUCTS.map(card).join('')}</div><div id="hwadamSelectedProductDetail" class="hpcSelected" hidden></div><div class="hpcNote">상품 선택 → AI 상담 → 결제 → 정식 리포트 열람 순서입니다. 1년 회원권은 선택 후 바로 결제할 수 있습니다.</div>`;
+    sec.innerHTML=`<div class="hpcHead"><div><span>HWADAM SERVICE</span><h3>화담 상담 상품</h3></div><b>5개 상품</b></div>${SALE_ACTIVE?'<div class="hpcSale">🎉 연말 감사 50% 할인 · 2026년 12월 31일까지</div>':''}<div class="hpcGrid">${PRODUCTS.map(card).join('')}</div><div id="hwadamSelectedProductDetail" class="hpcSelected" hidden></div><div class="hpcNote">상품 선택 → 상담 → 결제 → 정식 리포트 열람 순서입니다. 1년 회원권은 선택 후 바로 결제할 수 있습니다.</div>`;
     (ai.querySelector('.aiChips')||ai.querySelector('textarea'))?.insertAdjacentElement('beforebegin',sec);
     sec.querySelectorAll('.hwadamProduct').forEach(btn=>btn.addEventListener('click',()=>{const p=PRODUCTS.find(x=>x.id===btn.dataset.id);if(p)selectProduct(p)}));
     let st=$('hwadamProductStyle'); if(!st){st=d.createElement('style');st.id='hwadamProductStyle';d.head.appendChild(st)}

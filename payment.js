@@ -98,7 +98,7 @@
           state.textContent=exp?`1년 회원권 이용 중 · ${exp}까지`:'1년 회원권 이용 중';return;
         }
       }else{
-        if(!last.answer||!reportId){state.textContent='선택한 상품으로 AI 상담을 완료하면 결제 버튼이 활성화됩니다.';return}
+        if(!last.answer||!reportId){state.textContent='선택한 상품으로 상담을 완료하면 결제 버튼이 활성화됩니다.';return}
         if(await valid(reportId)){state.textContent='이 상담은 결제가 완료되어 정식 열람이 가능합니다.';document.dispatchEvent(new CustomEvent('hwadam:report-entitled',{detail:{reportId}}));return}
       }
       const r=await fetch('/api/payment-config?productId='+encodeURIComponent(sel.id),{cache:'no-store'}),nextCfg=await r.json();

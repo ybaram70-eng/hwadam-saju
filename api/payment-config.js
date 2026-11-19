@@ -6,9 +6,9 @@ const PRODUCTS={
   'compatibility':{name:'궁합 상담',amount:7900},
   'comprehensive':{name:'정식 상담 리포트',amount:9900},
   'lifetime-fortune':{name:'평생운세 장문 리포트',amount:14900},
-  'palm-detail':{name:'AI 손금 상세분석',amount:5900},
+  'palm-detail':{name:'손금 상세분석',amount:5900},
   'palm-saju':{name:'손금+사주 종합분석',amount:9900},
-  'face-detail':{name:'AI 관상 상세분석',amount:5900},
+  'face-detail':{name:'관상 상세분석',amount:5900},
   'face-saju':{name:'관상+사주 종합분석',amount:9900}
 };
 const SALE_END_MS=Date.parse('2026-12-31T23:59:59+09:00');

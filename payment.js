@@ -25,9 +25,10 @@
     try{return JSON.parse(localStorage.getItem('hwadam_selected_product')||'{}')||{}}catch{return{}}
   }
   function entitlement(reportId){try{return(JSON.parse(localStorage.getItem('hwadam_report_entitlements')||'{}')||{})[reportId]||null}catch{return null}}
-  async function valid(reportId){const e=entitlement(reportId);try{const r=await fetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:e?.token||'',reportId})});const x=await r.json();return !!(r.ok&&x.ok)}catch{return false}}
+  async function timedFetch(url,options={},ms=8000){const c=new AbortController();const t=setTimeout(()=>c.abort(),ms);try{return await fetch(url,{...options,signal:c.signal})}finally{clearTimeout(t)}}
+  async function valid(reportId){const e=entitlement(reportId);try{const r=await timedFetch('/api/report-entitlement',{method:'POST',headers:{'Content-Type':'application/json'},credentials:'same-origin',body:JSON.stringify({token:e?.token||'',reportId})},6500);const x=await r.json();return !!(r.ok&&x.ok)}catch{return false}}
   function memberReportId(){try{let id=localStorage.getItem('hwadam_membership_report_id');if(!id){id='RPT-MEMBER-'+Date.now()+'-'+Math.random().toString(36).slice(2,10).toUpperCase();localStorage.setItem('hwadam_membership_report_id',id)}return id}catch{return 'RPT-MEMBER-'+Date.now()}}
-  async function membership(){try{const r=await fetch('/api/membership',{credentials:'same-origin',cache:'no-store'});if(!r.ok)return null;const j=await r.json();return j.membership||null}catch{return null}}
+  async function membership(){try{const r=await timedFetch('/api/membership',{credentials:'same-origin',cache:'no-store'},6500);if(!r.ok)return null;const j=await r.json();return j.membership||null}catch{return null}}
   function ensureBox(){
     let sec=$('hwadamPaidReport');
     if(sec)return sec;
@@ -70,6 +71,7 @@
     const state=$('payState'),btn=$('payStart'),last=lastReport(),sel=selectedProduct();if(!state||!btn)return;
     const k=currentKey();if(k===lastKey&&cfg)return;
     busy=true;lastKey=k;
+    state.textContent='결제 상태를 확인하는 중입니다…';
     try{
       btn.hidden=true;
       if(!sel?.id||sel.id==='free-basic'){state.textContent='유료 상담 상품을 먼저 선택해 주세요.';return}
@@ -101,7 +103,7 @@
         if(!last.answer||!reportId){state.textContent='선택한 상품으로 상담을 완료하면 결제 버튼이 활성화됩니다.';return}
         if(await valid(reportId)){state.textContent='이 상담은 결제가 완료되어 정식 열람이 가능합니다.';document.dispatchEvent(new CustomEvent('hwadam:report-entitled',{detail:{reportId}}));return}
       }
-      const r=await fetch('/api/payment-config?productId='+encodeURIComponent(sel.id),{cache:'no-store'}),nextCfg=await r.json();
+      const r=await timedFetch('/api/payment-config?productId='+encodeURIComponent(sel.id),{cache:'no-store'},8000),nextCfg=await r.json();
       if(!nextCfg.enabled){state.textContent='결제 기능은 준비되어 있습니다. 토스페이먼츠 키를 연결하면 바로 사용할 수 있습니다.';return}
       if(nextCfg.mode!=='live'&&nextCfg.mode!=='test')throw new Error('결제 환경 설정이 올바르지 않습니다.');
       if(!nextCfg.clientKey||!Number.isSafeInteger(Number(nextCfg.amount))||Number(nextCfg.amount)<=0)throw new Error('결제 키 또는 금액 설정이 올바르지 않습니다.');
@@ -159,13 +161,13 @@
       lastKey='';
       btn.hidden=true;
       console.error('hwadam-payment-widget-setup-failed',{message:String(e?.message||e)});
-      state.textContent='결제 모듈을 준비하지 못했습니다: '+(e?.message||String(e));
+      state.textContent=(e?.name==='AbortError'?'결제 상태 확인 시간이 초과되었습니다. 잠시 후 다시 시도해 주세요.':'결제 모듈을 준비하지 못했습니다: '+(e?.message||String(e)));
     }finally{busy=false}
   }
   function boot(){
     ensureBox();sync();
     d.addEventListener('hwadam:product-selected',()=>{lastKey='';setTimeout(sync,60)});
-    d.addEventListener('hwadam:report-entitled',()=>{lastKey='';setTimeout(sync,60)});
+    d.addEventListener('hwadam:report-entitled',()=>{if(!busy){lastKey='';setTimeout(sync,300)}});
     d.addEventListener('click',e=>{
       if(e.target.closest('#aiReport')){lastKey='';setTimeout(sync,60);return}
       if(e.target.closest('#aiAsk,.hwadamProduct'))setTimeout(()=>{lastKey='';sync()},350)

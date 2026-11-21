@@ -2,7 +2,7 @@
 const d=document,$=id=>d.getElementById(id),JK='hwadam_journal_v1',CK='hwadam_customers_v1';
 function txt(id){return($(id)?.textContent||'').trim()}
 function val(id){return($(id)?.value||'').trim()}
-function snapshot(){const ps={year:txt('yP'),month:txt('mP'),day:txt('dP'),hour:txt('hP')};const birthYear=Number(val('year'))||null;const luckCycles=[...d.querySelectorAll('.lb')].map(el=>{const pillar=(el.querySelector('b')?.textContent||'').trim();const ageText=(el.querySelector('small')?.textContent||el.textContent||'').trim();const ageMatch=ageText.match(/(?:만\s*)?(\d+)\s*세/)||ageText.match(/^(\d+)\b/);const startAge=ageMatch?Number(ageMatch[1]):NaN;return pillar&&Number.isFinite(startAge)?{startAge,pillar}:null}).filter(Boolean);return{name:val('name')||'고객',gender:$('gender')?.value||'',birthYear,summary:txt('summary'),pillars:ps,dayMaster:txt('dm'),tenGods:txt('tg'),voidBranches:txt('vb'),relations:txt('rel')||txt('relations'),luckCycles,analysis:txt('hwadamAnalysis').slice(0,5000)}}
+function snapshot(){const ps={year:txt('yP'),month:txt('mP'),day:txt('dP'),hour:txt('hP')};const birthYear=Number(val('year'))||null;const luckCycles=[...d.querySelectorAll('.lb')].map(el=>{const pillar=(el.querySelector('b')?.textContent||'').trim();const ageText=(el.querySelector('small')?.textContent||el.textContent||'').trim();const ageMatch=ageText.match(/(?:만\s*)?(\d+)\s*세/)||ageText.match(/(?:^|\s)(\d{1,3})(?:\s|$)/);const startAge=ageMatch?Number(ageMatch[1]):NaN;return pillar&&Number.isFinite(startAge)?{startAge,pillar}:null}).filter(Boolean);return{name:val('name')||'고객',gender:$('gender')?.value||'',birthYear,summary:txt('summary'),pillars:ps,dayMaster:txt('dm'),tenGods:txt('tg'),voidBranches:txt('vb'),relations:txt('rel')||txt('relations'),luckCycles,analysis:txt('hwadamAnalysis').slice(0,5000)}}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function formatAnswer(md=''){let s=esc(md.trim());s=s.replace(/^###\s+(.+)$/gm,'<h4>$1</h4>').replace(/^##\s+(.+)$/gm,'<h3>$1</h3>').replace(/^#\s+(.+)$/gm,'<h3>$1</h3>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/^[-•]\s+(.+)$/gm,'<li>$1</li>');s=s.replace(/(?:<li>.*?<\/li>\n?)+/gs,m=>'<ul>'+m+'</ul>');return s.split(/\n{2,}/).map(x=>x.trim()).filter(Boolean).map(x=>/^<(h3|h4|ul)/.test(x)?x:'<p>'+x.replace(/\n/g,'<br>')+'</p>').join('')}
 function read(k,z=[]){try{return JSON.parse(localStorage.getItem(k))||z}catch{return z}}
@@ -17,14 +17,14 @@ function ensure(){if($('hwadamAiConsult')){const askBtn=$('aiAsk'),reportBtn=$('
 async function ask(){let q=val('aiQuestion');let palm={};try{palm=JSON.parse(localStorage.getItem('hwadam_palm_saju_pending')||'{}')||{}}catch{}if(palm?.answer){q=(q||'손금과 사주를 종합해 주세요.')+'\n\n[손금 분석 결과]\n'+palm.answer+'\n\n위 손금 결과와 현재 사주 원국·대운·세운을 함께 종합해서 설명해 주세요.'}if(!q){$('aiStatus').textContent='궁금한 내용을 한 줄이라도 입력해 주세요.';return}const btn=$('aiAsk'),status=$('aiStatus'),ans=$('aiAnswer'),report=$('aiReport');btn.disabled=true;btn.textContent='상담 중…';status.textContent='원국과 화담분석을 상담에 전달하고 있습니다.';ans.hidden=true;report.hidden=true;try{let chart=snapshot();
 if(!chart.luckCycles.length){
   const fields=['year','month','day','hour'];
-  const hasBirth=fields.every(id=>Number(val(id))>0);
+  const hasBirth=fields.every(id=>val(id)!==''&&Number.isFinite(Number(val(id))))&&Number(val('year'))>0&&Number(val('month'))>0&&Number(val('day'))>0;
   const go=$('go');
   if(hasBirth&&go&&!go.disabled){
     status.textContent='저장된 생년월일로 사주와 대운표를 자동 계산하고 있습니다…';
     go.click();
   }
   if(hasBirth&&go){
-    const deadline=Date.now()+12000;
+    const deadline=Date.now()+20000;
     while(Date.now()<deadline){
       await new Promise(resolve=>setTimeout(resolve,300));
       chart=snapshot();
@@ -33,7 +33,7 @@ if(!chart.luckCycles.length){
     }
   }
 }
-if(!chart.luckCycles.length){throw Error('대운표가 준비되지 않았습니다. 사주·분석에서 생년월일·출생시간을 확인하고 사주팔자 계산을 눌러 주세요. 대운표 없이 운세를 추측하지 않습니다.')}const r=await fetch('/api/consult',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,chart})}),data=await r.json().catch(()=>({}));if(!r.ok)throw Error(data.error||'상담 연결에 실패했습니다.');const answer=data.answer||'상담 결과가 없습니다.';if(palm?.answer){try{localStorage.removeItem('hwadam_palm_saju_pending')}catch{}}const shortPreview=answer.length>750?answer.slice(0,750).replace(/\s+\S*$/,'')+'…':answer;ans.innerHTML='<h3>무료 상담 요약</h3>'+formatAnswer(shortPreview)+(answer.length>750?'<p><strong>자세한 상담 내용과 월별 운세는 정식 리포트에서 확인할 수 있습니다.</strong></p>':'');ans.hidden=false;const saved=autoJournal(q,answer);status.textContent=saved?'상담이 완료되어 상담 기록·리포트에 자동 저장되었습니다.':'상담이 완료되었습니다.';try{localStorage.setItem('hwadam_last_ai_consult',JSON.stringify({at:new Date().toISOString(),question:q,answer,chart}))}catch{}report.hidden=true}catch(e){status.textContent=e?.message||String(e)}finally{btn.disabled=false;btn.textContent='상담하기'}}
+if(!chart.luckCycles.length){const calcError=($('st')?.textContent||'').trim();throw Error(calcError.includes('계산 오류')?calcError+' 대운표를 확인한 뒤 상담을 다시 진행해 주세요.':!val('hour')?'출생시간이 입력되지 않아 대운표를 확인할 수 없습니다. 사주·분석에서 출생시간을 입력한 뒤 계산해 주세요.':'대운표가 아직 계산되지 않았습니다. 사주·분석에서 사주팔자 계산을 완료한 뒤 상담해 주세요. 대운을 임의로 추측하지 않습니다.')}const r=await fetch('/api/consult',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q,chart})}),data=await r.json().catch(()=>({}));if(!r.ok)throw Error(data.error||'상담 연결에 실패했습니다.');const answer=data.answer||'상담 결과가 없습니다.';if(palm?.answer){try{localStorage.removeItem('hwadam_palm_saju_pending')}catch{}}const shortPreview=answer.length>750?answer.slice(0,750).replace(/\s+\S*$/,'')+'…':answer;ans.innerHTML='<h3>무료 상담 요약</h3>'+formatAnswer(shortPreview)+(answer.length>750?'<p><strong>자세한 상담 내용과 월별 운세는 정식 리포트에서 확인할 수 있습니다.</strong></p>':'');ans.hidden=false;const saved=autoJournal(q,answer);status.textContent=saved?'상담이 완료되어 상담 기록·리포트에 자동 저장되었습니다.':'상담이 완료되었습니다.';try{localStorage.setItem('hwadam_last_ai_consult',JSON.stringify({at:new Date().toISOString(),question:q,answer,chart}))}catch{}report.hidden=true}catch(e){status.textContent=e?.message||String(e)}finally{btn.disabled=false;btn.textContent='상담하기'}}
 function boot(){ensure();let t;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(ensure,120)}).observe(d.body,{subtree:true,childList:true,attributes:true})}
 if(d.readyState==='loading')d.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();

@@ -175,9 +175,11 @@ module.exports = async function handler(req,res){
 
     const easyKoreanInstructions=`\n\n[모든 사주 상담에 적용할 쉬운 설명 규칙]\n독자는 명리학을 처음 접하는 중학생이라고 생각하고 쉽고 자연스러운 한국어로 설명하세요. 어려운 한자어와 전문용어를 연달아 나열하지 마세요. 일간, 오행, 십신, 재성, 관성, 식상, 인성, 비겁, 합, 충, 형, 파, 해, 대운, 세운 등의 용어를 처음 쓸 때에는 반드시 괄호 안에 쉬운 뜻을 붙이세요. 예: 재성(돈을 벌고 관리하는 흐름), 관성(일과 책임에 관한 흐름), 대운(약 10년 동안의 큰 흐름), 세운(그해의 흐름), 충(변화나 부딪힘을 뜻하는 관계). 용어의 뜻은 문맥에 맞게 정확하고 간결하게 설명하세요.\n각 항목은 먼저 '쉽게 말하면'에 해당하는 한두 문장으로 핵심을 말하고, 그다음 '왜 그렇게 보는지'를 일상적인 표현으로 풀어주고, 마지막에 직장·돈 관리·가족·계약·생활 같은 구체적 사례와 현실적인 조언을 제시하세요. 어려운 이론 설명은 꼭 필요한 만큼만 쓰고, 고객에게 직접 말하듯 존댓말로 설명하세요. 문장은 가급적 짧게, 한 문단은 2~4문장으로 나누세요. 같은 말을 반복하여 분량만 늘리지 마세요. 기존에 요구된 상세한 분석 범위와 분량, 월별 분석, 실제 사주 데이터에 근거해야 한다는 규칙은 그대로 지키세요. 사주풀이는 전통적인 해석이며 미래를 확정하는 사실처럼 말하지 마세요.`;
 
+    const visualStructureInstructions=`\n\n[화담철학관 읽기 쉬운 사주풀이 형식]\n무료 상담과 유료 정식 리포트에 공통 적용됩니다. 각 주요 운세 주제나 장의 제목 아래에 가능하면 '핵심 결론:', '명리학적 근거:', '현실적 변화:', '화담 조언:' 네 항목을 이 순서로 작성하세요. 핵심 결론은 가장 중요한 내용을 한 문장으로, 명리학적 근거는 실제 제공된 사주 원국·대운·세운에서 확인되는 것만, 현실적 변화는 확정적인 사건 예언이 아닌 가능한 생활 흐름을, 화담 조언은 바로 실천할 수 있는 행동으로 작성하세요. 재고·조후·천을귀인 등은 해당 사주에 실제 근거가 확인될 때에만 설명하세요. 분기·월별 해설에서는 기존 월별 필수 항목과 전체 분량을 우선 유지하면서 위 네 가지 구분을 짧게 적용하세요. 색깔과 카드 디자인은 화면에서 별도로 처리하므로 답변에 HTML이나 색상 코드를 넣지 마세요.\n`;
+
     const payload={
       model:process.env.OPENAI_MODEL||'gpt-5.6-luna',
-      instructions:(isLifetime?lifetimeInstructions:(isPalmSaju?palmSajuInstructions:normalInstructions))+easyKoreanInstructions,
+      instructions:(isLifetime?lifetimeInstructions:(isPalmSaju?palmSajuInstructions:normalInstructions))+easyKoreanInstructions+visualStructureInstructions,
       input:`[사주 데이터]\n${JSON.stringify(chart)}\n\n[사용자 질문]\n${question}`,
       max_output_tokens:isLifetime?12000:(isPalmSaju?3600:4800)
     };

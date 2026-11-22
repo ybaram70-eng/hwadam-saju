@@ -1,1 +1,12 @@
-.hwadam-color-report{display:grid;gap:14px;line-height:1.85;color:#24332d;white-space:normal}.hwadam-reading-card{padding:17px 18px;border:1px solid #dfe8df;border-left:5px solid #688b79;background:#f6faf6;border-radius:14px;break-inside:avoid}.hwadam-reading-card.wealth{background:#f1faf3;border-left-color:#25835b}.hwadam-reading-card.fortune{background:#fff9e9;border-left-color:#c2942b}.hwadam-reading-card.balance{background:#f0f6ff;border-left-color:#5185bd}.hwadam-reading-card.caution{background:#fff3f1;border-left-color:#cf7664}.hwadam-reading-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.02em;color:#40564b;background:#ffffffb8;border-radius:999px;padding:2px 10px;margin-bottom:6px}.hwadam-reading-card h3{margin:2px 0 10px;font-size:18px;line-height:1.5;color:#203d30}.hwadam-reading-body p{margin:0 0 10px;overflow-wrap:anywhere}.hwadam-reading-body p:last-child{margin-bottom:0}.hwadam-reading-body strong{color:#174e3a}@media print{.hwadam-reading-card{box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+.hwadam-color-report{display:block!important;background:#fff!important;border:2px solid #234c3c;border-radius:14px;padding:12px 18px!important;line-height:1.85;color:#18231e;white-space:normal}
+.hwadam-reading-card,.hwadam-reading-card.wealth,.hwadam-reading-card.fortune,.hwadam-reading-card.balance,.hwadam-reading-card.caution{background:transparent!important;border:0!important;border-radius:0!important;border-left:0!important;border-bottom:1px solid #cbd5d0!important;padding:15px 0!important;margin:0!important;box-shadow:none!important;break-inside:auto}
+.hwadam-reading-card:last-child{border-bottom:0!important}
+.hwadam-reading-tag{display:none!important}
+.hwadam-reading-card h3{font-size:19px!important;color:#143e2c!important;font-weight:900!important;margin:2px 0 12px!important}
+.hwadam-reading-body p{margin:0 0 12px!important;line-height:1.9!important}
+.hwadam-reading-body strong{display:inline-block!important;font-weight:900!important;font-size:1.08em!important;padding:2px 5px!important;border-radius:4px}
+.hwadam-reading-body strong[data-kind="conclusion"]{color:#087a32!important;background:#ddf9e4!important}
+.hwadam-reading-body strong[data-kind="basis"]{color:#0649cf!important;background:#e3edff!important}
+.hwadam-reading-body strong[data-kind="change"]{color:#ad4800!important;background:#fff0d8!important}
+.hwadam-reading-body strong[data-kind="advice"]{color:#b51758!important;background:#ffe1ee!important}
+@media print{.hwadam-color-report,.hwadam-reading-body strong{print-color-adjust:exact!important;-webkit-print-color-adjust:exact!important}}

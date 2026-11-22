@@ -24,7 +24,7 @@ function render(raw){
   for(const line of remaining){
     const p=document.createElement('p');
     const m=line.match(/^(핵심 결론|명리학적 근거|현실적 변화|화담 조언|운세|조언|역할|현실적 변화|명리학적 해석)\s*[:：]\s*(.*)$/);
-    if(m){const strong=document.createElement('strong');strong.textContent=m[1]+' · ';p.appendChild(strong);p.appendChild(document.createTextNode(m[2]))}
+    if(m){const strong=document.createElement('strong');strong.textContent=m[1]+' · ';strong.dataset.kind=({'핵심 결론':'conclusion','명리학적 근거':'basis','현실적 변화':'change','화담 조언':'advice'})[m[1]]||'other';p.appendChild(strong);p.appendChild(document.createTextNode(m[2]))}
     else{p.textContent=line.replace(/^[-•]\s*/,'• ').replace(/\*\*/g,'')}
     body.appendChild(p);
   }

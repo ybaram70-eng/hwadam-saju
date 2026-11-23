@@ -97,7 +97,7 @@
     return true;
   }
   function boot(){
-    let tries=0;const tryBuild=()=>{if(build())return;if(++tries<25)setTimeout(tryBuild,200)};tryBuild();
+    let tries=0;const tryBuild=()=>{try{if(build())return}catch(err){console.warn('Hwadam product catalog retry:',err)}if(++tries<180)setTimeout(tryBuild,500)};tryBuild();
     d.addEventListener('click',e=>{if(e.target.closest('#aiAsk'))setTimeout(startAiWatch,80)},true);
   }
   window.hwadamConsultationProducts={PRODUCTS,selectProduct,startAiWatch};

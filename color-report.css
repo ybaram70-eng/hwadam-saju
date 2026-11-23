@@ -1,5 +1,5 @@
-.hwadam-color-report{display:block!important;background:#fff!important;border:2px solid #234c3c;border-radius:14px;padding:12px 18px!important;line-height:1.85;color:#18231e;white-space:normal}
-.hwadam-reading-card,.hwadam-reading-card.wealth,.hwadam-reading-card.fortune,.hwadam-reading-card.balance,.hwadam-reading-card.caution{background:transparent!important;border:0!important;border-radius:0!important;border-left:0!important;border-bottom:1px solid #cbd5d0!important;padding:15px 0!important;margin:0!important;box-shadow:none!important;break-inside:auto}
+.hwadam-color-report{display:block!important;background:#fff!important;border:0;border-radius:0;padding:0!important;line-height:1.85;color:#18231e;white-space:normal}
+.hwadam-reading-card,.hwadam-reading-card.wealth,.hwadam-reading-card.fortune,.hwadam-reading-card.balance,.hwadam-reading-card.caution{background:#fff!important;border:2px solid #176447!important;border-radius:12px!important;padding:18px!important;margin:0 0 18px!important;box-shadow:none!important;break-inside:avoid}
 .hwadam-reading-card:last-child{border-bottom:0!important}
 .hwadam-reading-tag{display:none!important}
 .hwadam-reading-card h3{font-size:19px!important;color:#143e2c!important;font-weight:900!important;margin:2px 0 12px!important}

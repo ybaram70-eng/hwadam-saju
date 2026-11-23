@@ -90,7 +90,7 @@
     // A homepage annual-fortune shortcut must initialize its dedicated yearly question,
     // not leave the previous lifetime/general consultation prompt in the textarea.
     if(saved?.id==='annual-fortune'){
-      const selectedYear=Number(saved.year)||Number((saved.name||'').match(/20\\d{2}/)?.[0])||2027;
+      const selectedYear=Number(saved.year)||Number((saved.name||'').match(/20[0-9]{2}/)?.[0])||2027;
       const annual=PRODUCTS.find(p=>p.id==='annual-fortune');
       if(annual){try{localStorage.setItem('hwadam_annual_year',String(selectedYear))}catch{};selectProduct(annual,selectedYear)}
     }
